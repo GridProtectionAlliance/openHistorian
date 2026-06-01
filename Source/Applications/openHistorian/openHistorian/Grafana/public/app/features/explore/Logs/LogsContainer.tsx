@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import {
   AbsoluteTimeRange,
-  Field,
   hasLogsContextSupport,
   hasLogsContextUiSupport,
   LoadingState,
@@ -22,21 +21,17 @@ import {
   DataSourceWithQueryModificationSupport,
   hasQueryModificationSupport,
 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { DataQuery } from '@grafana/schema';
-import { Collapse } from '@grafana/ui';
+import { PanelChrome } from '@grafana/ui';
 import { MIXED_DATASOURCE_NAME } from 'app/plugins/datasource/mixed/MixedDataSource';
-import { StoreState } from 'app/types';
+import { GetFieldLinksFn } from 'app/plugins/panel/logs/types';
 import { ExploreItemState } from 'app/types/explore';
+import { StoreState } from 'app/types/store';
 
 import { getTimeZone } from '../../profile/state/selectors';
-import {
-  addResultsToCache,
-  clearCache,
-  loadSupplementaryQueryData,
-  selectIsWaitingForData,
-  setSupplementaryQueryEnabled,
-} from '../state/query';
+import { loadSupplementaryQueryData, selectIsWaitingForData, setSupplementaryQueryEnabled } from '../state/query';
 import { updateTimeRange, loadMoreLogs } from '../state/time';
 import { LiveTailControls } from '../useLiveTailControls';
 import { getFieldLinksForExplore } from '../utils/links';
@@ -57,7 +52,6 @@ interface LogsContainerProps extends PropsFromRedux {
   onStopScanning: () => void;
   eventBus: EventBus;
   splitOpenFn: SplitOpen;
-  scrollElement?: HTMLDivElement;
   isFilterLabelActive: (key: string, value: string, refId?: string) => Promise<boolean>;
   onClickFilterString: (value: string, refId?: string) => void;
   onClickFilterOutString: (value: string, refId?: string) => void;
@@ -163,20 +157,28 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
     row: LogRowModel,
     origRow: LogRowModel,
     options: LogRowContextOptions
-  ): Promise<DataQueryResponse | []> => {
+  ): Promise<DataQueryResponse> => {
     const { logsQueries } = this.props;
 
     if (!origRow.dataFrame.refId || !this.state.dsInstances[origRow.dataFrame.refId]) {
-      return Promise.resolve([]);
+      return Promise.resolve({
+        data: [],
+      });
     }
 
     const ds = this.state.dsInstances[origRow.dataFrame.refId];
     if (!hasLogsContextSupport(ds)) {
-      return Promise.resolve([]);
+      return Promise.resolve({
+        data: [],
+      });
     }
 
     const query = this.getQuery(logsQueries, origRow, ds);
-    return query ? ds.getLogRowContext(row, options, query) : Promise.resolve([]);
+    return query
+      ? ds.getLogRowContext(row, options, query)
+      : Promise.resolve({
+          data: [],
+        });
   };
 
   getLogRowContextQuery = async (
@@ -228,9 +230,9 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
     return hasLogsContextSupport(this.state.dsInstances[row.dataFrame.refId]);
   };
 
-  getFieldLinks = (field: Field, rowIndex: number, dataFrame: DataFrame) => {
+  getFieldLinks: GetFieldLinksFn = (field, rowIndex, dataFrame, vars) => {
     const { splitOpenFn, range } = this.props;
-    return getFieldLinksForExplore({ field, rowIndex, splitOpenFn, range, dataFrame });
+    return getFieldLinksForExplore({ field, rowIndex, splitOpenFn, range, dataFrame, vars });
   };
 
   logDetailsFilterAvailable = () => {
@@ -251,12 +253,12 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
     );
   };
 
-  addResultsToCache = () => {
-    this.props.addResultsToCache(this.props.exploreId);
+  loadLogsVolumeData = () => {
+    this.props.loadSupplementaryQueryData(this.props.exploreId, SupplementaryQueryType.LogsVolume);
   };
 
-  clearCache = () => {
-    this.props.clearCache(this.props.exploreId);
+  onSetLogsVolumeEnabled = (enabled: boolean) => {
+    this.props.setSupplementaryQueryEnabled(this.props.exploreId, enabled, SupplementaryQueryType.LogsVolume);
   };
 
   render() {
@@ -267,8 +269,6 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
       logsMeta,
       logsSeries,
       logsQueries,
-      loadSupplementaryQueryData,
-      setSupplementaryQueryEnabled,
       onClickFilterLabel,
       onClickFilterOutLabel,
       onStartScanning,
@@ -283,7 +283,6 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
       isLive,
       exploreId,
       logsVolume,
-      scrollElement,
       onPinLineCallback,
     } = this.props;
 
@@ -294,7 +293,7 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
     return (
       <>
         <LogsCrossFadeTransition visible={isLive}>
-          <Collapse label="Logs" loading={false} isOpen>
+          <PanelChrome title={t('explore.logs-container.label-logs', 'Logs')}>
             <LiveTailControls exploreId={exploreId}>
               {(controls) => (
                 <LiveLogsWithTheme
@@ -309,7 +308,7 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
                 />
               )}
             </LiveTailControls>
-          </Collapse>
+          </PanelChrome>
         </LogsCrossFadeTransition>
         <LogsCrossFadeTransition visible={!isLive}>
           <Logs
@@ -319,16 +318,14 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
             logsMeta={logsMeta}
             logsSeries={logsSeries}
             logsVolumeEnabled={logsVolume.enabled}
-            onSetLogsVolumeEnabled={(enabled) =>
-              setSupplementaryQueryEnabled(exploreId, enabled, SupplementaryQueryType.LogsVolume)
-            }
+            onSetLogsVolumeEnabled={this.onSetLogsVolumeEnabled}
             logsVolumeData={logsVolume.data}
             logsQueries={logsQueries}
             width={width}
             splitOpen={splitOpenFn}
             loading={loading}
             loadingState={loadingState}
-            loadLogsVolumeData={() => loadSupplementaryQueryData(exploreId, SupplementaryQueryType.LogsVolume)}
+            loadLogsVolumeData={this.loadLogsVolumeData}
             onChangeTime={this.onChangeTime}
             loadMoreLogs={this.loadMoreLogs}
             onClickFilterLabel={this.logDetailsFilterAvailable() ? onClickFilterLabel : undefined}
@@ -345,12 +342,9 @@ class LogsContainer extends PureComponent<LogsContainerProps, LogsContainerState
             getRowContextQuery={this.getLogRowContextQuery}
             getLogRowContextUi={this.getLogRowContextUi}
             getFieldLinks={this.getFieldLinks}
-            addResultsToCache={this.addResultsToCache}
-            clearCache={this.clearCache}
             eventBus={this.props.eventBus}
             panelState={this.props.panelState}
             logsFrames={this.props.logsFrames}
-            scrollElement={scrollElement}
             isFilterLabelActive={this.logDetailsFilterAvailable() ? this.props.isFilterLabelActive : undefined}
             range={range}
             onPinLineCallback={onPinLineCallback}
@@ -406,8 +400,6 @@ function mapStateToProps(state: StoreState, { exploreId }: { exploreId: string }
 const mapDispatchToProps = {
   updateTimeRange,
   loadMoreLogs,
-  addResultsToCache,
-  clearCache,
   loadSupplementaryQueryData,
   setSupplementaryQueryEnabled,
 };

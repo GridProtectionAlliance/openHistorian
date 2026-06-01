@@ -1,12 +1,13 @@
 import { screen, waitFor } from '@testing-library/react';
 import { Routes, Route } from 'react-router-dom-v5-compat';
+import { of } from 'rxjs';
 import { render } from 'test/test-utils';
 
+import { getDefaultTimeRange, LoadingState, type PanelData } from '@grafana/data';
 import { selectors as e2eSelectors } from '@grafana/e2e-selectors';
-import { config, locationService } from '@grafana/runtime';
+import { config, locationService, setRunRequest } from '@grafana/runtime';
 import { backendSrv } from 'app/core/services/backend_srv';
-
-import { DashboardRoutes } from '../../../types';
+import { DashboardDTO, DashboardRoutes } from 'app/types/dashboard';
 
 import PublicDashboardPageProxy, { PublicDashboardPageProxyProps } from './PublicDashboardPageProxy';
 
@@ -26,6 +27,16 @@ jest.mock('react-router-dom-v5-compat', () => ({
   ...jest.requireActual('react-router-dom-v5-compat'),
   useParams: () => ({ accessToken: 'an-access-token' }),
 }));
+
+const runRequestMock = jest.fn().mockReturnValue(
+  of<PanelData>({
+    state: LoadingState.Done,
+    series: [],
+    timeRange: getDefaultTimeRange(),
+    annotations: [],
+  })
+);
+setRunRequest(runRequestMock);
 
 function setup(props: Partial<PublicDashboardPageProxyProps>) {
   return render(
@@ -52,10 +63,12 @@ describe('PublicDashboardPageProxy', () => {
   beforeEach(() => {
     config.featureToggles.publicDashboardsScene = false;
 
+    // Mock console methods to avoid jest-fail-on-console issues
+    jest.spyOn(console, 'warn').mockImplementation();
+
     // Mock the dashboard UID response so we don't get any refused connection errors
     // from this test (as the fetch polyfill means this logic would actually try and call the API)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    jest.spyOn(backendSrv, 'getPublicDashboardByUid').mockResolvedValue({ dashboard: {}, meta: {} } as any);
+    jest.spyOn(backendSrv, 'getPublicDashboardByUid').mockResolvedValue({ dashboard: {}, meta: {} } as DashboardDTO);
   });
 
   describe('when scene feature enabled', () => {

@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { useMemo } from 'react';
 
 import { GrafanaTheme2, dateMath } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import {
   Alert,
   CollapsableSection,
@@ -14,7 +15,6 @@ import {
   useStyles2,
 } from '@grafana/ui';
 import { useQueryParams } from 'app/core/hooks/useQueryParams';
-import { Trans } from 'app/core/internationalization';
 import { alertSilencesApi } from 'app/features/alerting/unified/api/alertSilencesApi';
 import { featureDiscoveryApi } from 'app/features/alerting/unified/api/featureDiscoveryApi';
 import { MATCHER_ALERT_RULE_UID, SILENCES_POLL_INTERVAL_MS } from 'app/features/alerting/unified/utils/constants';
@@ -23,10 +23,14 @@ import { AlertmanagerAlert, Silence, SilenceState } from 'app/plugins/datasource
 
 import { alertmanagerApi } from '../../api/alertmanagerApi';
 import { AlertmanagerAction, useAlertmanagerAbility } from '../../hooks/useAbilities';
+import { useAlertmanager } from '../../state/AlertmanagerContext';
 import { parsePromQLStyleMatcherLooseSafe } from '../../utils/matchers';
 import { getSilenceFiltersFromUrlParams, makeAMLink, stringifyErrorLike } from '../../utils/misc';
+import { withPageErrorBoundary } from '../../withPageErrorBoundary';
+import { AlertmanagerPageWrapper } from '../AlertingPageWrapper';
 import { Authorize } from '../Authorize';
 import { DynamicTable, DynamicTableColumnProps, DynamicTableItemProps } from '../DynamicTable';
+import { GrafanaAlertmanagerWarning } from '../GrafanaAlertmanagerWarning';
 
 import { Matchers } from './Matchers';
 import { NoSilencesSplash } from './NoSilencesCTA';
@@ -40,13 +44,11 @@ export interface SilenceTableItem extends Silence {
 
 type SilenceTableColumnProps = DynamicTableColumnProps<SilenceTableItem>;
 type SilenceTableItemProps = DynamicTableItemProps<SilenceTableItem>;
-interface Props {
-  alertManagerSourceName: string;
-}
 
 const API_QUERY_OPTIONS = { pollingInterval: SILENCES_POLL_INTERVAL_MS, refetchOnFocus: true };
 
-const SilencesTable = ({ alertManagerSourceName }: Props) => {
+const SilencesTable = () => {
+  const { selectedAlertmanager: alertManagerSourceName = '' } = useAlertmanager();
   const [previewAlertsSupported, previewAlertsAllowed] = useAlertmanagerAbility(
     AlertmanagerAction.PreviewSilencedInstances
   );
@@ -54,7 +56,7 @@ const SilencesTable = ({ alertManagerSourceName }: Props) => {
 
   const { data: alertManagerAlerts = [], isLoading: amAlertsIsLoading } =
     alertmanagerApi.endpoints.getAlertmanagerAlerts.useQuery(
-      { amSourceName: alertManagerSourceName, filter: { silenced: true, active: true, inhibited: true } },
+      { amSourceName: alertManagerSourceName, filter: { silenced: true, active: false, inhibited: false } },
       { ...API_QUERY_OPTIONS, skip: !canPreview }
     );
 
@@ -110,12 +112,18 @@ const SilencesTable = ({ alertManagerSourceName }: Props) => {
   }, [filteredSilencesExpired, alertManagerAlerts, canPreview]);
 
   if (isLoading || amAlertsIsLoading) {
-    return <LoadingPlaceholder text="Loading silences..." />;
+    return <LoadingPlaceholder text={t('alerting.silences-table.text-loading-silences', 'Loading silences...')} />;
   }
 
   if (mimirLazyInitError) {
     return (
-      <Alert title="The selected Alertmanager has no configuration" severity="warning">
+      <Alert
+        title={t(
+          'alerting.silences-table.title-the-selected-alertmanager-has-no-configuration',
+          'The selected Alertmanager has no configuration'
+        )}
+        severity="warning"
+      >
         <Trans i18nKey="silences.table.noConfig">
           Create a new contact point to create a configuration using the default values or contact your administrator to
           set up the Alertmanager.
@@ -127,7 +135,10 @@ const SilencesTable = ({ alertManagerSourceName }: Props) => {
   if (error) {
     const errMessage = stringifyErrorLike(error) || 'Unknown error.';
     return (
-      <Alert severity="error" title="Error loading silences">
+      <Alert
+        severity="error"
+        title={t('alerting.silences-table.title-error-loading-silences', 'Error loading silences')}
+      >
         {errMessage}
       </Alert>
     );
@@ -135,6 +146,7 @@ const SilencesTable = ({ alertManagerSourceName }: Props) => {
 
   return (
     <div data-testid="silences-table">
+      <GrafanaAlertmanagerWarning currentAlertmanager={alertManagerSourceName} />
       {!!silences.length && (
         <Stack direction="column">
           <SilencesFilter />
@@ -151,7 +163,12 @@ const SilencesTable = ({ alertManagerSourceName }: Props) => {
             dataTestId="not-expired-table"
           />
           {itemsExpired.length > 0 && (
-            <CollapsableSection label={`Expired silences (${itemsExpired.length})`} isOpen={showExpiredFromUrl}>
+            <CollapsableSection
+              label={t('alerting.silences-table.label-section-expired', 'Expired silences ({{numExpired}})', {
+                numExpired: itemsExpired.length,
+              })}
+              isOpen={showExpiredFromUrl}
+            >
               <div className={styles.callout}>
                 <Icon className={styles.calloutIcon} name="info-circle" />
                 <span>
@@ -265,6 +282,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 function useColumns(alertManagerSourceName: string) {
   const [updateSupported, updateAllowed] = useAlertmanagerAbility(AlertmanagerAction.UpdateSilence);
   const [expireSilence] = alertSilencesApi.endpoints.expireSilence.useMutation();
+
   const isGrafanaFlavoredAlertmanager = alertManagerSourceName === GRAFANA_RULES_SOURCE_NAME;
 
   return useMemo((): SilenceTableColumnProps[] => {
@@ -274,7 +292,7 @@ function useColumns(alertManagerSourceName: string) {
     const columns: SilenceTableColumnProps[] = [
       {
         id: 'state',
-        label: 'State',
+        label: t('alerting.use-columns.columns.label.state', 'State'),
         renderCell: function renderStateTag({ data: { status } }) {
           return <SilenceStateTag state={status.state} />;
         },
@@ -282,7 +300,7 @@ function useColumns(alertManagerSourceName: string) {
       },
       {
         id: 'alert-rule',
-        label: 'Alert rule targeted',
+        label: t('alerting.use-columns.columns.label.alert-rule-targeted', 'Alert rule targeted'),
         renderCell: function renderAlertRuleLink({ data: { metadata } }) {
           return metadata?.rule_title ? (
             <Link
@@ -298,7 +316,7 @@ function useColumns(alertManagerSourceName: string) {
       },
       {
         id: 'matchers',
-        label: 'Matching labels',
+        label: t('alerting.use-columns.columns.label.matching-labels', 'Matching labels'),
         renderCell: function renderMatchers({ data: { matchers } }) {
           const filteredMatchers = matchers?.filter((matcher) => matcher.name !== MATCHER_ALERT_RULE_UID) || [];
           return <Matchers matchers={filteredMatchers} />;
@@ -307,15 +325,22 @@ function useColumns(alertManagerSourceName: string) {
       },
       {
         id: 'alerts',
-        label: 'Alerts silenced',
+        label: t('alerting.use-columns.columns.label.alerts-silenced', 'Alerts silenced'),
         renderCell: function renderSilencedAlerts({ data: { silencedAlerts } }) {
-          return <span data-testid="alerts">{Array.isArray(silencedAlerts) ? silencedAlerts.length : '-'}</span>;
+          return (
+            <span data-testid="alerts">
+              {Array.isArray(silencedAlerts)
+                ? silencedAlerts.length
+                : // eslint-disable-next-line @grafana/i18n/no-untranslated-strings
+                  '-'}
+            </span>
+          );
         },
         size: 2,
       },
       {
         id: 'schedule',
-        label: 'Schedule',
+        label: t('alerting.use-columns.columns.label.schedule', 'Schedule'),
         renderCell: function renderSchedule({ data: { startsAt, endsAt } }) {
           const startsAtDate = dateMath.parse(startsAt);
           const endsAtDate = dateMath.parse(endsAt);
@@ -328,7 +353,7 @@ function useColumns(alertManagerSourceName: string) {
     if (updateSupported) {
       columns.push({
         id: 'actions',
-        label: 'Actions',
+        label: t('alerting.use-columns.label.actions', 'Actions'),
         renderCell: function renderActions({ data: silence }) {
           const isExpired = silence.status.state === SilenceState.Expired;
 
@@ -342,7 +367,7 @@ function useColumns(alertManagerSourceName: string) {
             <Stack gap={0.5} wrap="wrap">
               {canRecreate && (
                 <LinkButton
-                  title="Recreate"
+                  title={t('alerting.use-columns.title-recreate', 'Recreate')}
                   size="sm"
                   variant="secondary"
                   icon="sync"
@@ -354,7 +379,7 @@ function useColumns(alertManagerSourceName: string) {
               {canEdit && (
                 <>
                   <LinkButton
-                    title="Unsilence"
+                    title={t('alerting.use-columns.title-unsilence', 'Unsilence')}
                     size="sm"
                     variant="secondary"
                     icon="bell"
@@ -363,7 +388,7 @@ function useColumns(alertManagerSourceName: string) {
                     <Trans i18nKey="silences.table.unsilence-button">Unsilence</Trans>
                   </LinkButton>
                   <LinkButton
-                    title="Edit"
+                    title={t('alerting.use-columns.title-edit', 'Edit')}
                     size="sm"
                     variant="secondary"
                     icon="pen"
@@ -382,4 +407,13 @@ function useColumns(alertManagerSourceName: string) {
     return columns;
   }, [alertManagerSourceName, expireSilence, isGrafanaFlavoredAlertmanager, updateAllowed, updateSupported]);
 }
-export default SilencesTable;
+
+function SilencesTablePage() {
+  return (
+    <AlertmanagerPageWrapper navId="silences" accessType="instance">
+      <SilencesTable />
+    </AlertmanagerPageWrapper>
+  );
+}
+
+export default withPageErrorBoundary(SilencesTablePage);

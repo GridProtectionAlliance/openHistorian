@@ -8,7 +8,7 @@ import {
   QueryBuilderOperationParamValue,
   VisualQuery,
   VisualQueryModeller,
-} from '@grafana/experimental';
+} from '@grafana/plugin-ui';
 
 import { escapeLabelValueInExactSelector } from '../languageUtils';
 import { FUNCTIONS } from '../syntax';
@@ -48,6 +48,7 @@ export function createRangeOperation(
     name: getLokiOperationDisplayName(name),
     params: params,
     defaultParams,
+    toggleable: true,
     alternativesKey: 'range function',
     category: LokiVisualQueryOperationCategory.RangeFunctions,
     orderRank: LokiOperationOrder.RangeVectorFunction,
@@ -86,6 +87,7 @@ export function createRangeOperationWithGrouping(name: string): QueryBuilderOper
         },
       ],
       defaultParams: [...rangeOperation.defaultParams, ''],
+      toggleable: true,
       alternativesKey: 'range function with grouping',
       category: LokiVisualQueryOperationCategory.RangeFunctions,
       renderer: getRangeAggregationWithGroupingRenderer(name, 'by'),
@@ -334,11 +336,14 @@ export function getLineFilterRenderer(operation: string, caseInsensitive?: boole
     return `${innerExpr} ${operation} ${delimiter}${params.join(`${delimiter} or ${delimiter}`)}${delimiter}`;
   };
 }
+
 function getRangeVectorParamDef(): QueryBuilderOperationParamDef {
   return {
     name: 'Range',
     type: 'string',
-    options: ['$__auto', '1m', '5m', '10m', '1h', '24h'],
+    options: ['$__auto'],
+    description:
+      'Use the default value "$__auto". Change the "step" value in the query options to change the bucket size.',
   };
 }
 
@@ -431,6 +436,7 @@ export function createAggregationOperation(
         },
       ],
       defaultParams: [],
+      toggleable: true,
       alternativesKey: 'plain aggregations',
       category: LokiVisualQueryOperationCategory.Aggregations,
       renderer: functionRendererLeft,

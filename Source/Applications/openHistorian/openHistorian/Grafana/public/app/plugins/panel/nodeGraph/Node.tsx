@@ -4,6 +4,7 @@ import { MouseEvent, memo } from 'react';
 import tinycolor from 'tinycolor2';
 
 import { Field, getFieldColorModeForField, GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Icon, useTheme2 } from '@grafana/ui';
 
 import { HoverState } from './NodeGraph';
@@ -14,61 +15,63 @@ export const nodeR = 40;
 export const highlightedNodeColor = '#a00';
 
 const getStyles = (theme: GrafanaTheme2, hovering: HoverState) => ({
-  mainGroup: css`
-    cursor: pointer;
-    font-size: 10px;
-    transition: opacity 300ms;
-    opacity: ${hovering === 'inactive' ? 0.5 : 1};
-  `,
+  mainGroup: css({
+    cursor: 'pointer',
+    fontSize: '10px',
+    [theme.transitions.handleMotion('no-preference', 'reduce')]: {
+      transition: 'opacity 300ms',
+    },
+    opacity: hovering === 'inactive' ? 0.5 : 1,
+  }),
 
-  mainCircle: css`
-    fill: ${theme.components.panel.background};
-  `,
+  mainCircle: css({
+    fill: theme.components.panel.background,
+  }),
 
-  filledCircle: css`
-    fill: ${highlightedNodeColor};
-  `,
+  filledCircle: css({
+    fill: highlightedNodeColor,
+  }),
 
-  hoverCircle: css`
-    opacity: 0.5;
-    fill: transparent;
-    stroke: ${theme.colors.primary.text};
-  `,
+  hoverCircle: css({
+    opacity: 0.5,
+    fill: 'transparent',
+    stroke: theme.colors.primary.text,
+  }),
 
-  text: css`
-    fill: ${theme.colors.text.primary};
-    pointer-events: none;
-  `,
+  text: css({
+    fill: theme.colors.text.primary,
+    pointerEvents: 'none',
+  }),
 
-  titleText: css`
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    background-color: ${tinycolor(theme.colors.background.primary).setAlpha(0.6).toHex8String()};
-    width: 140px;
-  `,
+  titleText: css({
+    textAlign: 'center',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    backgroundColor: tinycolor(theme.colors.background.primary).setAlpha(0.6).toHex8String(),
+    width: '140px',
+  }),
 
-  statsText: css`
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 70px;
-  `,
+  statsText: css({
+    textAlign: 'center',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    width: '70px',
+  }),
 
-  textHovering: css`
-    width: 200px;
-    & span {
-      background-color: ${tinycolor(theme.colors.background.primary).setAlpha(0.8).toHex8String()};
-    }
-  `,
+  textHovering: css({
+    width: '200px',
+    '& span': {
+      backgroundColor: tinycolor(theme.colors.background.primary).setAlpha(0.8).toHex8String(),
+    },
+  }),
 
-  clickTarget: css`
-    fill: none;
-    stroke: none;
-    pointer-events: fill;
-  `,
+  clickTarget: css({
+    fill: 'none',
+    stroke: 'none',
+    pointerEvents: 'fill',
+  }),
 });
 
 export const computeNodeCircumferenceStrokeWidth = (nodeRadius: number) => Math.ceil(nodeRadius * 0.075);
@@ -92,7 +95,11 @@ export const Node = memo(function Node(props: {
   }
 
   return (
-    <g data-node-id={node.id} className={styles.mainGroup} aria-label={`Node: ${node.title}`}>
+    <g
+      data-node-id={node.id}
+      className={styles.mainGroup}
+      aria-label={t('nodeGraph.node.aria-label-node-title', 'Node: {{nodeName}}', { nodeName: node.title })}
+    >
       <circle
         data-testid={`node-circle-${node.id}`}
         className={node.highlighted ? styles.filledCircle : styles.mainCircle}

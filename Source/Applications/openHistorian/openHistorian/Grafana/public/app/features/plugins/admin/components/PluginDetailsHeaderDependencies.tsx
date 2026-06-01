@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { useStyles2, Icon, Stack } from '@grafana/ui';
 
 import { CatalogPlugin, PluginIconName } from '../types';
@@ -27,7 +28,9 @@ export function PluginDetailsHeaderDependencies({ plugin, grafanaDependency }: P
       {Boolean(grafanaDependency) && (
         <div className={styles.depBadge}>
           <Icon name="grafana" className={styles.icon} />
-          Grafana {grafanaDependency}
+          <Trans i18nKey="plugins.plugin-details-header-dependencies.grafana-dependency">
+            Grafana {{ grafanaDependency }}
+          </Trans>
         </div>
       )}
 
@@ -50,21 +53,21 @@ export function PluginDetailsHeaderDependencies({ plugin, grafanaDependency }: P
 
 export const getStyles = (theme: GrafanaTheme2) => {
   return {
-    dependencyTitle: css`
-      margin-right: ${theme.spacing(0.5)};
+    dependencyTitle: css({
+      marginRight: theme.spacing(0.5),
 
-      &::after {
-        content: '';
-        padding: 0;
-      }
-    `,
+      '&::after': {
+        content: "''",
+        padding: 0,
+      },
+    }),
     depBadge: css({
       display: 'flex',
       alignItems: 'flex-start',
     }),
-    icon: css`
-      color: ${theme.colors.text.secondary};
-      margin-right: ${theme.spacing(0.5)};
-    `,
+    icon: css({
+      color: theme.colors.text.secondary,
+      marginRight: theme.spacing(0.5),
+    }),
   };
 };

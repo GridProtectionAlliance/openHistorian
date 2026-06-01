@@ -1,15 +1,15 @@
 import saveAs from 'file-saver';
 
 import { dateTimeFormat, formattedValueToString, getValueFormat, SelectableValue } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { t } from '@grafana/i18n';
 import { SceneObject } from '@grafana/scenes';
 import { StateManagerBase } from 'app/core/services/StateManagerBase';
 import { Randomize } from 'app/features/dashboard-scene/inspect/HelpWizard/randomizer';
 import { createDashboardSceneFromDashboardModel } from 'app/features/dashboard-scene/serialization/transformSaveModelToScene';
 
 import { getTimeSrv } from '../../services/TimeSrv';
-import { DashboardModel, PanelModel } from '../../state';
-import { setDashboardToFetchFromLocalStorage } from '../../state/initDashboard';
+import { DashboardModel } from '../../state/DashboardModel';
+import { PanelModel } from '../../state/PanelModel';
 
 import { getDebugDashboard, getGithubMarkdown } from './utils';
 
@@ -58,13 +58,16 @@ export class SupportSnapshotService extends StateManagerBase<SupportSnapshotStat
       snapshotUpdate: 0,
       options: [
         {
-          label: 'GitHub comment',
+          label: t('dashboard.support-snapshot-service.label.git-hub-comment', 'GitHub comment'),
           description: 'Copy and paste this message into a GitHub issue or comment',
           value: ShowMessage.GithubComment,
         },
         {
-          label: 'Panel support snapshot',
-          description: 'Dashboard JSON used to help troubleshoot visualization issues',
+          label: t('dashboard.support-snapshot-service.label.panel-support-snapshot', 'Panel support snapshot'),
+          description: t(
+            'dashboard.support-snapshot-service.description.dashboard-troubleshoot-visualization-issues',
+            'Dashboard JSON used to help troubleshoot visualization issues'
+          ),
           value: ShowMessage.PanelSnapshot,
         },
       ],
@@ -80,14 +83,12 @@ export class SupportSnapshotService extends StateManagerBase<SupportSnapshotStat
 
     let scene: SceneObject | undefined = undefined;
 
-    if (!panel.isAngularPlugin()) {
-      try {
-        const oldModel = new DashboardModel(snapshot, { isEmbedded: true });
-        const dash = createDashboardSceneFromDashboardModel(oldModel, snapshot);
-        scene = dash.state.body; // skip the wrappers
-      } catch (ex) {
-        console.log('Error creating scene:', ex);
-      }
+    try {
+      const oldModel = new DashboardModel(snapshot, { isEmbedded: true });
+      const dash = createDashboardSceneFromDashboardModel(oldModel, snapshot);
+      scene = dash.state.body; // skip the wrappers
+    } catch (ex) {
+      console.log('Error creating scene:', ex);
     }
 
     this.setState({ snapshot, snapshotText, markdownText, snapshotSize, snapshotUpdate: snapshotUpdate + 1, scene });
@@ -108,7 +109,7 @@ export class SupportSnapshotService extends StateManagerBase<SupportSnapshotStat
     if (markdownText.length > maxLen) {
       this.setState({
         error: {
-          title: 'Copy to clipboard failed',
+          title: t('dashboard.support-snapshot-service.title.copy-to-clipboard-failed', 'Copy to clipboard failed'),
           message: 'Snapshot is too large, consider download and attaching a file instead',
         },
       });
@@ -135,13 +136,5 @@ export class SupportSnapshotService extends StateManagerBase<SupportSnapshotStat
   onToggleRandomize = (k: keyof Randomize) => {
     const { randomize } = this.state;
     this.setState({ randomize: { ...randomize, [k]: !randomize[k] } });
-  };
-
-  onPreviewDashboard = () => {
-    const { snapshot } = this.state;
-    if (snapshot) {
-      setDashboardToFetchFromLocalStorage({ meta: {}, dashboard: snapshot });
-      global.open(config.appUrl + 'dashboard/new', '_blank');
-    }
   };
 }

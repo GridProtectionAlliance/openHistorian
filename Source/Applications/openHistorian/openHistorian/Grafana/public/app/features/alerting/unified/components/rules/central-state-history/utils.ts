@@ -11,22 +11,41 @@ import {
   ThresholdsMode,
   getDisplayProcessor,
 } from '@grafana/data';
-import { fieldIndexComparer } from '@grafana/data/src/field/fieldComparers';
-import { mapStateWithReasonToBaseState } from 'app/types/unified-alerting-dto';
+import { fieldIndexComparer } from '@grafana/data/internal';
 
 import { labelsMatchMatchers } from '../../../utils/alertmanager';
 import { parsePromQLStyleMatcherLooseSafe } from '../../../utils/matchers';
-import { LogRecord } from '../state-history/common';
-import { isLine, isNumbers } from '../state-history/useRuleHistoryRecords';
+import { LogRecord, historyDataFrameToLogRecords } from '../state-history/common';
 
-import { LABELS_FILTER, STATE_FILTER_FROM, STATE_FILTER_TO, StateFilterValues } from './CentralAlertHistoryScene';
+import { LABELS_FILTER, STATE_FILTER_FROM, STATE_FILTER_TO } from './CentralAlertHistoryScene';
+import { StateFilterValues } from './constants';
 
 const GROUPING_INTERVAL = 10 * 1000; // 10 seconds
 const QUERY_PARAM_PREFIX = 'var-'; // Prefix used by Grafana to sync variables in the URL
 
-const emptyFilters = {
-  stateTo: 'all',
-  stateFrom: 'all',
+/**
+ * Parse label filters and prepare backend filters.
+ * Backend supports only exact matchers.
+ */
+export function parseBackendLabelFilters(labelFilter: string): Record<string, string> {
+  const labelMatchers = parsePromQLStyleMatcherLooseSafe(labelFilter);
+  const labelFilters: Record<string, string> = {};
+
+  labelMatchers.forEach((matcher) => {
+    if (!matcher.isRegex && matcher.isEqual) {
+      labelFilters[matcher.name] = matcher.value;
+    }
+  });
+
+  return labelFilters;
+}
+
+interface HistoryFilters {
+  labels: string;
+}
+
+const emptyFilters: HistoryFilters = {
+  labels: '',
 };
 
 /*
@@ -35,33 +54,8 @@ const emptyFilters = {
  * We group all records by alert instance (unique set of labels) and create a DataFrame for each group (instance).
  * This allows us to be able to filter by labels and states in the groupDataFramesByTime function.
  */
-export function historyResultToDataFrame({ data }: DataFrameJSON, filters = emptyFilters): DataFrame[] {
-  const { stateTo, stateFrom } = filters;
-
-  // Extract timestamps and lines from the response
-  const [tsValues = [], lines = []] = data?.values ?? [];
-  const timestamps = isNumbers(tsValues) ? tsValues : [];
-
-  // Filter log records by state and create a list of log records with the timestamp and line
-  const logRecords = timestamps.reduce<LogRecord[]>((acc, timestamp: number, index: number) => {
-    const line = lines[index];
-    if (!isLine(line)) {
-      return acc;
-    }
-
-    // we have to filter out by state at that point , because we are going to group by timestamp and these states are going to be lost
-    const baseStateTo = mapStateWithReasonToBaseState(line.current);
-    const baseStateFrom = mapStateWithReasonToBaseState(line.previous);
-    const stateToMatch = stateTo !== StateFilterValues.all ? stateTo === baseStateTo : true;
-    const stateFromMatch = stateFrom !== StateFilterValues.all ? stateFrom === baseStateFrom : true;
-
-    // filter by state
-    if (stateToMatch && stateFromMatch) {
-      acc.push({ timestamp, line });
-    }
-
-    return acc;
-  }, []);
+export function historyResultToDataFrame(stateHistory: DataFrameJSON, filters = emptyFilters): DataFrame[] {
+  const logRecords = historyDataFrameToLogRecords(stateHistory);
 
   // Group log records by alert instance
   const logRecordsByInstance = groupBy(logRecords, (record: LogRecord) => {
@@ -75,7 +69,7 @@ export function historyResultToDataFrame({ data }: DataFrameJSON, filters = empt
   });
 
   // Group DataFrames by time and filter by labels
-  return groupDataFramesByTimeAndFilterByLabels(dataFrames);
+  return groupDataFramesByTimeAndFilterByLabels(dataFrames, filters);
 }
 
 // Scenes sync variables in the URL adding a prefix to the variable name.
@@ -98,9 +92,9 @@ export function getStateFilterFromInQueryParams() {
  * This function groups the data frames by time and filters them by labels.
  * The interval is set to 10 seconds.
  * */
-function groupDataFramesByTimeAndFilterByLabels(dataFrames: DataFrame[]): DataFrame[] {
+export function groupDataFramesByTimeAndFilterByLabels(dataFrames: DataFrame[], filters: HistoryFilters): DataFrame[] {
   // Filter data frames by labels. This is used to filter out the data frames that do not match the query.
-  const labelsFilterValue = getLabelsFilterInQueryParams();
+  const labelsFilterValue = filters.labels;
   const dataframesFiltered = dataFrames.filter((frame) => {
     const labels = JSON.parse(frame.name ?? ''); // in name we store the labels stringified
 
@@ -186,7 +180,7 @@ function logRecordsToDataFrame(instanceLabels: string, records: LogRecord[]): Da
  * The time field is the timestamp of the log record.
  * The value field is the state of the log record.
  * The state is converted to a string and color is assigned based on the state.
- * The state can be Alerting, Pending, Normal, or NoData.
+ * The state can be Alerting, Pending, Recovering, Normal, or NoData.
  *
  * */
 export function logRecordsToDataFrameForState(records: LogRecord[], theme: GrafanaTheme2): DataFrame {
@@ -226,6 +220,9 @@ export function logRecordsToDataFrameForState(records: LogRecord[], theme: Grafa
                   color: theme.colors.error.main,
                 },
                 Pending: {
+                  color: theme.colors.warning.main,
+                },
+                Recovering: {
                   color: theme.colors.warning.main,
                 },
                 Normal: {

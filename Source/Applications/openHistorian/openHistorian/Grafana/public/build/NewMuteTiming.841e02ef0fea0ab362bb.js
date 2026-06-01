@@ -1,3 +1,0 @@
-"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[8302],{66162:(g,n,a)=>{a.r(n),a.d(n,{default:()=>P});var t=a(74848),E=a(66602),s=a(37959),_=a(39241);const e=()=>(0,t.jsx)(s.y,{navId:"am-routes",pageNav:{id:"alert-policy-new",text:"Add mute timing"},accessType:"notification",children:(0,t.jsx)(_.A,{})}),P=(0,E.Xc)(e,{style:"page"})}}]);
-
-//# sourceMappingURL=NewMuteTiming.841e02ef0fea0ab362bb.js.map

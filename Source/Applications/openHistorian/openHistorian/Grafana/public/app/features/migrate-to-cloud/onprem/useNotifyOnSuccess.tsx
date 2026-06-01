@@ -1,9 +1,14 @@
-import { t } from 'i18next';
 import { useRef, useEffect } from 'react';
 
+import { GetSnapshotResponseDto, SnapshotDto } from '@grafana/api-clients/rtkq/legacy/migrate-to-cloud';
+import { t } from '@grafana/i18n';
 import { useAppNotification } from 'app/core/copy/appNotification';
 
-import { GetSnapshotResponseDto, SnapshotDto } from '../api';
+import { pluralizeResourceName } from './resourceInfo';
+import { ResourceTableItem } from './types';
+
+// After the number of distinct resource types migrated exceeeds this value, we display a generic success message.
+const SUCCESS_MESSAGE_ITEM_TYPES_THRESHOLD = 4;
 
 export function useNotifySuccessful(snapshot: GetSnapshotResponseDto | undefined) {
   const previousStatusRef = useRef<SnapshotDto['status']>(undefined);
@@ -32,6 +37,8 @@ export function useNotifySuccessful(snapshot: GetSnapshotResponseDto | undefined
 function getTranslatedMessage(snapshot: GetSnapshotResponseDto) {
   const types: string[] = [];
 
+  let distinctItems = 0;
+
   for (const [type, count] of Object.entries(snapshot.stats?.types ?? {})) {
     if (count <= 0) {
       continue;
@@ -39,24 +46,29 @@ function getTranslatedMessage(snapshot: GetSnapshotResponseDto) {
 
     // We don't have per-resource status counts, so there's no way to accurately pluralize these
     // so we just don't :)
-    if (type === 'DASHBOARD') {
-      types.push(t('migrate-to-cloud.migrated-counts.dashboards', 'dashboards'));
-    } else if (type === 'DATASOURCE') {
-      types.push(t('migrate-to-cloud.migrated-counts.datasources', 'data sources'));
-    } else if (type === 'FOLDER') {
-      types.push(t('migrate-to-cloud.migrated-counts.folders', 'folders'));
-    } else if (type === 'LIBRARY_ELEMENT') {
-      types.push(t('migrate-to-cloud.migrated-counts.library_elements', 'library elements'));
+    const resourceType = pluralizeResourceName(type as ResourceTableItem['type']);
+    if (!resourceType) {
+      continue;
     }
+
+    types.push(resourceType);
+
+    distinctItems += 1;
   }
 
   const successCount = snapshot?.stats?.statuses?.['OK'] ?? 0;
 
-  const message = t(
+  if (distinctItems > SUCCESS_MESSAGE_ITEM_TYPES_THRESHOLD) {
+    return t(
+      'migrate-to-cloud.onprem.success-message-generic',
+      'Successfully migrated {{successCount}} resources to your Grafana Cloud instance.',
+      { successCount }
+    );
+  }
+
+  return t(
     'migrate-to-cloud.onprem.success-message',
     'Successfully migrated {{successCount}} {{types, list}} to your Grafana Cloud instance.',
     { successCount, types }
   );
-
-  return message;
 }

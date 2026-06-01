@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 
 import { DateTimeInput, GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
 
 import { PanelModelWithLibraryPanel } from '../../types';
@@ -21,21 +22,34 @@ export const LibraryPanelInformation = ({ panel, formatDate }: Props) => {
   return (
     <div className={styles.info}>
       <div className={styles.libraryPanelInfo}>
-        {`Used on ${meta.connectedDashboards} `}
-        {meta.connectedDashboards === 1 ? 'dashboard' : 'dashboards'}
+        <Trans i18nKey="library-panels.library-panel-info.usage-count" count={meta.connectedDashboards}>
+          Used on {'{{count}}'} dashboards
+        </Trans>
       </div>
       <div className={styles.libraryPanelInfo}>
-        Last edited on {formatDate?.(meta.updated, 'L') ?? meta.updated} by
-        {meta.updatedBy.avatarUrl && (
-          <img
-            width="22"
-            height="22"
-            className={styles.userAvatar}
-            src={meta.updatedBy.avatarUrl}
-            alt={`Avatar for ${meta.updatedBy.name}`}
-          />
-        )}
-        {meta.updatedBy.name}
+        <Trans
+          i18nKey="library-panels.library-panel-info.last-edited"
+          values={{ timeAgo: formatDate?.(meta.updated, 'L') ?? meta.updated }}
+          components={{
+            person: (
+              <>
+                {meta.updatedBy.avatarUrl && (
+                  <img
+                    width="22"
+                    height="22"
+                    className={styles.userAvatar}
+                    src={meta.updatedBy.avatarUrl}
+                    alt={`Avatar for ${meta.updatedBy.name}`}
+                  />
+                )}
+                {meta.updatedBy.name}
+              </>
+            ),
+          }}
+        >
+          Last edited on {'{{timeAgo}}'} by
+          {'<person />'}
+        </Trans>
       </div>
     </div>
   );
@@ -43,20 +57,20 @@ export const LibraryPanelInformation = ({ panel, formatDate }: Props) => {
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    info: css`
-      line-height: 1;
-    `,
-    libraryPanelInfo: css`
-      color: ${theme.colors.text.secondary};
-      font-size: ${theme.typography.bodySmall.fontSize};
-    `,
-    userAvatar: css`
-      border-radius: ${theme.shape.radius.circle};
-      box-sizing: content-box;
-      width: 22px;
-      height: 22px;
-      padding-left: ${theme.spacing(1)};
-      padding-right: ${theme.spacing(1)};
-    `,
+    info: css({
+      lineHeight: 1,
+    }),
+    libraryPanelInfo: css({
+      color: theme.colors.text.secondary,
+      fontSize: theme.typography.bodySmall.fontSize,
+    }),
+    userAvatar: css({
+      borderRadius: theme.shape.radius.circle,
+      boxSizing: 'content-box',
+      width: '22px',
+      height: '22px',
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    }),
   };
 };

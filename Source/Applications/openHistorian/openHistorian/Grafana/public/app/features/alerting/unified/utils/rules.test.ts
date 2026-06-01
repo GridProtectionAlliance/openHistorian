@@ -1,5 +1,5 @@
 import { PluginLoadingStrategy } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { setAppPluginMetas } from '@grafana/runtime/internal';
 import { RuleGroupIdentifier } from 'app/types/unified-alerting';
 
 import {
@@ -7,6 +7,7 @@ import {
   mockCombinedRule,
   mockCombinedRuleGroup,
   mockGrafanaRulerRule,
+  mockPromAlertingRule,
   mockRuleWithLocation,
   mockRulerAlertingRule,
 } from '../mocks';
@@ -16,32 +17,37 @@ import {
   getRuleGroupLocationFromCombinedRule,
   getRuleGroupLocationFromRuleWithLocation,
   getRulePluginOrigin,
+  isUngroupedRuleGroup,
 } from './rules';
 
 describe('getRuleOrigin', () => {
+  afterEach(() => {
+    setAppPluginMetas({});
+  });
+
   it('returns undefined when no origin label is present', () => {
-    const rule = mockCombinedRule({
+    const rule = mockPromAlertingRule({
       labels: {},
     });
     expect(getRulePluginOrigin(rule)).toBeUndefined();
   });
 
   it('returns undefined when origin label does not match expected format', () => {
-    const rule = mockCombinedRule({
+    const rule = mockPromAlertingRule({
       labels: { [GRAFANA_ORIGIN_LABEL]: 'invalid_format' },
     });
     expect(getRulePluginOrigin(rule)).toBeUndefined();
   });
 
-  it('returns undefined when plugin is not installed', () => {
-    const rule = mockCombinedRule({
+  it('returns pluginId even when plugin is not installed', () => {
+    const rule = mockPromAlertingRule({
       labels: { [GRAFANA_ORIGIN_LABEL]: 'plugin/uninstalled_plugin' },
     });
-    expect(getRulePluginOrigin(rule)).toBeUndefined();
+    expect(getRulePluginOrigin(rule)).toEqual({ pluginId: 'uninstalled_plugin' });
   });
 
   it('returns pluginId when origin label matches expected format and plugin is installed', () => {
-    config.apps = {
+    setAppPluginMetas({
       installed_plugin: {
         id: 'installed_plugin',
         version: '',
@@ -54,6 +60,7 @@ describe('getRuleOrigin', () => {
           addedComponents: [],
           extensionPoints: [],
           exposedComponents: [],
+          addedFunctions: [],
         },
         dependencies: {
           grafanaVersion: '',
@@ -63,8 +70,8 @@ describe('getRuleOrigin', () => {
           },
         },
       },
-    };
-    const rule = mockCombinedRule({
+    });
+    const rule = mockPromAlertingRule({
       labels: { [GRAFANA_ORIGIN_LABEL]: 'plugin/installed_plugin' },
     });
     expect(getRulePluginOrigin(rule)).toEqual({ pluginId: 'installed_plugin' });
@@ -119,5 +126,24 @@ describe('ruleGroupLocation', () => {
       namespaceName: 'abc123',
       groupName: 'group-1',
     });
+  });
+});
+
+describe('isUngroupedRuleGroup', () => {
+  it('should return true for group names starting with NO_GROUP_PREFIX', () => {
+    expect(isUngroupedRuleGroup('no_group_for_rule_abc123')).toBe(true);
+    expect(isUngroupedRuleGroup('no_group_for_rule_')).toBe(true);
+    expect(isUngroupedRuleGroup('no_group_for_rule_test-rule-uid')).toBe(true);
+  });
+
+  it('should return false for group names not starting with NO_GROUP_PREFIX', () => {
+    expect(isUngroupedRuleGroup('MyGroup')).toBe(false);
+    expect(isUngroupedRuleGroup('group-1')).toBe(false);
+    expect(isUngroupedRuleGroup('')).toBe(false);
+  });
+
+  it('should return false for group names that contain but do not start with NO_GROUP_PREFIX', () => {
+    expect(isUngroupedRuleGroup('prefix_no_group_for_rule_abc123')).toBe(false);
+    expect(isUngroupedRuleGroup('MyGroup_no_group_for_rule_')).toBe(false);
   });
 });

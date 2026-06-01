@@ -1,52 +1,103 @@
-import { css, cx } from '@emotion/css';
-import { memo, forwardRef, useMemo } from 'react';
+import { css } from '@emotion/css';
+import { memo, forwardRef, useMemo, useState, type JSX } from 'react';
 
 import { GrafanaTheme2, Labels } from '@grafana/data';
-import { Tooltip, useStyles2 } from '@grafana/ui';
+import { t } from '@grafana/i18n';
+import { Button, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+
+import { getNormalizedFieldName } from './panel/processing';
 
 // Levels are already encoded in color, filename is a Loki-ism
 const HIDDEN_LABELS = ['detected_level', 'level', 'lvl', 'filename'];
 
-interface Props {
+export interface Props {
   labels: Labels;
   emptyMessage?: string;
+  addTooltip?: boolean;
+  displayMax?: number;
+  displayAll?: boolean;
+  onDisplayMaxToggle?(state: boolean): void;
 }
 
-export const LogLabels = memo(({ labels, emptyMessage }: Props) => {
-  const styles = useStyles2(getStyles);
-  const displayLabels = useMemo(
-    () =>
-      Object.keys(labels)
-        .filter((label) => !label.startsWith('_') && !HIDDEN_LABELS.includes(label))
-        .sort(),
-    [labels]
-  );
+export const LogLabels = memo(
+  ({
+    labels,
+    emptyMessage,
+    addTooltip = true,
+    displayMax,
+    onDisplayMaxToggle,
+    displayAll: initialDisplayAll = false,
+  }: Props) => {
+    const [displayAll, setDisplayAll] = useState<boolean | undefined>(displayMax ? initialDisplayAll : undefined);
+    const styles = useStyles2(getStyles);
+    const allLabels = useMemo(
+      () =>
+        Object.keys(labels)
+          .filter((label) => !label.startsWith('_') && !HIDDEN_LABELS.includes(label) && labels[label])
+          .map((label) => `${label}=${labels[label]}`),
+      [labels]
+    );
+    const displayLabels = useMemo(
+      () => allLabels.slice(0, !displayAll && displayMax ? displayMax : Infinity),
+      [allLabels, displayAll, displayMax]
+    );
 
-  if (displayLabels.length === 0 && emptyMessage) {
+    if (displayLabels.length === 0 && emptyMessage) {
+      return (
+        <span className={styles.logsLabels}>
+          <span className={styles.logsLabel}>{emptyMessage}</span>
+        </span>
+      );
+    }
+
     return (
-      <span className={cx([styles.logsLabels])}>
-        <span className={cx([styles.logsLabel])}>{emptyMessage}</span>
+      <span className={styles.logsLabels}>
+        {displayLabels.map((labelValue) => {
+          return addTooltip ? (
+            <Tooltip content={labelValue} key={labelValue} placement="top">
+              <LogLabel styles={styles}>{labelValue}</LogLabel>
+            </Tooltip>
+          ) : (
+            <LogLabel styles={styles} tooltip={labelValue} key={labelValue}>
+              {labelValue}
+            </LogLabel>
+          );
+        })}
+        {displayLabels.length < allLabels.length && !displayAll && (
+          <Button
+            size="sm"
+            fill="outline"
+            variant="secondary"
+            className={styles.button}
+            aria-label={t('logs.log-labels.expand', 'Expand labels')}
+            onClick={() => {
+              setDisplayAll(true);
+              onDisplayMaxToggle?.(true);
+            }}
+          >
+            <Icon name="plus" size="xs" />
+            {allLabels.length - displayLabels.length}
+          </Button>
+        )}
+        {displayAll === true && (
+          <Button
+            size="sm"
+            fill="outline"
+            variant="secondary"
+            className={styles.button}
+            aria-label={t('logs.log-labels.collapse', 'Collapse labels')}
+            onClick={() => {
+              setDisplayAll(false);
+              onDisplayMaxToggle?.(false);
+            }}
+          >
+            <Icon name="minus" size="xs" />
+          </Button>
+        )}
       </span>
     );
   }
-
-  return (
-    <span className={cx([styles.logsLabels])}>
-      {displayLabels.map((label) => {
-        const value = labels[label];
-        if (!value) {
-          return;
-        }
-        const labelValue = `${label}=${value}`;
-        return (
-          <Tooltip content={labelValue} key={label} placement="top">
-            <LogLabel styles={styles}>{labelValue}</LogLabel>
-          </Tooltip>
-        );
-      })}
-    </span>
-  );
-});
+);
 LogLabels.displayName = 'LogLabels';
 
 interface LogLabelsArrayProps {
@@ -55,11 +106,12 @@ interface LogLabelsArrayProps {
 
 export const LogLabelsList = memo(({ labels }: LogLabelsArrayProps) => {
   const styles = useStyles2(getStyles);
+
   return (
-    <span className={cx([styles.logsLabels])}>
+    <span className={styles.logsLabels}>
       {labels.map((label) => (
         <LogLabel key={label} styles={styles} tooltip={label}>
-          {label}
+          {getNormalizedFieldName(label)}
         </LogLabel>
       ))}
     </span>
@@ -75,8 +127,8 @@ interface LogLabelProps {
 
 const LogLabel = forwardRef<HTMLSpanElement, LogLabelProps>(({ styles, tooltip, children }: LogLabelProps, ref) => {
   return (
-    <span className={cx([styles.logsLabel])} ref={ref}>
-      <span className={cx([styles.logsLabelValue])} title={tooltip}>
+    <span className={styles.logsLabel} ref={ref}>
+      <span className={styles.logsLabelValue} title={tooltip}>
         {children}
       </span>
     </span>
@@ -86,28 +138,33 @@ LogLabel.displayName = 'LogLabel';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    logsLabels: css`
-      display: flex;
-      flex-wrap: wrap;
-      font-size: ${theme.typography.size.xs};
-    `,
-    logsLabel: css`
-      label: logs-label;
-      display: flex;
-      padding: ${theme.spacing(0, 0.25)};
-      background-color: ${theme.colors.background.secondary};
-      border-radius: ${theme.shape.radius.default};
-      margin: ${theme.spacing(0.125, 0.5, 0, 0)};
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    `,
-    logsLabelValue: css`
-      label: logs-label__value;
-      display: inline-block;
-      max-width: ${theme.spacing(25)};
-      text-overflow: ellipsis;
-      overflow: hidden;
-    `,
+    logsLabels: css({
+      display: 'inline-flex',
+      flexWrap: 'wrap',
+      fontSize: theme.typography.size.xs,
+      alignItems: 'center',
+    }),
+    logsLabel: css({
+      label: 'logs-label',
+      display: 'flex',
+      padding: theme.spacing(0, 0.25),
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: theme.shape.radius.default,
+      margin: theme.spacing(0.125, 0.5, 0, 0),
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      maxHeight: theme.spacing(2),
+    }),
+    logsLabelValue: css({
+      label: 'logs-label__value',
+      display: 'inline-block',
+      maxWidth: theme.spacing(25),
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+    }),
+    button: css({
+      height: theme.spacing(2.75),
+    }),
   };
 };

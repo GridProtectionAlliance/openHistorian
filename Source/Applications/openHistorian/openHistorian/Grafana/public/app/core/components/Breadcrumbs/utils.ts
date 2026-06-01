@@ -22,7 +22,6 @@ export function buildBreadcrumbs(sectionNav: NavModelItem, pageNav?: NavModelIte
 
     // Check if we found home/root if if so return early
     if (homeNav && urlToMatch === homeNav.url) {
-      crumbs.unshift({ text: homeNav.text, href: node.url ?? '' });
       foundHome = true;
       return;
     }

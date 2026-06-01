@@ -4,7 +4,7 @@ import { Unsubscribable } from 'rxjs';
 import { LoadingState, PanelData } from '@grafana/data';
 
 import { GetDataOptions } from '../../../query/state/PanelQueryRunner';
-import { PanelModel } from '../../state';
+import { PanelModel } from '../../state/PanelModel';
 
 interface UsePanelLatestData {
   data?: PanelData;
@@ -21,7 +21,7 @@ export const usePanelLatestData = (
   options: GetDataOptions,
   checkSchema?: boolean
 ): UsePanelLatestData => {
-  const querySubscription = useRef<Unsubscribable>();
+  const querySubscription = useRef<Unsubscribable>(undefined);
   const [latestData, setLatestData] = useState<PanelData>();
 
   useEffect(() => {

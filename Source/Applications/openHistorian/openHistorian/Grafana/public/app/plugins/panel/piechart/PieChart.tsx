@@ -18,7 +18,7 @@ import {
   DataHoverEvent,
 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
-import { VizTooltipOptions } from '@grafana/schema';
+import { SortOrder, VizTooltipOptions } from '@grafana/schema';
 import {
   useTheme2,
   useStyles2,
@@ -27,8 +27,7 @@ import {
   SeriesTable,
   usePanelContext,
 } from '@grafana/ui';
-import { getTooltipContainerStyles } from '@grafana/ui/src/themes/mixins';
-import { useComponentInstanceId } from '@grafana/ui/src/utils/useComponetInstanceId';
+import { getTooltipContainerStyles, useComponentInstanceId } from '@grafana/ui/internal';
 
 import { PieChartType, PieChartLabels } from './panelcfg.gen';
 import { filterDisplayItems, sumDisplayItemsReducer } from './utils';
@@ -41,6 +40,7 @@ interface PieChartProps {
   width: number;
   fieldDisplayValues: FieldDisplay[];
   pieType: PieChartType;
+  sort: SortOrder;
   highlightedTitle?: string;
   displayLabels?: PieChartLabels[];
   useGradients?: boolean; // not used?
@@ -50,6 +50,7 @@ interface PieChartProps {
 export const PieChart = ({
   fieldDisplayValues,
   pieType,
+  sort,
   width,
   height,
   highlightedTitle,
@@ -106,6 +107,7 @@ export const PieChart = ({
           <Pie
             data={filteredFieldDisplayValues}
             pieValue={getValue}
+            pieSortValues={() => 0}
             outerRadius={layout.outerRadius}
             innerRadius={layout.innerRadius}
             cornerRadius={3}
@@ -321,8 +323,12 @@ function getTooltipData(
   if (tooltipOptions.mode === 'multi') {
     return pie.arcs
       .filter((pa) => {
-        const field = pa.data.field;
-        return field && !field.custom?.hideFrom?.tooltip && !field.custom?.hideFrom?.viz;
+        if (tooltipOptions.hideZeros && pa.value === 0) {
+          return false;
+        }
+
+        const customConfig = pa.data.field.custom;
+        return !customConfig?.hideFrom?.tooltip;
       })
       .map((pieArc) => {
         return {
@@ -423,28 +429,32 @@ function getSvgStyle(
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    container: css`
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `,
+    container: css({
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }),
     svgArg: {
-      normal: css`
-        transition: all 200ms ease-in-out;
-      `,
-      highlighted: css`
-        transition: all 200ms ease-in-out;
-        transform: scale3d(1.03, 1.03, 1);
-      `,
-      deemphasized: css`
-        transition: all 200ms ease-in-out;
-        fill-opacity: 0.5;
-      `,
+      normal: css({
+        [theme.transitions.handleMotion('no-preference')]: {
+          transition: 'all 200ms ease-in-out',
+        },
+      }),
+      highlighted: css({
+        [theme.transitions.handleMotion('no-preference')]: {
+          transition: 'all 200ms ease-in-out',
+        },
+        transform: 'scale3d(1.03, 1.03, 1)',
+      }),
+      deemphasized: css({
+        [theme.transitions.handleMotion('no-preference')]: {
+          transition: 'all 200ms ease-in-out',
+        },
+        fillOpacity: 0.5,
+      }),
     },
-    tooltipPortal: css`
-      ${getTooltipContainerStyles(theme)}
-    `,
+    tooltipPortal: css(getTooltipContainerStyles(theme)),
   };
 };

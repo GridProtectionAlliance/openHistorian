@@ -1,11 +1,11 @@
 import { NavModel, NavModelItem, PageLayoutType, arrayUtils } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
 import { DashboardLink } from '@grafana/schema';
 import { Page } from 'app/core/components/Page/Page';
 
 import { DashboardScene } from '../scene/DashboardScene';
-import { NavToolbarActions, ToolbarActions } from '../scene/NavToolbarActions';
+import { NavToolbarActions } from '../scene/NavToolbarActions';
 import { DashboardLinkForm } from '../settings/links/DashboardLinkForm';
 import { DashboardLinkList } from '../settings/links/DashboardLinkList';
 import { NEW_LINK } from '../settings/links/utils';
@@ -81,7 +81,6 @@ function DashboardLinksEditViewRenderer({ model }: SceneComponentProps<Dashboard
   const { links } = dashboard.useState();
   const { navModel, pageNav } = useDashboardEditPageNav(dashboard, model.getUrlKey());
   const linkToEdit = editIndex !== undefined ? links[editIndex] : undefined;
-  const isSingleTopNav = config.featureToggles.singleTopNav;
 
   if (linkToEdit) {
     return (
@@ -97,13 +96,8 @@ function DashboardLinksEditViewRenderer({ model }: SceneComponentProps<Dashboard
   }
 
   return (
-    <Page
-      navModel={navModel}
-      pageNav={pageNav}
-      layout={PageLayoutType.Standard}
-      toolbar={isSingleTopNav ? <ToolbarActions dashboard={dashboard} /> : undefined}
-    >
-      {!isSingleTopNav && <NavToolbarActions dashboard={dashboard} />}
+    <Page navModel={navModel} pageNav={pageNav} layout={PageLayoutType.Standard}>
+      <NavToolbarActions dashboard={dashboard} />
       <DashboardLinkList
         links={links}
         onNew={model.onNewLink}
@@ -127,19 +121,13 @@ interface EditLinkViewProps {
 
 function EditLinkView({ pageNav, link, navModel, dashboard, onChange, onGoBack }: EditLinkViewProps) {
   const editLinkPageNav = {
-    text: 'Edit link',
+    text: t('dashboard-scene.edit-link-view.edit-link-page-nav.text.edit-link', 'Edit link'),
     parentItem: pageNav,
   };
-  const isSingleTopNav = config.featureToggles.singleTopNav;
 
   return (
-    <Page
-      navModel={navModel}
-      pageNav={editLinkPageNav}
-      layout={PageLayoutType.Standard}
-      toolbar={isSingleTopNav ? <ToolbarActions dashboard={dashboard} /> : undefined}
-    >
-      {!isSingleTopNav && <NavToolbarActions dashboard={dashboard} />}
+    <Page navModel={navModel} pageNav={editLinkPageNav} layout={PageLayoutType.Standard}>
+      <NavToolbarActions dashboard={dashboard} />
       <DashboardLinkForm link={link!} onUpdate={onChange} onGoBack={onGoBack} />
     </Page>
   );

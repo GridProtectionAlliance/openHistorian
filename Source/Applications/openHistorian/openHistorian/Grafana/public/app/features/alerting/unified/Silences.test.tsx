@@ -1,10 +1,11 @@
-import { useParams } from 'react-router-dom-v5-compat';
+import { HttpResponse, http } from 'msw';
+import { Route, Routes } from 'react-router-dom-v5-compat';
 import { render, screen, userEvent, waitFor, within } from 'test/test-utils';
 import { byLabelText, byPlaceholderText, byRole, byTestId, byText } from 'testing-library-selector';
 
 import { dateTime } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
-import { config, locationService } from '@grafana/runtime';
+import { locationService } from '@grafana/runtime';
 import { mockAlertRuleApi, setupMswServer } from 'app/features/alerting/unified/mockApi';
 import { waitForServerRequest } from 'app/features/alerting/unified/mocks/server/events';
 import {
@@ -15,9 +16,13 @@ import { MOCK_GRAFANA_ALERT_RULE_TITLE } from 'app/features/alerting/unified/moc
 import { silenceCreateHandler } from 'app/features/alerting/unified/mocks/server/handlers/silences';
 import { MATCHER_ALERT_RULE_UID } from 'app/features/alerting/unified/utils/constants';
 import { MatcherOperator, SilenceState } from 'app/plugins/datasource/alertmanager/types';
-import { AccessControlAction } from 'app/types';
+import { AccessControlAction } from 'app/types/accessControl';
 
-import Silences from './Silences';
+import { contextSrv } from '../../../core/services/context_srv';
+
+import NewSilencePage from './NewSilencePage';
+import ExistingSilenceEditorPage from './components/silences/SilencesEditor';
+import SilencesTablePage from './components/silences/SilencesTable';
 import {
   MOCK_SILENCE_ID_EXISTING,
   MOCK_SILENCE_ID_EXISTING_ALERT_RULE_UID,
@@ -30,21 +35,21 @@ import { grafanaRulerRule } from './mocks/grafanaRulerApi';
 import { setupDataSources } from './testSetup/datasources';
 import { DataSourceType, GRAFANA_RULES_SOURCE_NAME } from './utils/datasource';
 
-jest.mock('app/core/services/context_srv');
-
-jest.mock('react-router-dom-v5-compat', () => ({
-  ...jest.requireActual('react-router-dom-v5-compat'),
-  useParams: jest.fn(),
-}));
-
 const TEST_TIMEOUT = 60000;
 
 const renderSilences = (location = '/alerting/silences/') => {
-  return render(<Silences />, {
-    historyOptions: {
-      initialEntries: [location],
-    },
-  });
+  return render(
+    <Routes>
+      <Route path="/alerting/silences" element={<SilencesTablePage />} />
+      <Route path="/alerting/silence/new" element={<NewSilencePage />} />
+      <Route path="/alerting/silence/:id/edit" element={<ExistingSilenceEditorPage />} />
+    </Routes>,
+    {
+      historyOptions: {
+        initialEntries: [location],
+      },
+    }
+  );
 };
 
 const dataSources = {
@@ -63,7 +68,6 @@ const ui = {
   notExpiredTable: byTestId('not-expired-table'),
   expiredTable: byTestId('expired-table'),
   expiredCaret: byText(/expired silences \(/i),
-  silencesTags: byLabelText(/tags/i),
   silenceRow: byTestId('row'),
   silencedAlertCell: byTestId('alerts'),
   addSilenceButton: byRole('link', { name: /add silence/i }),
@@ -88,8 +92,8 @@ const ui = {
 };
 
 const setUserLogged = (isLogged: boolean) => {
-  config.bootData.user.isSignedIn = isLogged;
-  config.bootData.user.name = isLogged ? 'admin' : '';
+  contextSrv.user.isSignedIn = isLogged;
+  contextSrv.user.name = isLogged ? 'admin' : '';
 };
 
 const enterSilenceLabel = async (index: number, name: string, matcher: MatcherOperator, value: string) => {
@@ -118,14 +122,11 @@ beforeEach(() => {
   ]);
 });
 
-afterEach(() => jest.resetAllMocks());
-
 describe('Silences', () => {
   it(
     'loads and shows silences',
     async () => {
-      const user = userEvent.setup();
-      renderSilences();
+      const { user } = renderSilences();
 
       expect(await ui.notExpiredTable.find()).toBeInTheDocument();
 
@@ -155,6 +156,28 @@ describe('Silences', () => {
   );
 
   it(
+    'fetches silenced alerts with correct filter parameters',
+    async () => {
+      let capturedParams: URLSearchParams | undefined;
+      server.use(
+        http.get('/api/alertmanager/:datasourceUid/api/v2/alerts', ({ request }) => {
+          capturedParams = new URL(request.url).searchParams;
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderSilences();
+
+      await waitFor(() => expect(capturedParams).toBeDefined());
+
+      expect(capturedParams?.get('silenced')).toBe('true');
+      expect(capturedParams?.get('active')).toBe('false');
+      expect(capturedParams?.get('inhibited')).toBe('false');
+    },
+    TEST_TIMEOUT
+  );
+
+  it(
     'shows the correct number of silenced alerts',
     async () => {
       renderSilences();
@@ -174,8 +197,7 @@ describe('Silences', () => {
   it(
     'filters silences by matchers',
     async () => {
-      const user = userEvent.setup();
-      renderSilences();
+      const { user } = renderSilences();
 
       const queryBar = await ui.queryBar.find();
       await user.type(queryBar, 'foo=bar');
@@ -260,8 +282,7 @@ describe('Silence create/edit', () => {
   it(
     'creates a new silence',
     async () => {
-      const user = userEvent.setup();
-      renderSilences(`${baseUrlPath}?alertmanager=${GRAFANA_RULES_SOURCE_NAME}`);
+      const { user } = renderSilences(`${baseUrlPath}?alertmanager=${GRAFANA_RULES_SOURCE_NAME}`);
       expect(await ui.editor.durationField.find()).toBeInTheDocument();
 
       const postRequest = waitForServerRequest(silenceCreateHandler());
@@ -320,20 +341,17 @@ describe('Silence create/edit', () => {
   });
 
   it('shows an error when existing silence cannot be found', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: 'foo-bar' });
     renderSilences('/alerting/silence/foo-bar/edit');
 
     expect(await ui.existingSilenceNotFound.find()).toBeInTheDocument();
   });
 
   it('shows an error when user cannot edit/recreate silence', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: MOCK_SILENCE_ID_LACKING_PERMISSIONS });
     renderSilences(`/alerting/silence/${MOCK_SILENCE_ID_LACKING_PERMISSIONS}/edit`);
     expect(await ui.noPermissionToEdit.find()).toBeInTheDocument();
   });
 
   it('populates form with existing silence information', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: MOCK_SILENCE_ID_EXISTING });
     renderSilences(`/alerting/silence/${MOCK_SILENCE_ID_EXISTING}/edit`);
 
     // Await the first value to be populated, after which we can expect that all of the other
@@ -344,7 +362,6 @@ describe('Silence create/edit', () => {
   });
 
   it('populates form with existing silence information that has __alert_rule_uid__', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: MOCK_SILENCE_ID_EXISTING_ALERT_RULE_UID });
     mockAlertRuleApi(server).getAlertRule(MOCK_SILENCE_ID_EXISTING_ALERT_RULE_UID, grafanaRulerRule);
     renderSilences(`/alerting/silence/${MOCK_SILENCE_ID_EXISTING_ALERT_RULE_UID}/edit`);
     expect(await screen.findByLabelText(/alert rule/i)).toHaveValue(grafanaRulerRule.grafana_alert.title);
@@ -358,11 +375,9 @@ describe('Silence create/edit', () => {
   it(
     'silences page should contain alertmanager parameter after creating a silence',
     async () => {
-      const user = userEvent.setup();
-
       const postRequest = waitForServerRequest(silenceCreateHandler());
 
-      renderSilences(`${baseUrlPath}?alertmanager=${GRAFANA_RULES_SOURCE_NAME}`);
+      const { user } = renderSilences(`${baseUrlPath}?alertmanager=${GRAFANA_RULES_SOURCE_NAME}`);
       await waitFor(() => expect(ui.editor.durationField.query()).not.toBeNull());
 
       await enterSilenceLabel(0, 'foo', MatcherOperator.equal, 'bar');

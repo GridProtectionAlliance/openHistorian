@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 
 import { SelectableValue } from '@grafana/data';
-import { EditorField } from '@grafana/experimental';
+import { EditorField } from '@grafana/plugin-ui';
 import { Select } from '@grafana/ui';
 
+import { ValueTypes } from '../dataquery.gen';
 import { getAggregationOptionsByMetric } from '../functions';
-import { ValueTypes } from '../types/query';
 import { MetricDescriptor } from '../types/types';
 
 export interface Props {
@@ -22,7 +22,13 @@ export const Aggregation = (props: Props) => {
   const selected = useSelectedFromOptions(aggOptions, props);
 
   return (
-    <EditorField label="Group by function" data-testid="cloud-monitoring-aggregation">
+    <EditorField
+      label="Group by function"
+      data-testid="cloud-monitoring-aggregation"
+      tooltip={
+        'Aggregation function used on the metric data. Defaults to none for scalar data and mean for distribution data. Not applying an aggregation to distribution data may lead to performance issues.'
+      }
+    >
       <Select
         width="auto"
         onChange={({ value }) => props.onChange(value!)}

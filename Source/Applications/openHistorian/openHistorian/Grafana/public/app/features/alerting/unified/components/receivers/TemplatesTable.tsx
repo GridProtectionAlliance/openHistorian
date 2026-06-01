@@ -1,12 +1,16 @@
 import { Fragment, useState } from 'react';
 
+import { Trans, t } from '@grafana/i18n';
 import { logError } from '@grafana/runtime';
-import { ConfirmModal, useStyles2 } from '@grafana/ui';
+import { Badge, ConfirmModal, Tooltip, useStyles2 } from '@grafana/ui';
 import { useAppNotification } from 'app/core/copy/appNotification';
+import { CodeText } from 'app/features/alerting/unified/components/common/TextVariants';
+import { GRAFANA_RULES_SOURCE_NAME } from 'app/features/alerting/unified/utils/datasource';
 
 import { Authorize } from '../../components/Authorize';
 import { AlertmanagerAction } from '../../hooks/useAbilities';
 import { getAlertTableStyles } from '../../styles/table';
+import { isProvisionedResource } from '../../utils/k8s/utils';
 import { makeAMLink, stringifyErrorLike } from '../../utils/misc';
 import { CollapseToggle } from '../CollapseToggle';
 import { DetailsField } from '../DetailsField';
@@ -27,7 +31,7 @@ interface Props {
 
 export const TemplatesTable = ({ alertManagerName, templates }: Props) => {
   const appNotification = useAppNotification();
-  const deleteTemplate = useDeleteNotificationTemplate({ alertmanager: alertManagerName });
+  const [deleteTemplate] = useDeleteNotificationTemplate({ alertmanager: alertManagerName });
 
   const tableStyles = useStyles2(getAlertTableStyles);
 
@@ -36,7 +40,7 @@ export const TemplatesTable = ({ alertManagerName, templates }: Props) => {
   const onDeleteTemplate = async () => {
     if (templateToDelete) {
       try {
-        await deleteTemplate({ uid: templateToDelete.uid });
+        await deleteTemplate.execute({ uid: templateToDelete.uid });
         appNotification.success('Template deleted', `Template ${templateToDelete.title} has been deleted`);
       } catch (error) {
         appNotification.error('Error deleting template', `Error deleting template ${templateToDelete.title}`);
@@ -58,8 +62,10 @@ export const TemplatesTable = ({ alertManagerName, templates }: Props) => {
         </colgroup>
         <thead>
           <tr>
-            <th></th>
-            <th>Template</th>
+            <th />
+            <th>
+              <Trans i18nKey="alerting.templates-table.template-group">Template group</Trans>
+            </th>
             <Authorize
               actions={[
                 AlertmanagerAction.CreateNotificationTemplate,
@@ -67,14 +73,18 @@ export const TemplatesTable = ({ alertManagerName, templates }: Props) => {
                 AlertmanagerAction.DeleteNotificationTemplate,
               ]}
             >
-              <th>Actions</th>
+              <th>
+                <Trans i18nKey="alerting.templates-table.actions">Actions</Trans>
+              </th>
             </Authorize>
           </tr>
         </thead>
         <tbody>
           {!templates.length && (
             <tr className={tableStyles.evenRow}>
-              <td colSpan={3}>No templates defined.</td>
+              <td colSpan={3}>
+                <Trans i18nKey="alerting.templates-table.no-templates-defined">No templates defined.</Trans>
+              </td>
             </tr>
           )}
           {templates.map((notificationTemplate, idx) => (
@@ -92,9 +102,13 @@ export const TemplatesTable = ({ alertManagerName, templates }: Props) => {
       {!!templateToDelete && (
         <ConfirmModal
           isOpen={true}
-          title="Delete template"
-          body={`Are you sure you want to delete template "${templateToDelete.title}"?`}
-          confirmText="Yes, delete"
+          title={t('alerting.templates-table.title-delete-template-group', 'Delete template group')}
+          body={t(
+            'alerting.templates-table.body-delete-template-group',
+            'Are you sure you want to delete template group "{{template}}"?',
+            { template: templateToDelete.title }
+          )}
+          confirmText={t('alerting.templates-table.confirmText-yes-delete', 'Yes, delete')}
           onConfirm={onDeleteTemplate}
           onDismiss={() => setTemplateToDelete(undefined)}
         />
@@ -112,12 +126,14 @@ interface TemplateRowProps {
 
 function TemplateRow({ notificationTemplate, idx, alertManagerName, onDeleteClick }: TemplateRowProps) {
   const tableStyles = useStyles2(getAlertTableStyles);
+  const isGrafanaAlertmanager = alertManagerName === GRAFANA_RULES_SOURCE_NAME;
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const { isProvisioned } = useNotificationTemplateMetadata(notificationTemplate);
+  const { provenance } = useNotificationTemplateMetadata(notificationTemplate);
+  const isProvisioned = isProvisionedResource(provenance);
 
-  const { uid, title: name, content: template } = notificationTemplate;
-
+  const { uid, title: name, content: template, missing } = notificationTemplate;
+  const misconfiguredBadgeText = t('alerting.templates.misconfigured-badge-text', 'Misconfigured');
   return (
     <Fragment key={uid}>
       <tr className={idx % 2 === 0 ? tableStyles.evenRow : undefined}>
@@ -125,13 +141,33 @@ function TemplateRow({ notificationTemplate, idx, alertManagerName, onDeleteClic
           <CollapseToggle isCollapsed={!isExpanded} onToggle={() => setIsExpanded(!isExpanded)} />
         </td>
         <td>
-          {name} {isProvisioned && <ProvisioningBadge />}
+          {name} {isProvisioned && <ProvisioningBadge tooltip provenance={provenance} />}{' '}
+          {missing && !isGrafanaAlertmanager && (
+            <Tooltip
+              content={
+                <>
+                  <Trans i18nKey="alerting.templates.misconfigured-warning">This template is misconfigured.</Trans>
+                  <br />
+                  <Trans i18nKey="alerting.templates.misconfigured-warning-details">
+                    Templates must be defined in both the{' '}
+                    <CodeText content={t('alerting.template-row.content-templatefiles', 'template_files')} /> and{' '}
+                    <CodeText content={t('alerting.template-row.content-templates', 'templates')} /> sections of your
+                    alertmanager configuration.
+                  </Trans>
+                </>
+              }
+            >
+              <span>
+                <Badge text={misconfiguredBadgeText} color="orange" />
+              </span>
+            </Tooltip>
+          )}
         </td>
         <td className={tableStyles.actionsCell}>
           {isProvisioned && (
             <ActionIcon
               to={makeAMLink(`/alerting/notifications/templates/${encodeURIComponent(uid)}/edit`, alertManagerName)}
-              tooltip="view template"
+              tooltip={t('alerting.template-row.tooltip-view-template', 'view template')}
               icon="file-alt"
             />
           )}
@@ -139,18 +175,18 @@ function TemplateRow({ notificationTemplate, idx, alertManagerName, onDeleteClic
             <Authorize actions={[AlertmanagerAction.UpdateNotificationTemplate]}>
               <ActionIcon
                 to={makeAMLink(`/alerting/notifications/templates/${encodeURIComponent(uid)}/edit`, alertManagerName)}
-                tooltip="edit template"
+                tooltip={t('alerting.template-row.tooltip-edit-template-group', 'Edit template group')}
                 icon="pen"
               />
             </Authorize>
           )}
-          <Authorize actions={[AlertmanagerAction.CreateContactPoint]}>
+          <Authorize actions={[AlertmanagerAction.CreateNotificationTemplate]}>
             <ActionIcon
               to={makeAMLink(
                 `/alerting/notifications/templates/${encodeURIComponent(uid)}/duplicate`,
                 alertManagerName
               )}
-              tooltip="Copy template"
+              tooltip={t('alerting.template-row.tooltip-copy-template-group', 'Copy template group')}
               icon="copy"
             />
           </Authorize>
@@ -158,7 +194,7 @@ function TemplateRow({ notificationTemplate, idx, alertManagerName, onDeleteClic
             <Authorize actions={[AlertmanagerAction.DeleteNotificationTemplate]}>
               <ActionIcon
                 onClick={() => onDeleteClick(notificationTemplate)}
-                tooltip="delete template"
+                tooltip={t('alerting.template-row.tooltip-delete-template-group', 'Delete template group')}
                 icon="trash-alt"
               />
             </Authorize>
@@ -167,9 +203,9 @@ function TemplateRow({ notificationTemplate, idx, alertManagerName, onDeleteClic
       </tr>
       {isExpanded && (
         <tr className={idx % 2 === 0 ? tableStyles.evenRow : undefined}>
-          <td></td>
+          <td />
           <td colSpan={2}>
-            <DetailsField label="Description" horizontal={true}>
+            <DetailsField label="" horizontal={true}>
               <TemplateEditor
                 width={'auto'}
                 height={'auto'}

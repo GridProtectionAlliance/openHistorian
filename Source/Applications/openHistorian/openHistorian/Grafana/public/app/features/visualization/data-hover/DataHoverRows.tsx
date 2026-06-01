@@ -38,7 +38,6 @@ export const DataHoverRows = ({ layers, activeTabIndex }: Props) => {
                   return shouldDisplayCollapse ? (
                     <Collapse
                       key={key}
-                      collapsible
                       label={generateLabel(feature, idx)}
                       isOpen={rowMap.get(key)}
                       onToggle={() => {
@@ -108,7 +107,7 @@ export const generateLabel = (feature: FeatureLike, idx: number): string | React
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  collapsibleRow: css`
-    margin-bottom: 0;
-  `,
+  collapsibleRow: css({
+    marginBottom: 0,
+  }),
 });

@@ -1,6 +1,0 @@
-"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[4301],{82892:(F,r,s)=>{s.r(r),s.d(r,{plugin:()=>L});var u=s(65158),t=s(74848),d=s(32196),c=s(96540),g=s(16817),p=s(19347),f=s(92599),m=s(35090);const i={wrapper:(0,d.css)`
-    height: 100%;
-    overflow: scroll;
-  `},v=({data:a,options:e})=>{const n=(0,c.createRef)(),l=(0,c.useMemo)(()=>(0,m.L)(a.series[0]),[a.series]),j=(0,g.A)(async()=>await(0,p.l)().get(a.request?.targets[0].datasource?.uid));return!a||!a.series.length||!l?(0,t.jsx)("div",{className:"panel-empty",children:(0,t.jsx)("p",{children:"No data found in response"})}):(0,t.jsxs)("div",{className:i.wrapper,children:[(0,t.jsx)("div",{ref:n}),(0,t.jsx)(f.V,{dataFrames:a.series,scrollElementClass:i.wrapper,traceProp:l,datasource:j.value,topOfViewRef:n,createSpanLink:e.createSpanLink,focusedSpanId:e.focusedSpanId,createFocusSpanLink:e.createFocusSpanLink})]})};var S=s(47070),o=s(38824);class h{getListWithDefaults(e){return e.getListAppender({name:o.m.Trace,pluginId:"traces"})}getSuggestionsForData(e){!e.data||!e.data.series[0]||e.data.series[0].meta?.preferredVisualisationType==="trace"&&this.getListWithDefaults(e).append({name:o.m.Trace,score:S.nQ.Best})}}const L=new u.m(v).setSuggestionsSupplier(new h)}}]);
-
-//# sourceMappingURL=tracesPanel.513bae1e8aac28c13a07.js.map

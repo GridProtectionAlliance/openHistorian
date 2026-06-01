@@ -21,9 +21,9 @@ weight: 600
 refs:
   state-history:
     - pattern: /docs/grafana/
-      destination: /docs/grafana/<GRAFANA_VERSION>/alerting/manage-notifications/view-state-health/
+      destination: /docs/grafana/<GRAFANA_VERSION>/alerting/monitor-status/view-alert-state-history/
     - pattern: /docs/grafana-cloud/
-      destination: /docs/grafana-cloud/alerting-and-irm/alerting/manage-notifications/view-state-health/
+      destination: /docs/grafana-cloud/alerting-and-irm/alerting/monitor-status/view-alert-state-history/
   meta-monitoring:
     - pattern: /docs/grafana/
       destination: /docs/grafana/<GRAFANA_VERSION>/alerting/monitor/
@@ -67,13 +67,21 @@ For a demo, see this [example using Docker Compose](https://github.com/grafana/a
 
 ## Enable alerting high availability using Redis
 
-As an alternative to Memberlist, you can use Redis for high availability. This is useful if you want to have a central
-database for HA and cannot support the meshing of all Grafana servers.
+As an alternative to Memberlist, you can configure Redis to enable high availability. Redis standalone, Redis Cluster and Redis Sentinel modes are supported.
+
+{{< admonition type="note" >}}
+
+Memberlist is the preferred option for high availability. Use Redis only in environments where direct communication between Grafana servers is not possible, such as when TCP or UDP ports are blocked.
+
+{{< /admonition >}}
 
 1. Make sure you have a Redis server that supports pub/sub. If you use a proxy in front of your Redis cluster, make sure the proxy supports pub/sub.
 1. In your custom configuration file ($WORKING_DIR/conf/custom.ini), go to the `[unified_alerting]` section.
-1. Set `ha_redis_address` to the Redis server address Grafana should connect to.
+1. Set `ha_redis_address` to the Redis server address or addresses Grafana should connect to. It can be a single Redis address if using Redis standalone, or a list of comma-separated addresses if using Redis Cluster or Sentinel.
+1. Optional: Set `ha_redis_cluster_mode_enabled` to `true` if you are using Redis Cluster.
+1. Optional: Set `ha_redis_sentinel_mode_enabled` to `true` if you are using Redis Sentinel. Also set `ha_redis_sentinel_master_name` to the Redis Sentinel master name.
 1. Optional: Set the username and password if authentication is enabled on the Redis server using `ha_redis_username` and `ha_redis_password`.
+1. Optional: Set the username and password if authentication is enabled on Redis Sentinel using `ha_redis_sentinel_username` and `ha_redis_sentinel_password`.
 1. Optional: Set `ha_redis_prefix` to something unique if you plan to share the Redis server with multiple Grafana instances.
 1. Optional: Set `ha_redis_tls_enabled` to `true` and configure the corresponding `ha_redis_tls_*` fields to secure communications between Grafana and Redis with Transport Layer Security (TLS).
 1. Set `[ha_advertise_address]` to `ha_advertise_address = "${POD_IP}:9094"` This is required if the instance doesn't have an IP address that is part of RFC 6890 with a default route.
@@ -96,12 +104,15 @@ For a demo, see this [example using Docker Compose](https://github.com/grafana/a
 
    ```yaml
    ports:
-     - containerPort: 3000
-       name: http-grafana
+     - name: grafana
+       containerPort: 3000
        protocol: TCP
-     - containerPort: 9094
-       name: grafana-alert
+     - name: gossip-tcp
+       containerPort: 9094
        protocol: TCP
+     - name: gossip-udp
+       containerPort: 9094
+       protocol: UDP
    ```
 
 1. Add the environment variables to the Grafana deployment:
@@ -152,29 +163,33 @@ For a demo, see this [example using Docker Compose](https://github.com/grafana/a
 
 When running multiple Grafana instances, all alert rules are evaluated on every instance. This multiple evaluation of alert rules is visible in the [state history](ref:state-history) and provides a straightforward way to verify that your high availability configuration is working correctly.
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 
 If using a mix of `execute_alerts=false` and `execute_alerts=true` on the HA nodes, since the alert state is not shared amongst the Grafana instances, the instances with `execute_alerts=false` do not show any alert status.
 
 The HA settings (`ha_peers`, etc.) apply only to communication between alertmanagers, synchronizing silences and attempting to avoid duplicate notifications, as described in the introduction.
 
-{{% /admonition %}}
+{{< /admonition >}}
 
 You can also confirm your high availability setup by monitoring Alertmanager metrics exposed by Grafana.
 
-| Metric                                               | Description                                                                                                                                                |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| alertmanager_cluster_members                         | Number indicating current number of members in cluster.                                                                                                    |
-| alertmanager_cluster_messages_received_total         | Total number of cluster messages received.                                                                                                                 |
-| alertmanager_cluster_messages_received_size_total    | Total size of cluster messages received.                                                                                                                   |
-| alertmanager_cluster_messages_sent_total             | Total number of cluster messages sent.                                                                                                                     |
-| alertmanager_cluster_messages_sent_size_total        | Total number of cluster messages received.                                                                                                                 |
-| alertmanager_cluster_messages_publish_failures_total | Total number of messages that failed to be published.                                                                                                      |
-| alertmanager_cluster_pings_seconds                   | Histogram of latencies for ping messages.                                                                                                                  |
-| alertmanager_cluster_pings_failures_total            | Total number of failed pings.                                                                                                                              |
-| alertmanager_peer_position                           | The position an Alertmanager instance believes it holds, which defines its role in the cluster. Peers should be numbered sequentially, starting from zero. |
+{{< admonition type="note" >}}
+Starting in Grafana v12.4, these metrics are prefixed with `grafana_` (for example, `grafana_alertmanager_cluster_members`). If you are upgrading from an earlier version, update your dashboards and alert rules accordingly.
+{{< /admonition >}}
 
-You can confirm the number of Grafana instances in your alerting high availability setup by querying the `alertmanager_cluster_members` and `alertmanager_peer_position` metrics.
+| Metric                                                         | Description                                                                                                                                                |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `grafana_alertmanager_cluster_members`                         | Number indicating current number of members in cluster.                                                                                                    |
+| `grafana_alertmanager_cluster_messages_received_total`         | Total number of cluster messages received.                                                                                                                 |
+| `grafana_alertmanager_cluster_messages_received_size_total`    | Total size of cluster messages received.                                                                                                                   |
+| `grafana_alertmanager_cluster_messages_sent_total`             | Total number of cluster messages sent.                                                                                                                     |
+| `grafana_alertmanager_cluster_messages_sent_size_total`        | Total number of cluster messages received.                                                                                                                 |
+| `grafana_alertmanager_cluster_messages_publish_failures_total` | Total number of messages that failed to be published.                                                                                                      |
+| `grafana_alertmanager_cluster_pings_seconds`                   | Histogram of latencies for ping messages.                                                                                                                  |
+| `grafana_alertmanager_cluster_pings_failures_total`            | Total number of failed pings.                                                                                                                              |
+| `grafana_alertmanager_peer_position`                           | The position an Alertmanager instance believes it holds, which defines its role in the cluster. Peers should be numbered sequentially, starting from zero. |
+
+You can confirm the number of Grafana instances in your alerting high availability setup by querying the `grafana_alertmanager_cluster_members` and `grafana_alertmanager_peer_position` metrics.
 
 Note that these alerting high availability metrics are exposed via the `/metrics` endpoint in Grafana, and are not automatically collected or displayed. If you have a Prometheus instance connected to Grafana, add a `scrape_config` to scrape Grafana metrics and then query these metrics in Explore.
 

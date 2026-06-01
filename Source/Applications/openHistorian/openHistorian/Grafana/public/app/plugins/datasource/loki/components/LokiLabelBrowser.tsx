@@ -26,6 +26,7 @@ const MAX_LABEL_COUNT = 1000;
 const MAX_VALUE_COUNT = 10000;
 const MAX_AUTO_SELECT = 4;
 const EMPTY_SELECTOR = '{}';
+const collator = new Intl.Collator('en', { sensitivity: 'accent' });
 
 export interface BrowserProps {
   languageProvider: LokiLanguageProvider;
@@ -68,7 +69,10 @@ export function buildSelector(labels: SelectableLabel[]): string {
   const selectedLabels = [];
   for (const label of labels) {
     if (label.selected && label.values && label.values.length > 0) {
-      const selectedValues = label.values.filter((value) => value.selected).map((value) => value.name);
+      const selectedValues = label.values
+        .filter((value) => value.selected)
+        .map((value) => value.name)
+        .sort(collator.compare); // sort selected values alphabetically
       if (selectedValues.length > 1) {
         selectedLabels.push(`${label.name}=~"${selectedValues.map(escapeLabelValueInRegexSelector).join('|')}"`);
       } else if (selectedValues.length === 1) {
@@ -97,7 +101,13 @@ export function facetLabels(
           label.values?.filter((value) => value.selected).map((value) => value.name) || []
         );
         // Values for this label have not been requested yet, let's use the facetted ones as the initial values
-        existingValues = possibleValues.map((value) => ({ name: value, selected: selectedValues.has(value) }));
+        existingValues = possibleValues
+          .slice()
+          .sort(collator.compare) // sort raw label values alphabetically
+          .map((value) => ({
+            name: value,
+            selected: selectedValues.has(value),
+          }));
       }
       return { ...label, loading: false, values: existingValues, facets: existingValues.length };
     }
@@ -108,82 +118,84 @@ export function facetLabels(
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  wrapper: css`
-    background-color: ${theme.colors.background.secondary};
-    width: 100%;
-  `,
-  wrapperPadding: css`
-    padding: ${theme.spacing(2)};
-  `,
-  list: css`
-    margin-top: ${theme.spacing(1)};
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 200px;
-    overflow: auto;
-  `,
-  section: css`
-    & + & {
-      margin: ${theme.spacing(2, 0)};
-    }
+  wrapper: css({
+    backgroundColor: theme.colors.background.secondary,
+    width: '100%',
+  }),
+  wrapperPadding: css({
+    padding: theme.spacing(2),
+  }),
+  list: css({
+    marginTop: theme.spacing(1),
+    display: 'flex',
+    flexWrap: 'wrap',
+    maxHeight: '200px',
+    overflow: 'auto',
+  }),
+  section: css({
+    '& + &': {
+      margin: theme.spacing(2, 0),
+    },
 
-    position: relative;
-  `,
-  footerSectionStyles: css`
-    padding: ${theme.spacing(1)};
-    background-color: ${theme.colors.background.primary};
-    position: sticky;
-    bottom: -${theme.spacing(3)}; /* offset the padding on modal */
-    left: 0;
-  `,
-  selector: css`
-    font-family: ${theme.typography.fontFamilyMonospace};
-    margin-bottom: ${theme.spacing(1)};
-    width: 100%;
-  `,
-  status: css`
-    margin-bottom: ${theme.spacing(1)};
-    color: ${theme.colors.text.secondary};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: opacity 100ms linear;
-    opacity: 0;
-    font-size: ${theme.typography.bodySmall.fontSize};
-    height: calc(${theme.typography.bodySmall.fontSize} + 10px);
-  `,
-  statusShowing: css`
-    opacity: 1;
-  `,
-  error: css`
-    color: ${theme.colors.error.main};
-  `,
-  valueList: css`
-    margin-right: ${theme.spacing(1)};
-    resize: horizontal;
-  `,
-  valueListWrapper: css`
-    border-left: 1px solid ${theme.colors.border.medium};
-    margin: ${theme.spacing(1, 0)};
-    padding: ${theme.spacing(1, 0, 1, 1)};
-  `,
-  valueListArea: css`
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: ${theme.spacing(1)};
-  `,
-  valueTitle: css`
-    margin-left: -${theme.spacing(0.5)};
-    margin-bottom: ${theme.spacing(1)};
-  `,
-  validationStatus: css`
-    padding: ${theme.spacing(0.5)};
-    margin-bottom: ${theme.spacing(1)};
-    color: ${theme.colors.text.maxContrast};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  `,
+    position: 'relative',
+  }),
+  footerSectionStyles: css({
+    padding: theme.spacing(1),
+    backgroundColor: theme.colors.background.primary,
+    position: 'sticky',
+    bottom: theme.spacing(-3) /* offset the padding on modal */,
+    left: 0,
+  }),
+  selector: css({
+    fontFamily: theme.typography.fontFamilyMonospace,
+    marginBottom: theme.spacing(1),
+    width: '100%',
+  }),
+  status: css({
+    marginBottom: theme.spacing(1),
+    color: theme.colors.text.secondary,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    [theme.transitions.handleMotion('no-preference', 'reduce')]: {
+      transition: 'opacity 100ms linear',
+    },
+    opacity: 0,
+    fontSize: theme.typography.bodySmall.fontSize,
+    height: `calc(${theme.typography.bodySmall.fontSize} + 10px)`,
+  }),
+  statusShowing: css({
+    opacity: 1,
+  }),
+  error: css({
+    color: theme.colors.error.main,
+  }),
+  valueList: css({
+    marginRight: theme.spacing(1),
+    resize: 'horizontal',
+  }),
+  valueListWrapper: css({
+    borderLeft: `1px solid ${theme.colors.border.medium}`,
+    margin: theme.spacing(1, 0),
+    padding: theme.spacing(1, 0, 1, 1),
+  }),
+  valueListArea: css({
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: theme.spacing(1),
+  }),
+  valueTitle: css({
+    marginLeft: theme.spacing(-0.5),
+    marginBottom: theme.spacing(1),
+  }),
+  validationStatus: css({
+    padding: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
+    color: theme.colors.text.maxContrast,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
 });
 
 export class UnthemedLokiLabelBrowser extends React.Component<BrowserProps, BrowserState> {

@@ -13,12 +13,12 @@ const validateMock = jest.fn();
 describe('DerivedField', () => {
   beforeEach(() => {
     setDataSourceSrv({
+      registerRuntimeDataSource: jest.fn(),
       get: jest.fn(),
       reload: jest.fn(),
       getInstanceSettings: jest.fn(),
       getList: mockList.mockImplementation(() => [
         {
-          id: 1,
           uid: 'metrics',
           name: 'metrics_ds',
           meta: {
@@ -31,7 +31,6 @@ describe('DerivedField', () => {
           } as DataSourcePluginMeta,
         } as DataSourceInstanceSettings,
         {
-          id: 2,
           uid: 'tracing',
           name: 'tracing_ds',
           meta: {

@@ -3,9 +3,9 @@ import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
-import { config } from '@grafana/runtime';
+import { t } from '@grafana/i18n';
 import { Icon, IconButton, Link, useTheme2 } from '@grafana/ui';
-import { t } from 'app/core/internationalization';
+import { contextSrv } from 'app/core/services/context_srv';
 
 export interface Props {
   children: React.ReactNode;
@@ -19,6 +19,7 @@ export interface Props {
 
 export function MegaMenuItemText({ children, isActive, onClick, target, url, onPin, isPinned }: Props) {
   const theme = useTheme2();
+
   const styles = getStyles(theme, isActive);
   const LinkComponent = !target && url.startsWith('/') ? Link : 'a';
 
@@ -34,12 +35,7 @@ export function MegaMenuItemText({ children, isActive, onClick, target, url, onP
   );
 
   return (
-    <div
-      className={cx(styles.wrapper, {
-        [styles.wrapperActive]: isActive,
-        [styles.wrapperBookmark]: config.featureToggles.pinNavItems,
-      })}
-    >
+    <div className={cx(styles.wrapper, isActive && styles.wrapperActive)}>
       <LinkComponent
         data-testid={selectors.components.NavMenu.item}
         className={styles.container}
@@ -50,7 +46,7 @@ export function MegaMenuItemText({ children, isActive, onClick, target, url, onP
       >
         {linkContent}
       </LinkComponent>
-      {config.featureToggles.pinNavItems && url && url !== '/bookmarks' && (
+      {contextSrv.isSignedIn && url && url !== '/bookmarks' && (
         <IconButton
           name="bookmark"
           className={'pin-icon'}
@@ -75,25 +71,24 @@ const getStyles = (theme: GrafanaTheme2, isActive: Props['isActive']) => ({
     justifyContent: 'space-between',
     width: '100%',
     height: '100%',
-  }),
-  wrapperBookmark: css({
     '.pin-icon': {
-      display: 'none',
+      visibility: 'hidden',
     },
     '&:hover, &:focus-within': {
       a: {
         width: 'calc(100% - 20px)',
       },
       '.pin-icon': {
-        display: 'inline-flex',
+        visibility: 'visible',
       },
     },
   }),
   wrapperActive: css({
-    backgroundColor: theme.colors.background.secondary,
+    backgroundColor: theme.colors.action.selected,
     borderTopRightRadius: theme.shape.radius.default,
     borderBottomRightRadius: theme.shape.radius.default,
     position: 'relative',
+    color: theme.colors.text.primary,
 
     '&::before': {
       backgroundImage: theme.colors.gradients.brandVertical,
@@ -103,7 +98,8 @@ const getStyles = (theme: GrafanaTheme2, isActive: Props['isActive']) => ({
       height: '100%',
       position: 'absolute',
       transform: 'translateX(-50%)',
-      width: theme.spacing(0.5),
+      left: 0,
+      width: theme.spacing(0.25),
     },
   }),
   container: css({
@@ -113,7 +109,7 @@ const getStyles = (theme: GrafanaTheme2, isActive: Props['isActive']) => ({
     position: 'relative',
     width: '100%',
 
-    '&:hover, &:focus-visible': {
+    '&:hover span, &:focus-visible span': {
       color: theme.colors.text.primary,
       textDecoration: 'underline',
     },
@@ -122,7 +118,6 @@ const getStyles = (theme: GrafanaTheme2, isActive: Props['isActive']) => ({
       boxShadow: 'none',
       outline: `2px solid ${theme.colors.primary.main}`,
       outlineOffset: '-2px',
-      transition: 'none',
     },
   }),
   linkContent: css({

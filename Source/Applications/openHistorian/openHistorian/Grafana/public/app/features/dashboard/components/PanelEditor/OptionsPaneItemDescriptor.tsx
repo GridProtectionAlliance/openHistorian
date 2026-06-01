@@ -11,16 +11,20 @@ import { OptionsPaneCategoryDescriptor } from './OptionsPaneCategoryDescriptor';
 import { OptionsPaneItemOverrides } from './OptionsPaneItemOverrides';
 import { OptionPaneItemOverrideInfo } from './types';
 
-export interface OptionsPaneItemProps {
-  title: string;
+export interface OptionsPaneItemInfo {
+  title?: string;
   value?: any;
   description?: string;
   popularRank?: number;
-  render: () => React.ReactElement;
+  render: (descriptor: OptionsPaneItemDescriptor) => React.ReactElement<Record<string, unknown>>;
   skipField?: boolean;
   showIf?: () => boolean;
+  /** Hook for controlling visibility */
+  useShowIf?: () => boolean;
   overrides?: OptionPaneItemOverrideInfo[];
   addon?: ReactNode;
+  /** Must be unique on the page! */
+  id: string;
 }
 
 /**
@@ -28,75 +32,96 @@ export interface OptionsPaneItemProps {
  */
 export class OptionsPaneItemDescriptor {
   parent!: OptionsPaneCategoryDescriptor;
+  props: OptionsPaneItemInfo;
 
-  constructor(public props: OptionsPaneItemProps) {}
-
-  getLabel(searchQuery?: string): ReactNode {
-    const { title, description, overrides, addon } = this.props;
-
-    if (!searchQuery) {
-      // Do not render label for categories with only one child
-      if (this.parent.props.title === title && !overrides?.length) {
-        return null;
-      }
-
-      return <OptionPaneLabel title={title} description={description} overrides={overrides} addon={addon} />;
-    }
-
-    const categories: React.ReactNode[] = [];
-
-    if (this.parent.parent) {
-      categories.push(this.highlightWord(this.parent.parent.props.title, searchQuery));
-    }
-
-    if (this.parent.props.title !== title) {
-      categories.push(this.highlightWord(this.parent.props.title, searchQuery));
-    }
-
-    return (
-      <Label description={description && this.highlightWord(description, searchQuery)} category={categories}>
-        {this.highlightWord(title, searchQuery)}
-        {overrides && overrides.length > 0 && <OptionsPaneItemOverrides overrides={overrides} />}
-      </Label>
-    );
+  constructor(props: OptionsPaneItemInfo) {
+    this.props = { ...props };
   }
 
-  highlightWord(word: string, query: string) {
-    return (
-      <Highlighter textToHighlight={word} searchWords={[query]} highlightClassName={'search-fragment-highlight'} />
-    );
+  renderElement(searchQuery?: string) {
+    return <OptionsPaneItem key={this.props.id} itemDescriptor={this} searchQuery={searchQuery} />;
   }
 
-  renderOverrides() {
-    const { overrides } = this.props;
-    if (!overrides || overrides.length === 0) {
-      return;
+  useShowIf() {
+    if (this.props.useShowIf) {
+      return this.props.useShowIf();
     }
+
+    if (this.props.showIf) {
+      return this.props.showIf();
+    }
+
+    return true;
+  }
+}
+
+interface OptionsPaneItemProps {
+  itemDescriptor: OptionsPaneItemDescriptor;
+  searchQuery?: string;
+}
+
+function OptionsPaneItem({ itemDescriptor, searchQuery }: OptionsPaneItemProps) {
+  const { title, description, id, render, skipField } = itemDescriptor.props;
+  const key = `${itemDescriptor.parent.props.id} ${title}`;
+  const showIf = itemDescriptor.useShowIf();
+
+  if (!showIf) {
+    return null;
   }
 
-  render(searchQuery?: string) {
-    const { title, description, render, showIf, skipField } = this.props;
-    const key = `${this.parent.props.id} ${title}`;
+  if (skipField) {
+    return render(itemDescriptor);
+  }
 
-    if (showIf && !showIf()) {
+  return (
+    <Field
+      label={renderOptionLabel(itemDescriptor, searchQuery)}
+      description={description}
+      key={key}
+      aria-label={selectors.components.PanelEditor.OptionsPane.fieldLabel(key)}
+      htmlFor={id}
+    >
+      {render(itemDescriptor)}
+    </Field>
+  );
+}
+
+function renderOptionLabel(itemDescriptor: OptionsPaneItemDescriptor, searchQuery?: string): ReactNode {
+  const { title, description, overrides, id, addon } = itemDescriptor.props;
+
+  if (!title) {
+    return null;
+  }
+
+  if (!searchQuery) {
+    // Do not render label for categories with only one child
+    if (itemDescriptor.parent.props.title === title && !overrides?.length) {
       return null;
     }
 
-    if (skipField) {
-      return render();
-    }
-
-    return (
-      <Field
-        label={this.getLabel(searchQuery)}
-        description={description}
-        key={key}
-        aria-label={selectors.components.PanelEditor.OptionsPane.fieldLabel(key)}
-      >
-        {render()}
-      </Field>
-    );
+    return <OptionPaneLabel title={title} description={description} overrides={overrides} addon={addon} htmlFor={id} />;
   }
+
+  const categories: React.ReactNode[] = [];
+
+  if (itemDescriptor.parent.parent) {
+    categories.push(highlightWord(itemDescriptor.parent.parent.props.title, searchQuery));
+  }
+
+  if (itemDescriptor.parent.props.title !== title) {
+    categories.push(highlightWord(itemDescriptor.parent.props.title, searchQuery));
+  }
+
+  return (
+    <Label description={description && highlightWord(description, searchQuery)} category={categories} htmlFor={id}>
+      {highlightWord(title, searchQuery)}
+      {overrides && overrides.length > 0 && <OptionsPaneItemOverrides overrides={overrides} />}
+    </Label>
+  );
+}
+
+function highlightWord(word: string, query: string) {
+  return <Highlighter textToHighlight={word} searchWords={[query]} highlightClassName={'search-fragment-highlight'} />;
 }
 
 interface OptionPanelLabelProps {
@@ -104,13 +129,14 @@ interface OptionPanelLabelProps {
   description?: string;
   overrides?: OptionPaneItemOverrideInfo[];
   addon: ReactNode;
+  htmlFor?: string;
 }
 
-function OptionPaneLabel({ title, description, overrides, addon }: OptionPanelLabelProps) {
+function OptionPaneLabel({ title, description, overrides, addon, htmlFor }: OptionPanelLabelProps) {
   const styles = useStyles2(getLabelStyles);
   return (
     <div className={styles.container}>
-      <Label description={description}>
+      <Label description={description} htmlFor={htmlFor}>
         {title}
         {overrides && overrides.length > 0 && <OptionsPaneItemOverrides overrides={overrides} />}
       </Label>

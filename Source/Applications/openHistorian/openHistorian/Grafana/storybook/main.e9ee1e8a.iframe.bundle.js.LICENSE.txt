@@ -1,8 +1,0 @@
-/*!
- * jquery.flot.gauge v1.1.0 *
- *
- * Flot plugin for rendering gauge charts.
- *
- * Copyright (c) 2015 @toyoty99.
- * Licensed under the MIT license.
- */

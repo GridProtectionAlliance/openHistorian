@@ -1,6 +1,5 @@
 import { findByText, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { UserEvent } from '@testing-library/user-event/dist/types/setup/setup';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 
 import {
   DataSourceInstanceSettings,
@@ -12,8 +11,6 @@ import {
 } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
 import { ModalRoot, ModalsProvider } from '@grafana/ui';
-import config from 'app/core/config';
-import { defaultFileUploadQuery } from 'app/plugins/datasource/grafana/types';
 
 import { DataSourcePicker, DataSourcePickerProps } from './DataSourcePicker';
 import * as utils from './utils';
@@ -37,7 +34,6 @@ function createDS(name: string, id: number, builtIn: boolean): DataSourceInstanc
     name: name,
     uid: name + 'uid',
     meta: createPluginMeta(name, builtIn),
-    id,
     access: 'direct',
     jsonData: {},
     type: '',
@@ -64,26 +60,18 @@ locationUtil.initialize({
   getTimeRangeForUrl: jest.fn(),
 });
 
-jest.mock('@grafana/runtime', () => {
-  const actual = jest.requireActual('@grafana/runtime');
-  return {
-    ...actual,
-    getTemplateSrv: () => {
-      return {
-        getVariables: () => [{ id: 'foo', type: 'datasource' }],
-      };
-    },
-  };
-});
-
-jest.mock('@grafana/runtime/src/services/dataSourceSrv', () => {
-  return {
-    getDataSourceSrv: () => ({
-      getList: getListMock,
-      getInstanceSettings: getInstanceSettingsMock,
-    }),
-  };
-});
+jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
+  getTemplateSrv: () => {
+    return {
+      getVariables: () => [{ id: 'foo', type: 'datasource' }],
+    };
+  },
+  getDataSourceSrv: () => ({
+    getList: getListMock,
+    getInstanceSettings: getInstanceSettingsMock,
+  }),
+}));
 
 const pushRecentlyUsedDataSourceMock = jest.fn();
 jest.mock('../../hooks', () => {
@@ -91,6 +79,7 @@ jest.mock('../../hooks', () => {
   return {
     ...actual,
     useRecentlyUsedDataSources: () => [[mockDS2.name], pushRecentlyUsedDataSourceMock],
+    useDatasources: () => mockDSList,
   };
 });
 
@@ -296,18 +285,6 @@ describe('DataSourcePicker', () => {
       expect(await screen.findByText('Configure a new data source')).toBeInTheDocument();
       // It should point to the new data source page including any sub url configured
       expect(screen.getByRole('link')).toHaveAttribute('href', '/my-sub-path/connections/datasources/new');
-    });
-
-    it('should call onChange with the default query when add csv is clicked', async () => {
-      config.featureToggles.editPanelCSVDragAndDrop = true;
-      const onChange = jest.fn();
-      await setupOpenDropdown(user, { onChange, uploadFile: true });
-
-      await user.click(await screen.findByText('Add csv or spreadsheet'));
-
-      expect(onChange.mock.lastCall[1]).toEqual([defaultFileUploadQuery]);
-      expect(screen.queryByText('Open advanced data source picker')).toBeNull(); //Drop down is closed
-      config.featureToggles.editPanelCSVDragAndDrop = false;
     });
 
     it('should open the modal when open advanced is clicked', async () => {

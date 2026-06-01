@@ -1,5 +1,3 @@
-import { uniqueId } from 'lodash';
-
 import { SelectableValue } from '@grafana/data';
 import { MatcherOperator, ObjectMatcher, Route, RouteWithID } from 'app/plugins/datasource/alertmanager/types';
 
@@ -9,7 +7,7 @@ import { MatcherFieldValue } from '../types/silence-form';
 import { matcherToMatcherField } from './alertmanager';
 import { GRAFANA_RULES_SOURCE_NAME } from './datasource';
 import { encodeMatcher, normalizeMatchers, parseMatcherToArray, unquoteWithUnescape } from './matchers';
-import { findExistingRoute } from './routeTree';
+import { findExistingRoute, hashRoute } from './routeTree';
 import { isValidPrometheusDuration, safeParsePrometheusDuration } from './time';
 
 const matchersToArrayFieldMatchers = (
@@ -51,6 +49,7 @@ export const commonGroupByOptions = [
 
 export const emptyRoute: FormAmRoute = {
   id: '',
+  name: '',
   overrideGrouping: false,
   groupBy: defaultGroupBy,
   object_matchers: [],
@@ -62,24 +61,33 @@ export const emptyRoute: FormAmRoute = {
   groupIntervalValue: '',
   repeatIntervalValue: '',
   muteTimeIntervals: [],
+  activeTimeIntervals: [],
 };
 
+export function addUniqueIdentifierToRoutes(routes: Route[]): RouteWithID[] {
+  return routes.map((policy, index) => addUniqueIdentifierToRoute(policy, policy.name ?? index.toString()));
+}
+
 // add unique identifiers to each route in the route tree, that way we can figure out what route we've edited / deleted
-export function addUniqueIdentifierToRoute(route: Route): RouteWithID {
+// ⚠️ make sure this function uses _stable_ identifiers!
+export function addUniqueIdentifierToRoute(route: Route, position = route.name ?? '0'): RouteWithID {
+  const routeHash = hashRoute(route);
+  const routes = route.routes ?? [];
+
   return {
-    id: uniqueId('route-'),
+    id: `${position}-${routeHash}`,
     ...route,
-    routes: (route.routes ?? []).map(addUniqueIdentifierToRoute),
+    routes: routes.map((route, index) => addUniqueIdentifierToRoute(route, `${position}-${index}`)),
   };
 }
 
-//returns route, and a record mapping id to existing route
-export const amRouteToFormAmRoute = (route: RouteWithID | Route | undefined): FormAmRoute => {
+// returns route, and a record mapping id to existing route
+export const amRouteToFormAmRoute = (route: RouteWithID | undefined): FormAmRoute => {
   if (!route) {
     return emptyRoute;
   }
 
-  const id = 'id' in route ? route.id : uniqueId('route-');
+  const id = route.id;
 
   if (Object.keys(route).length === 0) {
     const formAmRoute = { ...emptyRoute, id };
@@ -109,6 +117,7 @@ export const amRouteToFormAmRoute = (route: RouteWithID | Route | undefined): Fo
 
   return {
     id,
+    name: route.name ?? '',
     // Frontend migration to use object_matchers instead of matchers, match, and match_re
     object_matchers: [
       ...matchers,
@@ -126,6 +135,7 @@ export const amRouteToFormAmRoute = (route: RouteWithID | Route | undefined): Fo
     repeatIntervalValue: route.repeat_interval ?? '',
     routes: formRoutes,
     muteTimeIntervals: route.mute_time_intervals ?? [],
+    activeTimeIntervals: route.active_time_intervals ?? [],
   };
 };
 
@@ -182,6 +192,7 @@ export const formAmRouteToAmRoute = (
     repeat_interval,
     routes: routes,
     mute_time_intervals: formAmRoute.muteTimeIntervals,
+    active_time_intervals: formAmRoute.activeTimeIntervals,
     receiver: receiver,
   };
 

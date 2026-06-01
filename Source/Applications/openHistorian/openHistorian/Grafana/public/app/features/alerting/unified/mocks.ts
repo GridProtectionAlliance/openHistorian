@@ -1,25 +1,19 @@
 import { produce } from 'immer';
-import { Observable } from 'rxjs';
+import { isEmpty, pick } from 'lodash';
 
 import {
-  DataQuery,
-  DataQueryRequest,
-  DataQueryResponse,
-  DataSourceApi,
   DataSourceInstanceSettings,
   DataSourceJsonData,
   DataSourcePluginMeta,
-  DataSourceRef,
   PluginExtensionLink,
   PluginExtensionTypes,
-  ScopedVars,
-  TestDataSourceResponse,
+  ReducerID,
 } from '@grafana/data';
-import { DataSourceSrv, GetDataSourceListFilters, config } from '@grafana/runtime';
-import { defaultDashboard } from '@grafana/schema';
+import { DataQuery, defaultDashboard } from '@grafana/schema';
 import { contextSrv } from 'app/core/services/context_srv';
 import { MOCK_GRAFANA_ALERT_RULE_TITLE } from 'app/features/alerting/unified/mocks/server/handlers/grafanaRuler';
-import { DatasourceSrv } from 'app/features/plugins/datasource_srv';
+import { NotifiersState, ReceiversState } from 'app/features/alerting/unified/types/alerting';
+import { ExpressionQuery, ExpressionQueryType, ReducerMode } from 'app/features/expressions/types';
 import {
   AlertManagerCortexConfig,
   AlertState,
@@ -32,7 +26,10 @@ import {
   SilenceState,
 } from 'app/plugins/datasource/alertmanager/types';
 import { configureStore } from 'app/store/configureStore';
-import { AccessControlAction, DashboardDTO, FolderDTO, NotifiersState, ReceiversState, StoreState } from 'app/types';
+import { AccessControlAction } from 'app/types/accessControl';
+import { DashboardDTO } from 'app/types/dashboard';
+import { FolderDTO } from 'app/types/folders';
+import { StoreState } from 'app/types/store';
 import {
   Alert,
   AlertingRule,
@@ -45,9 +42,11 @@ import {
   RuleWithLocation,
 } from 'app/types/unified-alerting';
 import {
+  AlertDataQuery,
   AlertQuery,
   GrafanaAlertState,
   GrafanaAlertStateDecision,
+  GrafanaPromAlertingRuleDTO,
   GrafanaRuleDefinition,
   PromAlertingRuleState,
   PromRuleType,
@@ -61,6 +60,7 @@ import {
 
 import { DashboardSearchItem, DashboardSearchItemType } from '../../search/types';
 
+import { GRAFANA_RULES_SOURCE_NAME } from './utils/datasource';
 import { parsePromQLStyleMatcherLooseSafe } from './utils/matchers';
 
 let nextDataSourceId = 1;
@@ -128,7 +128,7 @@ export const mockRulerGrafanaRule = (
           datasourceUid: '123',
           refId: 'A',
           queryType: 'huh',
-          model: {} as any,
+          model: {} as unknown as DataQuery,
         },
       ],
       ...partialDef,
@@ -191,14 +191,11 @@ export const mockRulerAlertingRule = (partial: Partial<RulerAlertingRuleDTO> = {
   ...partial,
 });
 
-export const mockRulerRecordingRule = (partial: Partial<RulerRecordingRuleDTO> = {}): RulerAlertingRuleDTO => ({
-  alert: 'alert1',
+export const mockRulerRecordingRule = (partial: Partial<RulerRecordingRuleDTO> = {}): RulerRecordingRuleDTO => ({
+  record: 'alert1',
   expr: 'up = 1',
   labels: {
     severity: 'warning',
-  },
-  annotations: {
-    summary: 'test alert',
   },
   ...partial,
 });
@@ -225,6 +222,20 @@ export const mockPromAlertingRule = (partial: Partial<AlertingRule> = {}): Alert
     },
     state: PromAlertingRuleState.Firing,
     health: 'OK',
+    totalsFiltered: { alerting: 1 },
+    ...partial,
+  };
+};
+
+export const mockGrafanaPromAlertingRule = (
+  partial: Partial<GrafanaPromAlertingRuleDTO> = {}
+): GrafanaPromAlertingRuleDTO => {
+  return {
+    ...mockPromAlertingRule(),
+    uid: 'mock-rule-uid-123',
+    folderUid: 'NAMESPACE_UID',
+    isPaused: false,
+    totals: { alerting: 1 },
     totalsFiltered: { alerting: 1 },
     ...partial,
   };
@@ -326,7 +337,7 @@ export const mockSilence = (partial: Partial<Silence> = {}): Silence => {
     startsAt: new Date().toISOString(),
     endsAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     updatedAt: new Date().toISOString(),
-    createdBy: config.bootData.user.name || 'admin',
+    createdBy: contextSrv.user.name || 'admin',
     comment: 'Silence noisy alerts',
     status: {
       state: SilenceState.Active,
@@ -398,80 +409,6 @@ export const mockReceiversState = (partial: Partial<ReceiversState> = {}): Recei
   };
 };
 
-class MockDataSourceApi extends DataSourceApi {
-  constructor(instanceSettings: DataSourceInstanceSettings<DataSourceJsonData>) {
-    super(instanceSettings);
-  }
-
-  query(request: DataQueryRequest<DataQuery>): Promise<DataQueryResponse> | Observable<DataQueryResponse> {
-    throw new Error('Method not implemented.');
-  }
-  testDatasource(): Promise<TestDataSourceResponse> {
-    throw new Error('Method not implemented.');
-  }
-}
-
-// TODO This should be eventually moved to public/app/features/alerting/unified/testSetup/datasources.ts
-export class MockDataSourceSrv implements DataSourceSrv {
-  datasources: Record<string, DataSourceApi> = {};
-  // @ts-ignore
-  private settingsMapByName: Record<string, DataSourceInstanceSettings> = {};
-  private settingsMapByUid: Record<string, DataSourceInstanceSettings> = {};
-  private settingsMapById: Record<string, DataSourceInstanceSettings> = {};
-  // @ts-ignore
-  private templateSrv = {
-    getVariables: () => [],
-    replace: (name: any) => name,
-  };
-
-  defaultName = '';
-
-  constructor(datasources: Record<string, DataSourceInstanceSettings>) {
-    this.datasources = {};
-    this.settingsMapByName = Object.values(datasources).reduce<Record<string, DataSourceInstanceSettings>>(
-      (acc, ds) => {
-        acc[ds.name] = ds;
-        return acc;
-      },
-      {}
-    );
-
-    for (const dsSettings of Object.values(this.settingsMapByName)) {
-      this.settingsMapByUid[dsSettings.uid] = dsSettings;
-      this.settingsMapById[dsSettings.id] = dsSettings;
-      if (dsSettings.isDefault) {
-        this.defaultName = dsSettings.name;
-      }
-      this.datasources[dsSettings.uid] = new MockDataSourceApi(dsSettings);
-    }
-  }
-
-  get(name?: string | null | DataSourceRef, scopedVars?: ScopedVars): Promise<DataSourceApi> {
-    return DatasourceSrv.prototype.get.call(this, name, scopedVars);
-    //return Promise.reject(new Error('not implemented'));
-  }
-
-  /**
-   * Get a list of data sources
-   */
-  getList(filters?: GetDataSourceListFilters): DataSourceInstanceSettings[] {
-    return DatasourceSrv.prototype.getList.call(this, filters);
-  }
-
-  /**
-   * Get settings and plugin metadata by name or uid
-   */
-  getInstanceSettings(nameOrUid: string | null | undefined): DataSourceInstanceSettings | undefined {
-    return DatasourceSrv.prototype.getInstanceSettings.call(this, nameOrUid);
-  }
-
-  async loadDatasource(name: string): Promise<DataSourceApi<any, any>> {
-    return DatasourceSrv.prototype.loadDatasource.call(this, name);
-  }
-
-  reload() {}
-}
-
 export const mockGrafanaReceiver = (
   type: string,
   overrides: Partial<GrafanaManagedReceiverConfig> = {}
@@ -512,6 +449,7 @@ export const someGrafanaAlertManagerConfig: AlertManagerCortexConfig = {
   },
 };
 
+/** @deprecated Move into alertmanager status entities */
 export const someCloudAlertManagerStatus: AlertmanagerStatus = {
   cluster: {
     peers: [],
@@ -543,6 +481,7 @@ export const someCloudAlertManagerStatus: AlertmanagerStatus = {
   },
 };
 
+/** @deprecated Move into alertmanager config entities */
 export const someCloudAlertManagerConfig: AlertManagerCortexConfig = {
   template_files: {
     'foo template': 'foo content',
@@ -705,7 +644,7 @@ export const grantUserPermissions = (permissions: AccessControlAction[]) => {
 };
 
 export const grantUserRole = (role: string) => {
-  jest.spyOn(contextSrv, 'hasRole').mockReturnValue(true);
+  jest.spyOn(contextSrv, 'hasRole').mockImplementation((checkRole) => checkRole === role);
 };
 
 export function mockUnifiedAlertingStore(unifiedAlerting?: Partial<StoreState['unifiedAlerting']>) {
@@ -726,7 +665,7 @@ export function mockStore(recipe: (state: StoreState) => void) {
   return configureStore(produce(defaultState, recipe));
 }
 
-export function mockAlertQuery(query: Partial<AlertQuery>): AlertQuery {
+export function mockAlertQuery(query: Partial<AlertQuery> = {}): AlertQuery {
   return {
     datasourceUid: '--uid--',
     refId: 'A',
@@ -765,22 +704,28 @@ export function getGrafanaRule(override?: Partial<CombinedRule>, rulerOverride?:
     namespace: {
       groups: [],
       name: 'Grafana',
-      rulesSource: 'grafana',
+      rulesSource: GRAFANA_RULES_SOURCE_NAME,
     },
     rulerRule: mockGrafanaRulerRule(rulerOverride),
     ...override,
   });
 }
 
-export function getCloudRule(override?: Partial<CombinedRule>) {
+export function getCloudRule(override?: Partial<CombinedRule>, nsOverride?: Partial<CombinedRuleNamespace>) {
+  const promOverride = pick(override, ['name', 'labels', 'annotations']);
+  const rulerOverride = pick(override, ['name', 'labels', 'annotations']);
+
   return mockCombinedRule({
     namespace: {
       groups: [],
       name: 'Cortex',
       rulesSource: mockDataSource(),
+      ...nsOverride,
     },
-    promRule: mockPromAlertingRule(),
-    rulerRule: mockRulerAlertingRule(),
+    promRule: mockPromAlertingRule(isEmpty(promOverride) ? undefined : promOverride),
+    rulerRule: mockRulerAlertingRule(
+      isEmpty(rulerOverride) ? undefined : { ...rulerOverride, alert: rulerOverride.name }
+    ),
     ...override,
   });
 }
@@ -842,4 +787,67 @@ export function mockDashboardDto(
     },
     meta: { ...meta },
   };
+}
+
+export const mockDataQuery = (partial: Partial<AlertDataQuery> = {}): AlertQuery<AlertDataQuery> => ({
+  refId: partial?.refId ?? 'A',
+  datasourceUid: 'abc123',
+  queryType: '',
+  model: { refId: 'A', ...partial },
+});
+
+export const mockReduceExpression = (partial: Partial<ExpressionQuery> = {}): AlertQuery<ExpressionQuery> => ({
+  refId: 'B',
+  queryType: 'expression',
+  datasourceUid: '__expr__',
+  model: {
+    type: ExpressionQueryType.reduce,
+    refId: 'B',
+    settings: { mode: ReducerMode.Strict },
+    reducer: ReducerID.last,
+    ...partial,
+  },
+});
+
+export const mockThresholdExpression = (partial: Partial<ExpressionQuery> = {}): AlertQuery<ExpressionQuery> => ({
+  refId: 'C',
+  queryType: 'expression',
+  datasourceUid: '__expr__',
+  model: {
+    type: ExpressionQueryType.threshold,
+    refId: 'C',
+    ...partial,
+  },
+});
+
+class LocalStorageMock implements Storage {
+  [key: string]: any;
+
+  getItem(key: string) {
+    return this[key] ?? null;
+  }
+
+  setItem(key: string, value: string) {
+    this[key] = value;
+  }
+
+  clear() {
+    Object.keys(this).forEach((key) => delete this[key]);
+  }
+
+  removeItem(key: string) {
+    delete this[key];
+  }
+
+  key(index: number) {
+    return Object.keys(this)[index] ?? null;
+  }
+
+  get length() {
+    return Object.keys(this).length;
+  }
+}
+
+export function mockLocalStorage(): Storage {
+  return new LocalStorageMock();
 }

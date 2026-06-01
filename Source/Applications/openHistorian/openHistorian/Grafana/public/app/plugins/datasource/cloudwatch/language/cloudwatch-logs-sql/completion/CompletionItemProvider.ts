@@ -1,12 +1,13 @@
 import { getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import type { Monaco, monacoTypes } from '@grafana/ui';
 
+import { LogGroup } from '../../../dataquery.gen';
 import { ResourcesAPI } from '../../../resources/ResourcesAPI';
-import { LogGroup } from '../../../types';
 import { CompletionItemProvider } from '../../monarch/CompletionItemProvider';
 import { LinkedToken } from '../../monarch/LinkedToken';
 import { TRIGGER_SUGGEST } from '../../monarch/commands';
 import { SuggestionKind, CompletionItemPriority, StatementPosition } from '../../monarch/types';
+import { fetchLogGroupFields } from '../../utils';
 import {
   ASC,
   BY,
@@ -141,6 +142,12 @@ export class LogsSQLCompletionItemProvider extends CompletionItemProvider {
             command: TRIGGER_SUGGEST,
             sortText: CompletionItemPriority.MediumHigh,
           });
+          addSuggestion(`${FROM} \`$__logGroups\``, {
+            insertText: `${FROM} \`$__logGroups\``,
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            sortText: CompletionItemPriority.High,
+            detail: 'Use selected log groups from the selector',
+          });
           addSuggestion(`${FROM} \`logGroups(logGroupIdentifier: [...])\``, {
             insertText: `${FROM} \`logGroups(logGroupIdentifier: [$0])\``,
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
@@ -151,6 +158,12 @@ export class LogsSQLCompletionItemProvider extends CompletionItemProvider {
           break;
 
         case SuggestionKind.AfterFromKeyword:
+          addSuggestion('`$__logGroups`', {
+            insertText: '`$__logGroups`',
+            kind: monaco.languages.CompletionItemKind.Variable,
+            sortText: CompletionItemPriority.High,
+            detail: 'Expands to selected log groups',
+          });
           addSuggestion('`logGroups(logGroupIdentifier: [...])`', {
             insertText: '`logGroups(logGroupIdentifier: [$0])`',
             insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
@@ -268,7 +281,12 @@ export class LogsSQLCompletionItemProvider extends CompletionItemProvider {
           break;
 
         case SuggestionKind.Field:
-          const fields = await this.fetchFields(this.queryContext.logGroups || [], this.queryContext.region);
+          const fields = await fetchLogGroupFields(
+            this.queryContext.logGroups || [],
+            this.queryContext.region,
+            this.templateSrv,
+            this.resources
+          );
           fields.forEach((field) => {
             if (field !== '') {
               addSuggestion(field, {
@@ -295,20 +313,4 @@ export class LogsSQLCompletionItemProvider extends CompletionItemProvider {
 
     return suggestions;
   }
-
-  private fetchFields = async (logGroups: LogGroup[], region: string): Promise<string[]> => {
-    if (logGroups.length === 0) {
-      return [];
-    }
-
-    const results = await Promise.all(
-      logGroups.map((logGroup) =>
-        this.resources
-          .getLogGroupFields({ logGroupName: logGroup.name, arn: logGroup.arn, region })
-          .then((fields) => fields.filter((f) => f).map((f) => f.value.name ?? ''))
-      )
-    );
-    // Deduplicate fields
-    return [...new Set(results.flat())];
-  };
 }

@@ -13,7 +13,7 @@ import {
 import { LibraryPanelBehavior } from '../scene/LibraryPanelBehavior';
 import { getLibraryPanelBehavior, isLibraryPanel } from '../utils/utils';
 
-import { getPanelFrameCategory2 } from './getPanelFrameOptions';
+import { getPanelFrameOptions } from './getPanelFrameOptions';
 
 interface Props {
   panel: VizPanel;
@@ -24,13 +24,8 @@ interface Props {
 
 export const PanelOptions = React.memo<Props>(({ panel, searchQuery, listMode, data }) => {
   const { options, fieldConfig, _pluginInstanceState } = panel.useState();
-  const layoutElement = panel.parent!;
-  const layoutElementState = layoutElement.useState();
 
-  const panelFrameOptions = useMemo(
-    () => getPanelFrameCategory2(panel, layoutElementState),
-    [panel, layoutElementState]
-  );
+  const panelFrameOptions = useMemo(() => getPanelFrameOptions(panel), [panel]);
 
   const visualizationOptions = useMemo(() => {
     const plugin = panel.getPlugin();
@@ -92,21 +87,21 @@ export const PanelOptions = React.memo<Props>(({ panel, searchQuery, listMode, d
       case OptionFilter.All:
         if (libraryPanelOptions) {
           // Library Panel options first
-          mainBoxElements.push(libraryPanelOptions.render());
+          mainBoxElements.push(libraryPanelOptions.renderElement());
         }
-        mainBoxElements.push(panelFrameOptions.render());
+        mainBoxElements.push(panelFrameOptions.renderElement());
 
         for (const item of visualizationOptions ?? []) {
-          mainBoxElements.push(item.render());
+          mainBoxElements.push(item.renderElement());
         }
 
         for (const item of justOverrides) {
-          mainBoxElements.push(item.render());
+          mainBoxElements.push(item.renderElement());
         }
         break;
       case OptionFilter.Overrides:
         for (const item of justOverrides) {
-          mainBoxElements.push(item.render());
+          mainBoxElements.push(item.renderElement());
         }
       default:
         break;

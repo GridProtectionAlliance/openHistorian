@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-import { BootData, DataQuery } from '@grafana/data/src';
-import { selectors as e2eSelectors } from '@grafana/e2e-selectors/src';
+import { BootData, DataQuery } from '@grafana/data';
+import { selectors as e2eSelectors } from '@grafana/e2e-selectors';
 import { reportInteraction, setEchoSrv } from '@grafana/runtime';
 import { Panel } from '@grafana/schema';
 import config from 'app/core/config';
@@ -68,7 +68,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  config.featureToggles.publicDashboards = true;
   config.publicDashboardsEnabled = true;
 
   jest.spyOn(contextSrv, 'hasPermission').mockReturnValue(true);
@@ -146,13 +145,6 @@ describe('SharePublic', () => {
   });
   it('does not render share panel when public dashboards feature is disabled using config setting', async () => {
     config.publicDashboardsEnabled = false;
-    await renderSharePublicDashboard(undefined, false);
-
-    expect(screen.getByRole('tablist')).toHaveTextContent('Link');
-    expect(screen.getByRole('tablist')).not.toHaveTextContent('Public dashboard');
-  });
-  it('does not render share panel when public dashboards feature is disabled using feature toggle', async () => {
-    config.featureToggles.publicDashboards = false;
     await renderSharePublicDashboard(undefined, false);
 
     expect(screen.getByRole('tablist')).toHaveTextContent('Link');

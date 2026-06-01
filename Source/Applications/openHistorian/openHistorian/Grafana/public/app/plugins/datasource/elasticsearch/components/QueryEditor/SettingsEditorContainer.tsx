@@ -8,24 +8,35 @@ import { segmentStyles } from './styles';
 
 const getStyles = (theme: GrafanaTheme2, hidden: boolean) => {
   return {
-    wrapper: css`
-      max-width: 500px;
-      display: flex;
-      flex-direction: column;
-    `,
-    settingsWrapper: css`
-      padding-top: ${theme.spacing(0.5)};
-    `,
-    icon: css`
-      margin-right: ${theme.spacing(0.5)};
-    `,
-    button: css`
-      justify-content: start;
-      ${hidden &&
-      css`
-        color: ${theme.colors.text.disabled};
-      `}
-    `,
+    wrapper: css({
+      maxWidth: '500px',
+      display: 'flex',
+      flexDirection: 'column',
+    }),
+    settingsWrapper: css({
+      display: 'flex',
+      flexDirection: 'column',
+      paddingTop: theme.spacing(0.5),
+    }),
+    icon: css({
+      marginRight: theme.spacing(0.5),
+    }),
+    button: css(
+      {
+        justifyContent: 'flex-start',
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        fontSize: theme.typography.bodySmall.fontSize,
+        backgroundColor: theme.colors.background.secondary,
+        height: '32px',
+        lineHeight: '32px',
+        border: 'none',
+      },
+      hidden && {
+        color: theme.colors.text.disabled,
+      }
+    ),
   };
 };
 
@@ -44,7 +55,7 @@ export const SettingsEditorContainer = ({ label, children, hidden = false }: Pro
     <InlineSegmentGroup>
       <div className={cx(styles.wrapper)}>
         <button
-          className={cx('gf-form-label query-part', styles.button, segmentStyles)}
+          className={cx(styles.button, segmentStyles)}
           onClick={() => setOpen(!open)}
           aria-expanded={open}
           type="button"

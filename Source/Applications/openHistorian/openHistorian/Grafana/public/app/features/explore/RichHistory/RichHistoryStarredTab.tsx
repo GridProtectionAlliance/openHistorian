@@ -3,17 +3,13 @@ import { useEffect } from 'react';
 import { useAsync } from 'react-use';
 
 import { DataSourceApi, GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { config, getDataSourceSrv } from '@grafana/runtime';
 import { useStyles2, Select, MultiSelect, FilterInput, Button } from '@grafana/ui';
-import { Trans, t } from 'app/core/internationalization';
-import {
-  createDatasourcesList,
-  SortOrder,
-  RichHistorySearchFilters,
-  RichHistorySettings,
-} from 'app/core/utils/richHistory';
-import { useSelector } from 'app/types';
+import { createDatasourcesList } from 'app/core/utils/richHistory';
+import { SortOrder, RichHistorySearchFilters, RichHistorySettings } from 'app/core/utils/richHistoryTypes';
 import { RichHistoryQuery } from 'app/types/explore';
+import { useSelector } from 'app/types/store';
 
 import { selectExploreDSMaps } from '../state/selectors';
 
@@ -33,39 +29,39 @@ export interface RichHistoryStarredTabProps {
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    container: css`
-      display: flex;
-    `,
-    containerContent: css`
-      width: 100%;
-    `,
-    selectors: css`
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    `,
-    multiselect: css`
-      width: 100%;
-      margin-bottom: ${theme.spacing(1)};
-    `,
-    filterInput: css`
-      margin-bottom: ${theme.spacing(1)};
-    `,
-    sort: css`
-      width: 170px;
-    `,
-    footer: css`
-      height: 60px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: ${theme.typography.fontWeightLight};
-      font-size: ${theme.typography.bodySmall.fontSize};
-      a {
-        font-weight: ${theme.typography.fontWeightMedium};
-        margin-left: ${theme.spacing(0.25)};
-      }
-    `,
+    container: css({
+      display: 'flex',
+    }),
+    containerContent: css({
+      width: '100%',
+    }),
+    selectors: css({
+      display: 'flex',
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+    }),
+    multiselect: css({
+      width: '100%',
+      marginBottom: theme.spacing(1),
+    }),
+    filterInput: css({
+      marginBottom: theme.spacing(1),
+    }),
+    sort: css({
+      width: '170px',
+    }),
+    footer: css({
+      height: '60px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontWeight: theme.typography.fontWeightLight,
+      fontSize: theme.typography.bodySmall.fontSize,
+      a: {
+        fontWeight: theme.typography.fontWeightMedium,
+        marginLeft: theme.spacing(0.25),
+      },
+    }),
   };
 };
 

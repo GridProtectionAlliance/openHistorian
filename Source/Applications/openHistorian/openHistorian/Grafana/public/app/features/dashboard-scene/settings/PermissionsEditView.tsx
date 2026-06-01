@@ -1,13 +1,12 @@
 import { PageLayoutType } from '@grafana/data';
-import { config } from '@grafana/runtime';
 import { SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
-import { Permissions } from 'app/core/components/AccessControl';
+import { Permissions } from 'app/core/components/AccessControl/Permissions';
 import { Page } from 'app/core/components/Page/Page';
-import { contextSrv } from 'app/core/core';
-import { AccessControlAction } from 'app/types';
+import { contextSrv } from 'app/core/services/context_srv';
+import { AccessControlAction } from 'app/types/accessControl';
 
 import { DashboardScene } from '../scene/DashboardScene';
-import { NavToolbarActions, ToolbarActions } from '../scene/NavToolbarActions';
+import { NavToolbarActions } from '../scene/NavToolbarActions';
 import { getDashboardSceneFor } from '../utils/utils';
 
 import { DashboardEditView, DashboardEditViewState, useDashboardEditPageNav } from './utils';
@@ -35,16 +34,10 @@ function PermissionsEditorSettings({ model }: SceneComponentProps<PermissionsEdi
   const { uid } = dashboard.useState();
   const { navModel, pageNav } = useDashboardEditPageNav(dashboard, model.getUrlKey());
   const canSetPermissions = contextSrv.hasPermission(AccessControlAction.DashboardsPermissionsWrite);
-  const isSingleTopNav = config.featureToggles.singleTopNav;
 
   return (
-    <Page
-      navModel={navModel}
-      pageNav={pageNav}
-      layout={PageLayoutType.Standard}
-      toolbar={isSingleTopNav ? <ToolbarActions dashboard={dashboard} /> : undefined}
-    >
-      {!isSingleTopNav && <NavToolbarActions dashboard={dashboard} />}
+    <Page navModel={navModel} pageNav={pageNav} layout={PageLayoutType.Standard}>
+      <NavToolbarActions dashboard={dashboard} />
       <Permissions resource={'dashboards'} resourceId={uid ?? ''} canSetPermissions={canSetPermissions} />
     </Page>
   );

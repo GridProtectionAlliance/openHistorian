@@ -1,11 +1,16 @@
 import { css } from '@emotion/css';
 
-import { GrafanaTheme2 } from '@grafana/data';
-import { Components } from '@grafana/e2e-selectors';
+import { CoreApp, GrafanaTheme2 } from '@grafana/data';
+import { Components, selectors } from '@grafana/e2e-selectors';
+import { Trans, t } from '@grafana/i18n';
+import { config } from '@grafana/runtime';
 import { ToolbarButton, useTheme2 } from '@grafana/ui';
-import { t, Trans } from 'app/core/internationalization';
+import { contextSrv } from 'app/core/services/context_srv';
+import { AccessControlAction } from 'app/types/accessControl';
 
 import { useQueriesDrawerContext } from './QueriesDrawer/QueriesDrawerContext';
+import { useQueryLibraryContext } from './QueryLibrary/QueryLibraryContext';
+import { type OnSelectQueryType } from './QueryLibrary/types';
 
 type Props = {
   addQueryRowButtonDisabled?: boolean;
@@ -15,6 +20,7 @@ type Props = {
 
   onClickAddQueryRowButton: () => void;
   onClickQueryInspectorButton: () => void;
+  onSelectQueryFromLibrary: OnSelectQueryType;
 };
 
 const getStyles = (theme: GrafanaTheme2) => {
@@ -28,42 +34,68 @@ const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-export function SecondaryActions(props: Props) {
+export function SecondaryActions({
+  addQueryRowButtonDisabled,
+  addQueryRowButtonHidden,
+  onClickAddQueryRowButton,
+  onClickQueryInspectorButton,
+  onSelectQueryFromLibrary,
+  queryInspectorButtonActive,
+}: Props) {
   const theme = useTheme2();
   const styles = getStyles(theme);
-  const { drawerOpened, setDrawerOpened, queryLibraryAvailable } = useQueriesDrawerContext();
-
-  // When queryLibraryAvailable=true we show the button in the toolbar (see QueriesDrawerDropdown)
-  const showHistoryButton = !props.richHistoryRowButtonHidden && !queryLibraryAvailable;
+  const { queryLibraryEnabled, openDrawer: openQueryLibraryDrawer } = useQueryLibraryContext();
+  const { drawerOpened, setDrawerOpened } = useQueriesDrawerContext();
+  const canReadQueries = config.featureToggles.savedQueriesRBAC
+    ? contextSrv.hasPermission(AccessControlAction.QueriesRead)
+    : contextSrv.isSignedIn;
 
   return (
     <div className={styles.containerMargin}>
-      {!props.addQueryRowButtonHidden && (
-        <ToolbarButton
-          variant="canvas"
-          aria-label={t('explore.secondary-actions.query-add-button-aria-label', 'Add query')}
-          onClick={props.onClickAddQueryRowButton}
-          disabled={props.addQueryRowButtonDisabled}
-          icon="plus"
-        >
-          <Trans i18nKey="explore.secondary-actions.query-add-button">Add query</Trans>
-        </ToolbarButton>
-      )}
-      {showHistoryButton && (
-        <ToolbarButton
-          variant={drawerOpened ? 'active' : 'canvas'}
-          aria-label={t('explore.secondary-actions.query-history-button-aria-label', 'Query history')}
-          onClick={() => setDrawerOpened(!drawerOpened)}
-          data-testid={Components.QueryTab.queryHistoryButton}
-          icon="history"
-        >
-          <Trans i18nKey="explore.secondary-actions.query-history-button">Query history</Trans>
-        </ToolbarButton>
+      {!addQueryRowButtonHidden && (
+        <>
+          <ToolbarButton
+            variant="canvas"
+            aria-label={t('explore.secondary-actions.query-add-button-aria-label', 'Add query')}
+            onClick={onClickAddQueryRowButton}
+            disabled={addQueryRowButtonDisabled}
+            icon="plus"
+          >
+            <Trans i18nKey="explore.secondary-actions.query-add-button">Add query</Trans>
+          </ToolbarButton>
+          {queryLibraryEnabled && canReadQueries && (
+            <ToolbarButton
+              data-testid={selectors.pages.Explore.General.addFromQueryLibrary}
+              aria-label={t('explore.secondary-actions.add-from-query-library', 'Add from saved queries')}
+              variant="canvas"
+              onClick={() =>
+                openQueryLibraryDrawer({
+                  onSelectQuery: onSelectQueryFromLibrary,
+                  options: { context: CoreApp.Explore },
+                })
+              }
+              icon="plus"
+              disabled={addQueryRowButtonDisabled}
+            >
+              <Trans i18nKey="explore.secondary-actions.add-from-query-library">Add from saved queries</Trans>
+            </ToolbarButton>
+          )}
+        </>
       )}
       <ToolbarButton
-        variant={props.queryInspectorButtonActive ? 'active' : 'canvas'}
+        key="query-history"
+        variant={drawerOpened ? 'active' : 'canvas'}
+        aria-label={t('explore.secondary-actions.query-history-button-aria-label', 'Query history')}
+        onClick={() => setDrawerOpened(!drawerOpened)}
+        data-testid={Components.QueryTab.queryHistoryButton}
+        icon="history"
+      >
+        <Trans i18nKey="explore.secondary-actions.query-history-button">Query history</Trans>
+      </ToolbarButton>
+      <ToolbarButton
+        variant={queryInspectorButtonActive ? 'active' : 'canvas'}
         aria-label={t('explore.secondary-actions.query-inspector-button-aria-label', 'Query inspector')}
-        onClick={props.onClickQueryInspectorButton}
+        onClick={onClickQueryInspectorButton}
         icon="info-circle"
       >
         <Trans i18nKey="explore.secondary-actions.query-inspector-button">Query inspector</Trans>

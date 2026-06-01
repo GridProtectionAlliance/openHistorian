@@ -14,11 +14,11 @@ weight: 500
 
 This topic includes instructions for installing and running Grafana on Kubernetes using Helm Charts.
 
-[Helm](https://helm.sh/) is an open-source command line tool used for managing Kubernetes applications. It is a graduate project in the [CNCF Landscape](https://www.cncf.io/projects/helm/).
+[Helm](https://helm.sh/) is an open source command line tool used for managing Kubernetes applications. It is a graduate project in the [CNCF Landscape](https://www.cncf.io/projects/helm/).
 
-{{% admonition type="note" %}}
-The Grafana open-source community offers Helm Charts for running it on Kubernetes. Please be aware that the code is provided without any warranties. If you encounter any problems, you can report them to the [Official GitHub repository](https://github.com/grafana/helm-charts/).
-{{% /admonition %}}
+{{< admonition type="note" >}}
+The Grafana open source community offers Helm Charts for running it on Kubernetes. Please be aware that the code is provided without any warranties. If you encounter any problems, you can report them to the [Community-maintained GitHub repository](https://github.com/grafana-community/helm-charts).
+{{< /admonition >}}
 
 Watch this video to learn more about installing Grafana using Helm Charts: {{< youtube id="sgYrEleW24E">}}
 
@@ -50,7 +50,7 @@ To set up the Grafana Helm repository so that you download the correct Grafana H
    The following example adds the `grafana` Helm repository.
 
    ```bash
-   helm repo add grafana https://grafana.github.io/helm-charts
+   helm repo add grafana-community https://grafana-community.github.io/helm-charts
    ```
 
 1. Run the following command to verify the repository was added:
@@ -62,8 +62,8 @@ To set up the Grafana Helm repository so that you download the correct Grafana H
    After you add the repository, you should see an output similar to the following:
 
    ```bash
-   NAME    URL
-   grafana https://grafana.github.io/helm-charts
+   NAME              URL
+   grafana-community https://grafana-community.github.io/helm-charts
    ```
 
 1. Run the following command to update the repository to download the latest Grafana Helm charts:
@@ -92,27 +92,26 @@ When you create a new namespace in Kubernetes, you can better organize, allocate
    namespace/monitoring created
    ```
 
-1. Search for the official `grafana/grafana` repository using the command:
+1. Search for the official `grafana-community/grafana` repository using the command:
 
    `helm search repo <repo-name/package-name>`
 
    For example, the following command provides a list of the Grafana Helm Charts from which you will install the latest version of the Grafana chart.
 
    ```bash
-   helm search repo grafana/grafana
+   helm search repo grafana-community/grafana
    ```
 
 1. Run the following command to deploy the Grafana Helm Chart inside your namespace.
 
    ```bash
-   helm install my-grafana grafana/grafana --namespace monitoring
+   helm install my-grafana grafana-community/grafana --namespace monitoring
    ```
 
    Where:
-
    - `helm install`: Installs the chart by deploying it on the Kubernetes cluster
    - `my-grafana`: The logical chart name that you provided
-   - `grafana/grafana`: The repository and package name to install
+   - `grafana-community/grafana`: The repository and package name to install
    - `--namespace`: The Kubernetes namespace (i.e. `monitoring`) where you want to deploy the chart
 
 1. To verify the deployment status, run the following command and verify that `deployed` appears in the **STATUS** column:
@@ -147,7 +146,6 @@ This section describes the steps you must complete to access Grafana via web bro
    ```
 
    This command will print out the chart notes. You will the output `NOTES` that provide the complete instructions about:
-
    - How to decode the login password for the Grafana admin account
    - Access Grafana service to the web browser
 
@@ -197,11 +195,11 @@ By modifying the values in the `values.yaml` file, you can tailor the deployment
 
 In order to make any configuration changes, download the `values.yaml` file from the Grafana Helm Charts repository:
 
-https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 Depending on your use case requirements, you can use a single YAML file that contains your configuration changes or you can create multiple YAML files.
-{{% /admonition %}}
+{{< /admonition >}}
 
 ### Enable persistent storage **(recommended)**
 
@@ -233,7 +231,7 @@ To enable the persistent storage in the Grafana Helm charts, complete the follow
 1. Run the following `helm upgrade` command by specifying the `values.yaml` file to make the changes take effect:
 
    ```bash
-   helm upgrade my-grafana grafana/grafana -f values.yaml -n monitoring
+   helm upgrade my-grafana grafana-community/grafana -f values.yaml -n monitoring
    ```
 
 The PVC will now store all your data such as dashboards, data sources, and so on.
@@ -267,7 +265,7 @@ To install plugins in the Grafana Helm Charts, complete the following steps:
 1. Save the changes and use the `helm upgrade` command to get these plugins installed:
 
    ```bash
-   helm upgrade my-grafana grafana/grafana -f values.yaml -n monitoring
+   helm upgrade my-grafana grafana-community/grafana -f values.yaml -n monitoring
    ```
 
 1. Navigate to `127.0.0.1:3000` in your browser.
@@ -277,6 +275,67 @@ To install plugins in the Grafana Helm Charts, complete the following steps:
 1. Navigate to UI -> Administration -> Plugins
 
 1. Search for the above plugins and they should be marked as installed.
+
+### Configure a Private CA (Certificate Authority)
+
+In many enterprise networks, TLS certificates are issued by a private certificate authority and are not trusted by default (using the provided OS trust chain).
+
+If your Grafana instance needs to interact with services exposing certificates issued by these private CAs, then you need to ensure Grafana trusts the root certificate.
+
+You might need to configure this if you:
+
+- have plugins that require connectivity to other self hosted systems. For example, if you've installed the Grafana Enterprise Metrics, Logs, or Traces (GEM, GEL, GET) plugins, and your GEM (or GEL/GET) cluster is using a private certificate.
+- want to connect to data sources which are listening on HTTPS with a private certificate.
+- are using a backend database for persistence, or caching service that uses private certificates for encryption in transit.
+
+In some cases you can specify a self-signed certificate within Grafana (such as in some data sources), or choose to skip TLS certificate validation (this is not recommended unless absolutely necessary).
+
+A simple solution which should work across your entire instance (plugins, data sources, and backend connections) is to add your self-signed CA certificate to your Kubernetes deployment.
+
+1. Create a ConfigMap containing the certificate, and deploy it to your Kubernetes cluster
+
+   ```yaml
+   # grafana-ca-configmap.yaml
+   ---
+   apiVersion: v1
+   kind: ConfigMap
+   metadata:
+     name: grafana-ca-cert
+   data:
+     ca.pem: |
+       -----BEGIN CERTIFICATE-----
+       (rest of the CA cert)
+       -----END CERTIFICATE-----
+   ```
+
+   ```bash
+   kubectl apply --filename grafana-ca-configmap.yaml --namespace monitoring
+   ```
+
+1. Open the Helm `values.yaml` file in your favorite editor.
+
+1. Find the line that says `extraConfigmapMounts:` and under that section, specify the additional ConfigMap that you want to mount.
+
+   ```yaml
+   .......
+   ............
+   ......
+   extraConfigmapMounts:
+      - name: ca-certs-configmap
+        mountPath: /etc/ssl/certs/ca.pem
+        subPath: ca.pem
+        configMap: grafana-ca-cert
+        readOnly: true
+   .......
+   ............
+   ......
+   ```
+
+1. Save the changes and use the `helm upgrade` command to update your Grafana deployment and mount the new ConfigMap:
+
+   ```bash
+   helm upgrade my-grafana grafana-community/grafana --values values.yaml --namespace monitoring
+   ```
 
 ## Troubleshooting
 
@@ -334,7 +393,7 @@ To increase log level to `debug` mode, use the following steps:
 1. Now to apply this, run the `helm upgrade` command as follows:
 
    ```bash
-   helm upgrade my-grafana grafana/grafana -f values.yaml -n monitoring
+   helm upgrade my-grafana grafana-community/grafana -f values.yaml -n monitoring
    ```
 
 1. To verify it, access the Grafana UI in the browser using the provided `IP:Port`. The Grafana sign-in page appears.
@@ -356,7 +415,7 @@ By default the login credentials for the super admin account are generated via `
 1. Then use the `helm upgrade` command as follows:
 
    ```bash
-   helm upgrade my-grafana grafana/grafana -f values.yaml -n monitoring
+   helm upgrade my-grafana grafana-community/grafana -f values.yaml -n monitoring
    ```
 
    This command will now make your super admin login credentials as `admin` for both username and password.

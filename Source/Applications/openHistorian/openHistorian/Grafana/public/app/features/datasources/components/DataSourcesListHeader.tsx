@@ -1,10 +1,13 @@
-import { useCallback } from 'react';
+import { debounce } from 'lodash';
+import { useCallback, useMemo } from 'react';
 
 import { SelectableValue } from '@grafana/data';
-import PageActionBar from 'app/core/components/PageActionBar/PageActionBar';
-import { StoreState, useSelector, useDispatch } from 'app/types';
+import PageActionBar, { FilterCheckbox } from 'app/core/components/PageActionBar/PageActionBar';
+import { StoreState, useSelector, useDispatch } from 'app/types/store';
 
-import { getDataSourcesSearchQuery, getDataSourcesSort, setDataSourcesSearchQuery, setIsSortAscending } from '../state';
+import { setDataSourcesSearchQuery, setIsSortAscending } from '../state/reducers';
+import { getDataSourcesSearchQuery, getDataSourcesSort } from '../state/selectors';
+import { trackDsSearched } from '../tracking';
 
 const ascendingSortValue = 'alpha-asc';
 const descendingSortValue = 'alpha-desc';
@@ -17,9 +20,30 @@ const sortOptions = [
   { label: 'Sort by Z–A', value: descendingSortValue },
 ];
 
-export function DataSourcesListHeader() {
+export interface DataSourcesListHeaderProps {
+  filterCheckbox?: FilterCheckbox;
+}
+
+export function DataSourcesListHeader({ filterCheckbox }: DataSourcesListHeaderProps) {
   const dispatch = useDispatch();
-  const setSearchQuery = useCallback((q: string) => dispatch(setDataSourcesSearchQuery(q)), [dispatch]);
+
+  const debouncedTrackSearch = useMemo(
+    () =>
+      debounce((q) => {
+        trackDsSearched({ query: q });
+      }, 300),
+    []
+  );
+
+  const setSearchQuery = useCallback(
+    (q: string) => {
+      dispatch(setDataSourcesSearchQuery(q));
+      if (q) {
+        debouncedTrackSearch(q);
+      }
+    },
+    [dispatch, debouncedTrackSearch]
+  );
   const searchQuery = useSelector(({ dataSources }: StoreState) => getDataSourcesSearchQuery(dataSources));
 
   const setSort = useCallback(
@@ -35,6 +59,12 @@ export function DataSourcesListHeader() {
   };
 
   return (
-    <PageActionBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} key="action-bar" sortPicker={sortPicker} />
+    <PageActionBar
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      key="action-bar"
+      sortPicker={sortPicker}
+      filterCheckbox={filterCheckbox}
+    />
   );
 }

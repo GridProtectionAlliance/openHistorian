@@ -1,12 +1,15 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { DataSourcePluginMeta, DataSourceSettings } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { cleanUpAction } from 'app/core/actions/cleanUp';
-import appEvents from 'app/core/app_events';
-import { contextSrv } from 'app/core/core';
-import { AccessControlAction, useDispatch, useSelector } from 'app/types';
+import { appEvents } from 'app/core/app_events';
+import { contextSrv } from 'app/core/services/context_srv';
+import { AccessControlAction } from 'app/types/accessControl';
 import { ShowConfirmModalEvent } from 'app/types/events';
+import { useDispatch, useSelector } from 'app/types/store';
 
+import { ROUTES } from '../../connections/constants';
 import { DataSourceRights } from '../types';
 import { constructDataSourceExploreUrl } from '../utils';
 
@@ -20,7 +23,6 @@ import {
   updateDataSource,
   deleteLoadedDataSource,
 } from './actions';
-import { DataSourcesRoutesContext } from './contexts';
 import { initialDataSourceSettingsState } from './reducers';
 import { getDataSource, getDataSourceMeta } from './selectors';
 
@@ -42,9 +44,8 @@ export const useInitDataSourceSettings = (uid: string) => {
 
 export const useTestDataSource = (uid: string) => {
   const dispatch = useDispatch();
-  const dataSourcesRoutes = useDataSourcesRoutes();
 
-  return () => dispatch(testDataSource(uid, dataSourcesRoutes.Edit));
+  return () => dispatch(testDataSource(uid, ROUTES.DataSourcesEdit));
 };
 
 export const useLoadDataSources = () => {
@@ -77,10 +78,9 @@ export const useLoadDataSourcePlugins = () => {
 
 export const useAddDatasource = () => {
   const dispatch = useDispatch();
-  const dataSourcesRoutes = useDataSourcesRoutes();
 
   return (plugin: DataSourcePluginMeta) => {
-    dispatch(addDataSource(plugin, dataSourcesRoutes.Edit));
+    dispatch(addDataSource(plugin, ROUTES.DataSourcesEdit));
   };
 };
 
@@ -97,7 +97,7 @@ export const useDeleteLoadedDataSource = () => {
   return () => {
     appEvents.publish(
       new ShowConfirmModalEvent({
-        title: 'Delete',
+        title: t('datasources.use-delete-loaded-data-source.title.delete', 'Delete'),
         text: `Are you sure you want to delete the "${name}" data source?`,
         yesText: 'Delete',
         icon: 'trash-alt',
@@ -135,8 +135,4 @@ export const useDataSourceRights = (uid: string): DataSourceRights => {
     hasWriteRights,
     hasDeleteRights,
   };
-};
-
-export const useDataSourcesRoutes = () => {
-  return useContext(DataSourcesRoutesContext);
 };

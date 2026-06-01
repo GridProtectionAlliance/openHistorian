@@ -55,7 +55,6 @@ describe('alertRuleToQueries', () => {
           name: 'prom test',
           type: 'prometheus',
           uid: 'asdf23',
-          id: 1,
           access: 'proxy',
           meta: {} as PluginMeta,
           jsonData: {} as DataSourceJsonData,
@@ -93,6 +92,7 @@ const grafanaAlert = {
   no_data_state: GrafanaAlertStateDecision.NoData,
   title: 'Test alert',
   uid: 'asdf23',
+  version: 1,
   data: [
     {
       refId: 'A',

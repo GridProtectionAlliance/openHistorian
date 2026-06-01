@@ -2,12 +2,15 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestProvider } from 'test/helpers/TestProvider';
 
-import { ApiKey, OrgRole, ServiceAccountDTO } from 'app/types';
+import { OrgRole } from '@grafana/data';
+import { ApiKey } from 'app/types/apiKeys';
+import { ServiceAccountDTO } from 'app/types/serviceaccount';
 
 import { ServiceAccountPageUnconnected, Props } from './ServiceAccountPage';
 
-jest.mock('app/core/core', () => ({
+jest.mock('app/core/services/context_srv', () => ({
   contextSrv: {
+    ...jest.requireActual('app/core/services/context_srv').contextSrv,
     licensedAccessControlEnabled: () => false,
     hasPermission: () => true,
     hasPermissionInMetadata: () => false,
@@ -61,6 +64,7 @@ const setup = (propOverrides: Partial<Props>) => {
 
 const getDefaultServiceAccount = (): ServiceAccountDTO => ({
   id: 42,
+  uid: 'aaaaa',
   name: 'Data source scavenger',
   login: 'sa-data-source-scavenger',
   orgId: 1,
@@ -164,6 +168,6 @@ describe('ServiceAccountPage tests', () => {
     await userEvent.click(screen.getByLabelText(/Delete service account token/));
     await user.click(screen.getByRole('button', { name: /^Delete$/ }));
 
-    expect(deleteServiceAccountTokenMock).toHaveBeenCalledWith(42, 142);
+    expect(deleteServiceAccountTokenMock).toHaveBeenCalledWith('aaaaa', 142);
   });
 });

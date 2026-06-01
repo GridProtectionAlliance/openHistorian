@@ -1,27 +1,38 @@
-import { useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
 
 import { DataSourceInstanceSettings, MetricFindValue, readCSV } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { Trans, t } from '@grafana/i18n';
+import { EditorField } from '@grafana/plugin-ui';
 import { DataSourceRef } from '@grafana/schema';
-import { Alert, CodeEditor, Field, Switch } from '@grafana/ui';
+import { Alert, CodeEditor, Field, Switch, Box } from '@grafana/ui';
 import { DataSourcePicker } from 'app/features/datasources/components/picker/DataSourcePicker';
 
+import { VariableCheckboxField } from './VariableCheckboxField';
 import { VariableLegend } from './VariableLegend';
 
 export interface AdHocVariableFormProps {
   datasource?: DataSourceRef;
   onDataSourceChange: (dsSettings: DataSourceInstanceSettings) => void;
+  allowCustomValue?: boolean;
   infoText?: string;
   defaultKeys?: MetricFindValue[];
   onDefaultKeysChange?: (keys?: MetricFindValue[]) => void;
+  onAllowCustomValueChange?: (event: FormEvent<HTMLInputElement>) => void;
+  inline?: boolean;
+  datasourceSupported: boolean;
 }
 
 export function AdHocVariableForm({
   datasource,
   infoText,
+  allowCustomValue,
   onDataSourceChange,
   onDefaultKeysChange,
+  onAllowCustomValueChange,
   defaultKeys,
+  inline,
+  datasourceSupported,
 }: AdHocVariableFormProps) {
   const updateStaticKeys = useCallback(
     (csvContent: string) => {
@@ -38,27 +49,58 @@ export function AdHocVariableForm({
 
   return (
     <>
-      <VariableLegend>Ad-hoc options</VariableLegend>
-      <Field label="Data source" htmlFor="data-source-picker">
-        <DataSourcePicker current={datasource} onChange={onDataSourceChange} width={30} variables={true} noDefault />
-      </Field>
+      {!inline && (
+        <VariableLegend>
+          <Trans i18nKey="dashboard-scene.ad-hoc-variable-form.adhoc-options">Ad-hoc options</Trans>
+        </VariableLegend>
+      )}
 
-      {infoText ? (
+      <Box marginBottom={2}>
+        <EditorField
+          label={t('dashboard-scene.ad-hoc-variable-form.label-data-source', 'Data source')}
+          htmlFor="data-source-picker"
+          tooltip={infoText}
+        >
+          <DataSourcePicker
+            current={datasource}
+            onChange={onDataSourceChange}
+            width={30}
+            variables={true}
+            dashboard={true}
+            noDefault
+          />
+        </EditorField>
+      </Box>
+
+      {datasourceSupported === false ? (
         <Alert
-          title={infoText}
-          severity="info"
+          title={t(
+            'dashboard-scene.ad-hoc-variable-form.alert-not-supported',
+            'This data source does not support ad hoc filters'
+          )}
+          severity="warning"
           data-testid={selectors.pages.Dashboard.Settings.Variables.Edit.AdHocFiltersVariable.infoText}
         />
       ) : null}
 
-      {onDefaultKeysChange && (
+      {datasourceSupported && onDefaultKeysChange && (
         <>
-          <Field label="Use static key dimensions" description="Provide dimensions as CSV: dimensionName, dimensionId">
+          <Field
+            label={t(
+              'dashboard-scene.ad-hoc-variable-form.label-use-static-key-dimensions',
+              'Use static key dimensions'
+            )}
+            description={t(
+              'dashboard-scene.ad-hoc-variable-form.description-provide-dimensions-as-csv-dimension-name-dimension-id',
+              'Provide dimensions as CSV: {{name}}, {{value}}',
+              { name: 'dimensionName', value: 'dimensionId' }
+            )}
+          >
             <Switch
               data-testid={selectors.pages.Dashboard.Settings.Variables.Edit.AdHocFiltersVariable.modeToggle}
-              value={defaultKeys !== undefined}
+              value={defaultKeys != null}
               onChange={(e) => {
-                if (defaultKeys === undefined) {
+                if (defaultKeys == null) {
                   onDefaultKeysChange([]);
                 } else {
                   onDefaultKeysChange(undefined);
@@ -67,7 +109,7 @@ export function AdHocVariableForm({
             />
           </Field>
 
-          {defaultKeys !== undefined && (
+          {defaultKeys != null && (
             <CodeEditor
               height={300}
               language="csv"
@@ -79,6 +121,19 @@ export function AdHocVariableForm({
             />
           )}
         </>
+      )}
+
+      {datasourceSupported && onAllowCustomValueChange && (
+        <VariableCheckboxField
+          value={allowCustomValue ?? true}
+          name={t('dashboard-scene.ad-hoc-variable-form.name-allow-custom-values', 'Allow custom values')}
+          description={t(
+            'dashboard-scene.ad-hoc-variable-form.description-enables-users-custom-values',
+            'Enables users to add custom values to the list'
+          )}
+          onChange={onAllowCustomValueChange}
+          testId={selectors.pages.Dashboard.Settings.Variables.Edit.General.selectionOptionsAllowCustomValueSwitch}
+        />
       )}
     </>
   );

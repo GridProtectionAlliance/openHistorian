@@ -9,26 +9,31 @@ import {
 } from 'app/types/unified-alerting-dto';
 
 import { RULER_NOT_SUPPORTED_MSG } from '../utils/constants';
-import { getDataSourceByName, GRAFANA_RULES_SOURCE_NAME } from '../utils/datasource';
+import {
+  GRAFANA_RULES_SOURCE_NAME,
+  SUPPORTED_EXTERNAL_RULE_SOURCE_TYPES,
+  SupportedExternalRulesSourceType,
+  getDataSourceByName,
+  getRulesDataSourceByUID,
+  isSupportedExternalRulesSourceType,
+} from '../utils/datasource';
 
 import { fetchRules } from './prometheus';
 import { fetchTestRulerRulesGroup } from './ruler';
 
-/**
- * Attempt to fetch buildinfo from our component
- */
-export async function discoverFeatures(dataSourceName: string): Promise<PromApiFeatures> {
-  if (dataSourceName === GRAFANA_RULES_SOURCE_NAME) {
+export async function discoverFeaturesByUid(dataSourceUid: string): Promise<PromApiFeatures> {
+  if (dataSourceUid === GRAFANA_RULES_SOURCE_NAME) {
     return {
+      application: 'grafana',
       features: {
         rulerApiEnabled: true,
       },
-    };
+    } satisfies PromApiFeatures;
   }
 
-  const dsConfig = getDataSourceByName(dataSourceName);
+  const dsConfig = getRulesDataSourceByUID(dataSourceUid);
   if (!dsConfig) {
-    throw new Error(`Cannot find data source configuration for ${dataSourceName}`);
+    throw new Error(`Cannot find data source configuration for ${dataSourceUid}`);
   }
 
   const { url, name, type } = dsConfig;
@@ -36,8 +41,10 @@ export async function discoverFeatures(dataSourceName: string): Promise<PromApiF
     throw new Error(`The data source url cannot be empty.`);
   }
 
-  if (type !== 'prometheus' && type !== 'loki') {
-    throw new Error(`The build info request is not available for ${type}. Only 'prometheus' and 'loki' are supported`);
+  if (!isSupportedExternalRulesSourceType(type)) {
+    throw new Error(
+      `The build info request is not available for ${type}. Supported values are ${SUPPORTED_EXTERNAL_RULE_SOURCE_TYPES.join()}.`
+    );
   }
 
   return discoverDataSourceFeatures({ name, url, type });
@@ -54,7 +61,7 @@ export async function discoverFeatures(dataSourceName: string): Promise<PromApiF
 export async function discoverDataSourceFeatures(dsSettings: {
   url: string;
   name: string;
-  type: 'prometheus' | 'loki';
+  type: SupportedExternalRulesSourceType;
 }): Promise<PromApiFeatures> {
   const { url, name, type } = dsSettings;
 
@@ -78,7 +85,8 @@ export async function discoverDataSourceFeatures(dsSettings: {
     const rulerSupported = await hasRulerSupport(name);
 
     return {
-      application: PromApplication.Cortex,
+      // if we were not trying to discover ruler support for a "loki" type data source then assume it's Cortex.
+      application: type === 'loki' ? 'Loki' : PromApplication.Cortex,
       features: {
         rulerApiEnabled: rulerSupported,
       },

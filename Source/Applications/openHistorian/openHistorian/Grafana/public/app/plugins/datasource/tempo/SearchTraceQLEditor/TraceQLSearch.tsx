@@ -1,10 +1,10 @@
 import { css } from '@emotion/css';
 import { useCallback, useEffect, useState } from 'react';
 
-import { CoreApp, GrafanaTheme2 } from '@grafana/data';
+import { CoreApp, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { TemporaryAlert } from '@grafana/o11y-ds-frontend';
 import { config, FetchError, getTemplateSrv, reportInteraction } from '@grafana/runtime';
-import { Alert, Button, HorizontalGroup, Select, useStyles2 } from '@grafana/ui';
+import { Alert, Button, Stack, Select, useStyles2, TextLink } from '@grafana/ui';
 
 import { RawQuery } from '../_importedDependencies/datasources/prometheus/RawQuery';
 import { TraceqlFilter, TraceqlSearchScope } from '../dataquery.gen';
@@ -13,12 +13,12 @@ import { TempoQueryBuilderOptions } from '../traceql/TempoQueryBuilderOptions';
 import { traceqlGrammar } from '../traceql/traceql';
 import { TempoQuery } from '../types';
 
+import { AggregateByAlert } from './AggregateByAlert';
 import DurationInput from './DurationInput';
-import { GroupByField } from './GroupByField';
 import InlineSearchField from './InlineSearchField';
 import SearchField from './SearchField';
 import TagsInput from './TagsInput';
-import { filterScopedTag, filterTitle, generateQueryFromFilters, interpolateFilters, replaceAt } from './utils';
+import { filterScopedTag, filterTitle, interpolateFilters, replaceAt } from './utils';
 
 interface Props {
   datasource: TempoDatasource;
@@ -28,11 +28,20 @@ interface Props {
   onClearResults: () => void;
   app?: CoreApp;
   addVariablesToOptions?: boolean;
+  range?: TimeRange;
 }
 
 const hardCodedFilterIds = ['min-duration', 'max-duration', 'status'];
 
-const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVariablesToOptions = true }: Props) => {
+const TraceQLSearch = ({
+  datasource,
+  query,
+  onChange,
+  onClearResults,
+  app,
+  addVariablesToOptions = true,
+  range,
+}: Props) => {
   const styles = useStyles2(getStyles);
   const [alertText, setAlertText] = useState<string>();
   const [error, setError] = useState<Error | FetchError | null>(null);
@@ -64,15 +73,17 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
 
   const templateVariables = getTemplateSrv().getVariables();
   useEffect(() => {
-    setTraceQlQuery(generateQueryFromFilters(interpolateFilters(query.filters || [])));
-  }, [query, templateVariables]);
+    setTraceQlQuery(
+      datasource.languageProvider.generateQueryFromFilters({ traceqlFilters: interpolateFilters(query.filters || []) })
+    );
+  }, [datasource.languageProvider, query, templateVariables]);
 
   const findFilter = useCallback((id: string) => query.filters?.find((f) => f.id === id), [query.filters]);
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        await datasource.languageProvider.start();
+        await datasource.languageProvider.start(range, datasource.timeRangeForTags);
         setIsTagsLoading(false);
         setAlertText(undefined);
       } catch (error) {
@@ -82,7 +93,7 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
       }
     };
     fetchTags();
-  }, [datasource, setAlertText]);
+  }, [datasource, setAlertText, range, datasource.timeRangeForTags]);
 
   useEffect(() => {
     // Initialize state with configured static filters that already have a value from the config
@@ -99,6 +110,10 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
   const staticTags = datasource.search?.filters?.map((f) => f.tag) || [];
   staticTags.push('duration');
   staticTags.push('traceDuration');
+  staticTags.push('span:duration');
+  staticTags.push('trace:duration');
+  staticTags.push('status');
+  staticTags.push('span:status');
 
   // Dynamic filters are all filters that don't match the ID of a filter in the datasource configuration
   // The duration and status fields are a special case since its selector is hard-coded
@@ -109,6 +124,21 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
       f.id !== 'duration-type'
   );
 
+  // We use this function to generate queries without a specfic filter.
+  // This is useful because we're sending the query to Tempo so it can return the attributes and values filtered down.
+  // However, if we send the full query then we won't see more values for the filter we're trying to edit.
+  // For example, if we already have a service.name value selected and try to add another one, we won't see the other
+  // values if we send the full query since Tempo will only return the service.name that's already selected.
+  const generateQueryWithoutFilter = (filter?: TraceqlFilter) => {
+    if (!filter) {
+      return traceQlQuery;
+    }
+    const filtersAfterRemoval = query.filters?.filter((f) => f.id !== filter.id) || [];
+    return datasource.languageProvider.generateQueryFromFilters({
+      traceqlFilters: interpolateFilters(filtersAfterRemoval || []),
+    });
+  };
+
   return (
     <>
       <div className={styles.container}>
@@ -118,9 +148,10 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
               f.tag && (
                 <InlineSearchField
                   key={f.id}
-                  label={filterTitle(f)}
+                  label={filterTitle(f, datasource.languageProvider)}
                   tooltip={`Filter your search by ${filterScopedTag(
-                    f
+                    f,
+                    datasource.languageProvider
                   )}. To modify the default filters shown for search visit the Tempo datasource configuration page.`}
                 >
                   <SearchField
@@ -131,8 +162,10 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
                     tags={[]}
                     hideScope={true}
                     hideTag={true}
-                    query={traceQlQuery}
+                    query={generateQueryWithoutFilter(findFilter(f.id))}
                     addVariablesToOptions={addVariablesToOptions}
+                    range={range}
+                    timeRangeForTags={datasource.timeRangeForTags}
                   />
                 </InlineSearchField>
               )
@@ -153,18 +186,21 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
               tags={[]}
               hideScope={true}
               hideTag={true}
-              query={traceQlQuery}
+              query={generateQueryWithoutFilter(findFilter('status'))}
               isMulti={false}
               allowCustomValue={false}
               addVariablesToOptions={addVariablesToOptions}
+              range={range}
+              timeRangeForTags={datasource.timeRangeForTags}
             />
           </InlineSearchField>
           <InlineSearchField
             label={'Duration'}
             tooltip="The trace or span duration, i.e. end - start time of the trace/span. Accepted units are ns, ms, s, m, h"
           >
-            <HorizontalGroup spacing={'none'}>
+            <Stack gap={0}>
               <Select
+                width="auto"
                 options={[
                   { label: 'span', value: 'span' },
                   { label: 'trace', value: 'trace' },
@@ -203,7 +239,7 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
                 operators={['<', '<=']}
                 updateFilter={updateFilter}
               />
-            </HorizontalGroup>
+            </Stack>
           </InlineSearchField>
           <InlineSearchField label={'Tags'}>
             <TagsInput
@@ -214,20 +250,22 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
               deleteFilter={deleteFilter}
               staticTags={staticTags}
               isTagsLoading={isTagsLoading}
-              query={traceQlQuery}
+              generateQueryWithoutFilter={generateQueryWithoutFilter}
               requireTagAndValue={true}
               addVariablesToOptions={addVariablesToOptions}
+              range={range}
+              timeRangeForTags={datasource.timeRangeForTags}
             />
           </InlineSearchField>
-          {config.featureToggles.metricsSummary && (
-            <GroupByField
-              datasource={datasource}
-              onChange={onChange}
-              query={query}
-              isTagsLoading={isTagsLoading}
-              addVariablesToOptions={addVariablesToOptions}
-            />
-          )}
+          <AggregateByAlert
+            query={query}
+            onChange={() => {
+              delete query.groupBy;
+              onChange({
+                ...query,
+              });
+            }}
+          />
         </div>
         <div className={styles.rawQueryContainer}>
           <RawQuery query={templateSrv.replace(traceQlQuery)} lang={{ grammar: traceqlGrammar, name: 'traceql' }} />
@@ -242,7 +280,9 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
               });
 
               onClearResults();
-              const traceQlQuery = generateQueryFromFilters(query.filters || []);
+              const traceQlQuery = datasource.languageProvider.generateQueryFromFilters({
+                traceqlFilters: query.filters || [],
+              });
               onChange({
                 ...query,
                 query: traceQlQuery,
@@ -256,13 +296,15 @@ const TraceQLSearch = ({ datasource, query, onChange, onClearResults, app, addVa
         <TempoQueryBuilderOptions
           onChange={onChange}
           query={query}
-          isStreaming={datasource.isStreamingSearchEnabled() ?? false}
+          searchStreaming={datasource.isStreamingSearchEnabled() ?? false}
+          metricsStreaming={datasource.isStreamingMetricsEnabled() ?? false}
+          app={app}
         />
       </div>
       {error ? (
         <Alert title="Unable to connect to Tempo search" severity="info" className={styles.alert}>
           Please ensure that Tempo is configured with search enabled. If you would like to hide this tab, you can
-          configure it in the <a href={`/datasources/edit/${datasource.uid}`}>datasource settings</a>.
+          configure it in the <TextLink href={`/datasources/edit/${datasource.uid}`}>datasource settings</TextLink>.
         </Alert>
       ) : null}
       {alertText && <TemporaryAlert severity={'error'} text={alertText} />}
