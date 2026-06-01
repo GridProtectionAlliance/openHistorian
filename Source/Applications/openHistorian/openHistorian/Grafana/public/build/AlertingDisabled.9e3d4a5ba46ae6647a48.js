@@ -1,0 +1,5 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[9029],{31642(d,t,e){e.r(t),e.d(t,{default:()=>i});var n=e(74848),a=e(92745),l=e(13791),r=e(88547);function g(){const o={node:{text:(0,a.t)("alerting.feature-toggle-page.nav-model.text.alerting-is-not-enabled","Alerting is not enabled"),hideFromBreadcrumbs:!0,subTitle:(0,a.t)("alerting.feature-toggle-page.nav-model.subTitle.enable-alerting-grafana-config","To enable alerting, enable it in the Grafana config")},main:{text:(0,a.t)("alerting.feature-toggle-page.nav-model.text.alerting-is-not-enabled","Alerting is not enabled")}};return(0,n.jsx)(l.Y,{navModel:o,children:(0,n.jsx)(l.Y.Contents,{children:(0,n.jsx)("pre",{children:`[unified_alerting]
+enabled = true
+`})})})}const i=(0,r.S)(g)}}]);
+
+//# sourceMappingURL=AlertingDisabled.9e3d4a5ba46ae6647a48.js.map

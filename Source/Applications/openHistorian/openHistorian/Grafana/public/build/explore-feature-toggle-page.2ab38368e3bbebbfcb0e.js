@@ -1,0 +1,5 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[4422],{89153(g,s,e){e.r(s),e.d(s,{default:()=>d});var n=e(74848),t=e(22803),l=e(92745),o=e(63142),r=e(13791);function i(a){return(0,t.css)({marginTop:a.spacing(2)})}function d(){const a=(0,o.of)(i);return(0,n.jsx)(r.Y,{className:a,children:(0,n.jsxs)(r.Y.Contents,{children:[(0,n.jsx)("h1",{children:(0,n.jsx)(l.x6,{i18nKey:"explore.feature-toggle-page.title-explore-disabled",children:"Explore is disabled"})}),(0,n.jsx)(l.x6,{i18nKey:"explore.feature-toggle-page.description-explore-disabled",children:"To enable Explore, enable it in the Grafana config:"}),(0,n.jsx)("div",{children:(0,n.jsx)("pre",{children:`[explore]
+enable = true
+`})})]})})}}}]);
+
+//# sourceMappingURL=explore-feature-toggle-page.2ab38368e3bbebbfcb0e.js.map
