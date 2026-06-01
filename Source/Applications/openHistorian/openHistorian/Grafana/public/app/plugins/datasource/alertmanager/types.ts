@@ -1,6 +1,9 @@
 //DOCS: https://prometheus.io/docs/alerting/latest/configuration/
 import { DataSourceJsonData, WithAccessControlMetadata } from '@grafana/data';
-import { IoK8SApimachineryPkgApisMetaV1ObjectMeta } from 'app/features/alerting/unified/openapi/receiversApi.gen';
+import { IoK8SApimachineryPkgApisMetaV1ObjectMeta } from 'app/features/alerting/unified/openapi/routesApi.gen';
+import { ExtraConfiguration } from 'app/features/alerting/unified/utils/alertmanager/extraConfigs';
+
+export const ROUTES_META_SYMBOL = Symbol('routes_metadata');
 
 export type AlertManagerCortexConfig = {
   template_files: Record<string, string>;
@@ -9,6 +12,7 @@ export type AlertManagerCortexConfig = {
   template_file_provenances?: Record<string, string>;
   last_applied?: string;
   id?: number;
+  extra_config?: ExtraConfiguration[];
 };
 
 export type TLSConfig = {
@@ -67,15 +71,24 @@ export type WebhookConfig = {
 };
 
 type GrafanaManagedReceiverConfigSettings<T = any> = Record<string, T>;
+export type GrafanaManagedReceiverSecureFields = Record<string, boolean>;
+
 export type GrafanaManagedReceiverConfig = {
   uid?: string;
   disableResolveMessage?: boolean;
-  secureFields?: Record<string, boolean>;
-  secureSettings?: GrafanaManagedReceiverConfigSettings;
+  /**
+   * Secure fields keys values should be true if they are already configured in the database
+   * To reset the secure field, omit the key from the object when updating the receiver
+   */
+  secureFields?: GrafanaManagedReceiverSecureFields;
   /** If retrieved from k8s API, SecureSettings property name is different */
   // SecureSettings?: GrafanaManagedReceiverConfigSettings<boolean>;
   settings: GrafanaManagedReceiverConfigSettings;
   type: string;
+  /**
+   * Version of the integration (e.g. "v0" for Mimir legacy, "v1" for Grafana)
+   */
+  version?: string;
   /**
    * Name of the _receiver_, which in most cases will be the
    * same as the contact point's name. This should not be used, and is optional because the
@@ -95,7 +108,7 @@ export interface GrafanaManagedContactPoint {
   /** If parsed from k8s API, we'll have an ID property */
   id?: string;
   metadata?: IoK8SApimachineryPkgApisMetaV1ObjectMeta;
-  provisioned?: boolean;
+  provenance?: string;
   grafana_managed_receiver_configs?: GrafanaManagedReceiverConfig[];
 }
 
@@ -114,6 +127,7 @@ export type Receiver = GrafanaManagedContactPoint | AlertmanagerReceiver;
 export type ObjectMatcher = [name: string, operator: MatcherOperator, value: string];
 
 export type Route = {
+  name?: string;
   receiver?: string | null;
   group_by?: string[];
   continue?: boolean;
@@ -133,6 +147,13 @@ export type Route = {
   active_time_intervals?: string[];
   /** only the root policy might have a provenance field defined */
   provenance?: string;
+  /** this is used to add additional metadata to the routes without interfering with original route definition (symbols aren't iterable)  */
+  [ROUTES_META_SYMBOL]?: {
+    provenance?: string;
+    resourceVersion?: string;
+    name?: string;
+    metadata?: IoK8SApimachineryPkgApisMetaV1ObjectMeta;
+  };
 };
 
 export interface RouteWithID extends Route {

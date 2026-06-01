@@ -3,16 +3,16 @@ import userEvent from '@testing-library/user-event';
 import { render } from 'test/test-utils';
 
 import { standardEditorsRegistry, standardFieldConfigEditorRegistry } from '@grafana/data';
-import { getPanelPlugin } from '@grafana/data/test/__mocks__/pluginMocks';
+import { getPanelPlugin } from '@grafana/data/test';
 import { selectors } from '@grafana/e2e-selectors';
 import { VizPanel } from '@grafana/scenes';
 import { getAllOptionEditors, getAllStandardFieldConfigs } from 'app/core/components/OptionsUI/registry';
 import { OptionFilter } from 'app/features/dashboard/components/PanelEditor/OptionsPaneOptions';
 import { overrideRuleTooltipDescription } from 'app/features/dashboard/components/PanelEditor/state/getOptionOverrides';
 
-import { DashboardGridItem } from '../scene/DashboardGridItem';
 import { DashboardScene } from '../scene/DashboardScene';
 import { LibraryPanelBehavior } from '../scene/LibraryPanelBehavior';
+import { DashboardGridItem } from '../scene/layout-default/DashboardGridItem';
 import { vizPanelToPanel } from '../serialization/transformSceneToSaveModel';
 import { activateFullSceneTree } from '../utils/test-utils';
 import * as utils from '../utils/utils';
@@ -146,7 +146,7 @@ describe('PanelOptions', () => {
     it('Can update', async () => {
       const {} = setup();
 
-      await userEvent.click(screen.getByLabelText('Remove label'));
+      await userEvent.click(screen.getByLabelText('Remove property'));
 
       expect(screen.queryByLabelText(overrideRuleTooltipDescription)).not.toBeInTheDocument();
     });
@@ -177,7 +177,6 @@ describe('PanelOptions', () => {
 
     const libraryPanel = new LibraryPanelBehavior({
       isLoaded: true,
-      title: libraryPanelModel.title,
       uid: libraryPanelModel.uid,
       name: libraryPanelModel.name,
       _loadedPanel: libraryPanelModel,

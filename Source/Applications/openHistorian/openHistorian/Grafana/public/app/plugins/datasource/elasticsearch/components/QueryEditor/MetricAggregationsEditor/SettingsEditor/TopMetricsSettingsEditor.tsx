@@ -3,9 +3,9 @@ import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { AsyncMultiSelect, InlineField, SegmentAsync, Select } from '@grafana/ui';
 
+import { TopMetrics } from '../../../../dataquery.gen';
 import { useFields } from '../../../../hooks/useFields';
 import { useDispatch } from '../../../../hooks/useStatelessReducer';
-import { TopMetrics } from '../../../../types';
 import { orderOptions } from '../../BucketAggregationsEditor/utils';
 import { changeMetricSetting } from '../state/actions';
 
@@ -49,16 +49,16 @@ export const TopMetricsSettingsEditor = ({ metric }: Props) => {
       <InlineField
         label="Order By"
         labelWidth={16}
-        className={css`
-          & > div {
-            width: 100%;
-          }
-        `}
+        className={css({
+          '& > div': {
+            width: '100%',
+          },
+        })}
       >
         <SegmentAsync
-          className={css`
-            margin-right: 0;
-          `}
+          className={css({
+            marginRight: 0,
+          })}
           loadOptions={getOrderByOptions}
           onChange={(e) => dispatch(changeMetricSetting({ metric, settingName: 'orderBy', newValue: e.value }))}
           placeholder="Select Field"

@@ -1,62 +1,71 @@
 import { css, cx } from '@emotion/css';
 import { cloneDeep } from 'lodash';
-import { CSSProperties } from 'react';
+import { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 
-import { GrafanaTheme2, PanelData, VisualizationSuggestion } from '@grafana/data';
+import { GrafanaTheme2, PanelData, PanelPluginVisualizationSuggestion } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { config } from '@grafana/runtime';
 import { Tooltip, useStyles2 } from '@grafana/ui';
 
 import { PanelRenderer } from '../PanelRenderer';
 
-import { VizTypeChangeDetails } from './types';
-
-export interface Props {
+export interface Props extends HTMLAttributes<HTMLButtonElement> {
   data: PanelData;
   width: number;
-  suggestion: VisualizationSuggestion;
-  onChange: (details: VizTypeChangeDetails) => void;
+  suggestion: PanelPluginVisualizationSuggestion;
+  isSelected?: boolean;
 }
 
-export function VisualizationSuggestionCard({ data, suggestion, onChange, width }: Props) {
+export function VisualizationSuggestionCard({
+  data,
+  suggestion,
+  width,
+  isSelected = false,
+  className,
+  ...restProps
+}: Props) {
   const styles = useStyles2(getStyles);
   const { innerStyles, outerStyles, renderWidth, renderHeight } = getPreviewDimensionsAndStyles(width);
   const cardOptions = suggestion.cardOptions ?? {};
+  const isNewVizSuggestionsEnabled = config.featureToggles.newVizSuggestions;
 
   const commonButtonProps = {
     'aria-label': suggestion.name,
-    className: styles.vizBox,
+    className: cx(
+      className,
+      styles.vizBox,
+      config.featureToggles.newVizSuggestions && isSelected && styles.selectedBox
+    ),
     'data-testid': selectors.components.VisualizationPreview.card(suggestion.name),
     style: outerStyles,
-    onClick: () => {
-      onChange({
-        pluginId: suggestion.pluginId,
-        options: suggestion.options,
-        fieldConfig: suggestion.fieldConfig,
-      });
-    },
-  };
+    tabIndex: -1, // selection is handled by parent container
+    ...restProps,
+  } satisfies HTMLAttributes<HTMLButtonElement> & { 'data-testid': string };
+
+  let content: ReactNode;
 
   if (cardOptions.imgSrc) {
-    return (
-      <Tooltip content={suggestion.description ?? suggestion.name}>
-        <button {...commonButtonProps} className={cx(styles.vizBox, styles.imgBox)}>
-          <div className={styles.name}>{suggestion.name}</div>
-          <img className={styles.img} src={cardOptions.imgSrc} alt={suggestion.name} />
-        </button>
-      </Tooltip>
+    content = (
+      <button {...commonButtonProps} className={cx(commonButtonProps.className, styles.imgBox)}>
+        <div className={styles.name}>{suggestion.name}</div>
+        <img className={styles.img} src={cardOptions.imgSrc} alt={suggestion.name} />
+      </button>
     );
-  }
+  } else {
+    let preview = suggestion;
+    if (suggestion.cardOptions?.previewModifier) {
+      preview = cloneDeep(suggestion);
+      suggestion.cardOptions.previewModifier(preview);
+    }
 
-  let preview = suggestion;
-  if (suggestion.cardOptions?.previewModifier) {
-    preview = cloneDeep(suggestion);
-    suggestion.cardOptions.previewModifier(preview);
-  }
-
-  return (
-    <button {...commonButtonProps}>
-      <Tooltip content={suggestion.name}>
-        <div style={innerStyles} className={styles.renderContainer}>
+    content = (
+      <button {...commonButtonProps}>
+        {/* to use inert in React 18, we have to do this hacky object spread thing. https://stackoverflow.com/questions/72720469/error-when-using-inert-attribute-with-typescript */}
+        <div
+          style={innerStyles}
+          className={cx(styles.renderContainer, isSelected && styles.selectedSuggestion)}
+          {...{ inert: '' }}
+        >
           <PanelRenderer
             title=""
             data={data}
@@ -66,72 +75,77 @@ export function VisualizationSuggestionCard({ data, suggestion, onChange, width 
             options={preview.options}
             fieldConfig={preview.fieldConfig}
           />
-          <div className={styles.hoverPane} />
         </div>
-      </Tooltip>
-    </button>
-  );
+      </button>
+    );
+  }
+
+  if (!isNewVizSuggestionsEnabled) {
+    return <Tooltip content={suggestion.description ?? suggestion.name}>{content}</Tooltip>;
+  }
+
+  return content;
 }
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    hoverPane: css({
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      left: 0,
-      borderRadius: theme.spacing(2),
-      bottom: 0,
+    selectedSuggestion: css({
+      filter: `blur(1px) ${theme.isDark ? 'brightness(0.5)' : 'opacity(0.3)'}`,
     }),
-    vizBox: css`
-      position: relative;
-      background: none;
-      border-radius: ${theme.shape.radius.default};
-      cursor: pointer;
-      border: 1px solid ${theme.colors.border.medium};
+    vizBox: css({
+      position: 'relative',
+      background: 'none',
+      borderRadius: theme.shape.radius.default,
+      cursor: 'pointer',
+      border: `1px solid ${theme.colors.border.medium}`,
 
-      transition: ${theme.transitions.create(['background'], {
-        duration: theme.transitions.duration.short,
-      })};
+      [theme.transitions.handleMotion('no-preference', 'reduce')]: {
+        transition: theme.transitions.create(['background'], {
+          duration: theme.transitions.duration.short,
+        }),
+      },
 
-      &:hover {
-        background: ${theme.colors.background.secondary};
-      }
-    `,
-    imgBox: css`
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+      '&:hover': {
+        background: theme.colors.background.secondary,
+      },
+    }),
+    imgBox: css({
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
 
-      justify-self: center;
-      color: ${theme.colors.text.primary};
-      width: 100%;
-      display: flex;
+      justifySelf: 'center',
+      color: theme.colors.text.primary,
+      width: '100%',
 
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    `,
-    name: css`
-      padding-bottom: ${theme.spacing(0.5)};
-      margin-top: ${theme.spacing(-1)};
-      font-size: ${theme.typography.bodySmall.fontSize};
-      white-space: nowrap;
-      overflow: hidden;
-      color: ${theme.colors.text.secondary};
-      font-weight: ${theme.typography.fontWeightMedium};
-      text-overflow: ellipsis;
-    `,
-    img: css`
-      max-width: ${theme.spacing(8)};
-      max-height: ${theme.spacing(8)};
-    `,
-    renderContainer: css`
-      position: absolute;
-      transform-origin: left top;
-      top: 6px;
-      left: 6px;
-    `,
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+    }),
+    name: css({
+      paddingBottom: theme.spacing(0.5),
+      marginTop: theme.spacing(-1),
+      fontSize: theme.typography.bodySmall.fontSize,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      color: theme.colors.text.secondary,
+      fontWeight: theme.typography.fontWeightMedium,
+      textOverflow: 'ellipsis',
+    }),
+    img: css({
+      maxWidth: theme.spacing(8),
+      maxHeight: theme.spacing(8),
+    }),
+    renderContainer: css({
+      position: 'absolute',
+      transformOrigin: 'left top',
+      top: '6px',
+      left: '6px',
+    }),
+    selectedBox: css({
+      border: `1px solid ${theme.colors.primary.border}`,
+      background: theme.colors.action.selected,
+    }),
   };
 };
 

@@ -41,6 +41,8 @@ export function GraphiteFunctionEditor({ func }: FunctionEditorProps) {
       onFocus={() => setIsMouseOver(true)}
       onMouseOver={() => setIsMouseOver(true)}
       onMouseOut={() => setIsMouseOver(false)}
+      // We set this to ensure if any long text wraps the container expands with it
+      style={{ height: '100%' }}
     >
       <Stack gap={0} alignItems={'baseline'}>
         <FunctionEditor
@@ -93,9 +95,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     padding: `0 ${theme.spacing(1)}`,
     height: `${theme.v1.spacing.formInputHeight}px`,
   }),
-  error: css`
-    border: 1px solid ${theme.colors.error.main};
-  `,
+  error: css({
+    border: `1px solid ${theme.colors.error.main}`,
+  }),
   label: css({
     padding: 0,
     margin: 0,

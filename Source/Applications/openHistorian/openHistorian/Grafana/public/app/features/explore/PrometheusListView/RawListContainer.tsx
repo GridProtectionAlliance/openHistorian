@@ -4,9 +4,10 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useWindowSize } from 'react-use';
 import { VariableSizeList as List } from 'react-window';
 
-import { DataFrame, Field as DataFrameField } from '@grafana/data/';
-import { reportInteraction } from '@grafana/runtime/src';
-import { Field, Switch } from '@grafana/ui/';
+import { DataFrame, Field as DataFrameField } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
+import { reportInteraction } from '@grafana/runtime';
+import { Field, Switch } from '@grafana/ui';
 
 import { ItemLabels } from './ItemLabels';
 import RawListItem from './RawListItem';
@@ -15,40 +16,44 @@ import {
   RawPrometheusListItemEmptyValue,
 } from './utils/getRawPrometheusListItemsFromDataFrame';
 
-export type instantQueryRawVirtualizedListData = { Value: string; __name__: string; [index: string]: string };
+export type instantQueryRawVirtualizedListData = {
+  Value: string;
+  __name__?: string;
+  [index: string]: string | undefined;
+};
 
 export interface RawListContainerProps {
   tableResult: DataFrame;
 }
 
 const styles = {
-  wrapper: css`
-    height: 100%;
-    overflow: scroll;
-  `,
-  switchWrapper: css`
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 0;
-  `,
-  switchLabel: css`
-    margin-left: 15px;
-    margin-bottom: 0;
-  `,
-  switch: css`
-    margin-left: 10px;
-  `,
-  resultCount: css`
-    margin-bottom: 4px;
-  `,
-  header: css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    font-size: 12px;
-    line-height: 1.25;
-  `,
+  wrapper: css({
+    height: '100%',
+    overflow: 'scroll',
+  }),
+  switchWrapper: css({
+    display: 'flex',
+    flexDirection: 'row',
+    marginBottom: 0,
+  }),
+  switchLabel: css({
+    marginLeft: '15px',
+    marginBottom: 0,
+  }),
+  switch: css({
+    marginLeft: '10px',
+  }),
+  resultCount: css({
+    marginBottom: '4px',
+  }),
+  header: css({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 0',
+    fontSize: '12px',
+    lineHeight: 1.25,
+  }),
 };
 
 const mobileWidthThreshold = 480;
@@ -117,13 +122,27 @@ const RawListContainer = (props: RawListContainerProps) => {
   return (
     <section>
       <header className={styles.header}>
-        <Field className={styles.switchWrapper} label={`Expand results`} htmlFor={'isExpandedView'}>
+        <Field
+          className={styles.switchWrapper}
+          label={t('explore.raw-list-container.label-expand-results', 'Expand results')}
+          htmlFor={'isExpandedView'}
+          noMargin
+        >
           <div className={styles.switch}>
-            <Switch onChange={onContentClick} id={switchId} value={isExpandedView} label={`Expand results`} />
+            <Switch
+              onChange={onContentClick}
+              id={switchId}
+              value={isExpandedView}
+              label={t('explore.raw-list-container.label-expand-results', 'Expand results')}
+            />
           </div>
         </Field>
 
-        <div className={styles.resultCount}>Result series: {items.length}</div>
+        <div className={styles.resultCount}>
+          <Trans i18nKey="explore.raw-list-container.item-count" values={{ numItems: items.length }}>
+            Result series: {'{{numItems}}'}
+          </Trans>
+        </div>
       </header>
 
       <div role={'table'}>
@@ -156,7 +175,7 @@ const RawListContainer = (props: RawListContainerProps) => {
                       isExpandedView={isExpandedView}
                       valueLabels={filteredValueLabels}
                       totalNumberOfValues={valueLabels.length}
-                      listKey={items[index].__name__}
+                      listKey={items[index].__name__ || `item-${index}`}
                       listItemData={items[index]}
                     />
                   </div>

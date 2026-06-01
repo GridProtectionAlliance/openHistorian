@@ -1,21 +1,19 @@
-import { ScalarParameter, TabularParameter, Function, EntityGroup } from '@kusto/monaco-kusto';
+import { EntityGroup, Function, ScalarParameter, TabularParameter } from '@kusto/monaco-kusto';
 
-import {
-  DataSourceInstanceSettings,
-  DataSourceJsonData,
-  DataSourceSettings,
-  PanelData,
-  SelectableValue,
-  TimeRange,
-} from '@grafana/data';
+import { AzureDataSourceJsonData, AzureDataSourceSecureJsonData } from '@grafana/azure-sdk';
+import { DataSourceInstanceSettings, DataSourceSettings, PanelData, SelectableValue, TimeRange } from '@grafana/data';
 
+import { ResultFormat } from '../dataquery.gen';
 import Datasource from '../datasource';
 
 import { AzureLogAnalyticsMetadataTable } from './logAnalyticsMetadata';
-import { AzureMonitorQuery, ResultFormat } from './query';
+import { AzureMonitorQuery } from './query';
 
-export type AzureDataSourceSettings = DataSourceSettings<AzureDataSourceJsonData, AzureDataSourceSecureJsonData>;
-export type AzureDataSourceInstanceSettings = DataSourceInstanceSettings<AzureDataSourceJsonData>;
+export type AzureMonitorDataSourceSettings = DataSourceSettings<
+  AzureMonitorDataSourceJsonData,
+  AzureMonitorDataSourceSecureJsonData
+>;
+export type AzureMonitorDataSourceInstanceSettings = DataSourceInstanceSettings<AzureMonitorDataSourceJsonData>;
 
 export interface DatasourceValidationResult {
   status: 'success' | 'error';
@@ -23,64 +21,9 @@ export interface DatasourceValidationResult {
   title?: string;
 }
 
-/**
- * Azure clouds known to Azure Monitor.
- */
-export enum AzureCloud {
-  Public = 'AzureCloud',
-  China = 'AzureChinaCloud',
-  USGovernment = 'AzureUSGovernment',
-  None = '',
-}
-
-export type AzureAuthType = 'msi' | 'clientsecret' | 'workloadidentity' | 'currentuser';
-
-export type ConcealedSecret = symbol;
-
-interface AzureCredentialsBase {
-  authType: AzureAuthType;
-}
-
-export interface AzureManagedIdentityCredentials extends AzureCredentialsBase {
-  authType: 'msi';
-}
-
-export interface AzureWorkloadIdentityCredentials extends AzureCredentialsBase {
-  authType: 'workloadidentity';
-}
-
-export interface AzureClientSecretCredentials extends AzureCredentialsBase {
-  authType: 'clientsecret';
-  azureCloud?: string;
-  tenantId?: string;
-  clientId?: string;
-  clientSecret?: string | ConcealedSecret;
-}
-export interface AadCurrentUserCredentials extends AzureCredentialsBase {
-  authType: 'currentuser';
-  serviceCredentials?:
-    | AzureClientSecretCredentials
-    | AzureManagedIdentityCredentials
-    | AzureWorkloadIdentityCredentials;
-  serviceCredentialsEnabled?: boolean;
-}
-
-export type AzureCredentials =
-  | AadCurrentUserCredentials
-  | AzureManagedIdentityCredentials
-  | AzureClientSecretCredentials
-  | AzureWorkloadIdentityCredentials;
-
-export interface AzureDataSourceJsonData extends DataSourceJsonData {
-  cloudName: string;
-  azureAuthType?: AzureAuthType;
-
+export interface AzureMonitorDataSourceJsonData extends AzureDataSourceJsonData {
   // monitor
-  tenantId?: string;
-  clientId?: string;
   subscriptionId?: string;
-  oauthPassThru?: boolean;
-  azureCredentials?: AzureCredentials;
   basicLogsEnabled?: boolean;
 
   // logs
@@ -99,10 +42,11 @@ export interface AzureDataSourceJsonData extends DataSourceJsonData {
   appInsightsAppId?: string;
 
   enableSecureSocksProxy?: boolean;
+  timeout?: number;
+  keepCookies?: string[];
 }
 
-export interface AzureDataSourceSecureJsonData {
-  clientSecret?: string;
+export interface AzureMonitorDataSourceSecureJsonData extends AzureDataSourceSecureJsonData {
   appInsightsApiKey?: string;
 }
 
@@ -204,11 +148,14 @@ export interface AzureResourceSummaryItem {
 export interface RawAzureSubscriptionItem {
   subscriptionName: string;
   subscriptionId: string;
+  subscriptionURI: string;
+  count: number;
 }
 
 export interface RawAzureResourceGroupItem {
   resourceGroupURI: string;
   resourceGroupName: string;
+  count: number;
 }
 
 export interface RawAzureResourceItem {
@@ -285,10 +232,11 @@ export interface LegacyAzureGetMetricMetadataQuery {
 }
 
 export interface AzureGetResourceNamesQuery {
-  subscriptionId: string;
+  subscriptionId?: string;
   resourceGroup?: string;
   metricNamespace?: string;
   region?: string;
+  uri?: string;
 }
 
 export interface AzureMonitorLocations {
@@ -317,6 +265,15 @@ export interface AzureAPIResponse<T> {
   };
   status?: number;
   statusText?: string;
+}
+
+export interface AzureLogAnalyticsTable {
+  name: string;
+  description: string;
+}
+
+export interface MetadataResponse {
+  tables: AzureLogAnalyticsTable[];
 }
 
 export interface Location {
@@ -402,12 +359,8 @@ export interface ResourceGroup {
   type: string;
 }
 
-export interface Namespace {
-  classification: {
-    Custom: string;
-    Platform: string;
-    Qos: string;
-  };
+export interface MetricNamespace {
+  classification: 'Custom' | 'Platform' | 'Qos';
   id: string;
   name: string;
   properties: { metricNamespaceName: string };
@@ -476,3 +429,109 @@ export type CheatsheetQueries = {
 export type DropdownCategories = {
   [key: string]: boolean;
 };
+
+export enum QueryEditorPropertyType {
+  Number = 'number',
+  String = 'string',
+  Boolean = 'boolean',
+  DateTime = 'datetime',
+  TimeSpan = 'timeSpan',
+  Function = 'function',
+  Interval = 'interval',
+}
+
+export interface QueryEditorProperty {
+  type: QueryEditorPropertyType;
+  name: string;
+}
+
+export type QueryEditorOperatorType = string | boolean | number | SelectableValue<string>;
+export type QueryEditorOperatorValueType = QueryEditorOperatorType | QueryEditorOperatorType[];
+
+export interface QueryEditorOperator<T = QueryEditorOperatorValueType> {
+  name: string;
+  value: T;
+  labelValue?: string;
+}
+
+export interface QueryEditorOperatorDefinition {
+  value: string;
+  supportTypes: QueryEditorPropertyType[];
+  multipleValues: boolean;
+  booleanValues: boolean;
+  label?: string;
+  description?: string;
+}
+
+export enum AggregateFunctions {
+  Sum = 'sum',
+  Avg = 'avg',
+  Count = 'count',
+  Dcount = 'dcount',
+  Max = 'max',
+  Min = 'min',
+  Percentile = 'percentile',
+}
+
+export enum TablePlan {
+  Analytics = 'Analytics',
+  Basic = 'Basic',
+}
+
+export interface GetLogAnalyticsTableSuccessResponse {
+  properties: {
+    totalRetentionInDays: number;
+    archiveRetentionInDays: number;
+    lastPlanModifiedDate?: string;
+    plan: TablePlan;
+    restoredLogs?: Record<string, string | undefined>;
+    retentionInDaysAsDefault: boolean;
+    totalRetentionInDaysAsDefault: boolean;
+    schema: {
+      tableSubType: string;
+      name: string;
+      tableType: string;
+      columns: Array<Record<string, string | undefined>>;
+      standardColumns: Array<Record<string, string | undefined>>;
+      solutions: string[];
+      isTroubleshootingAllowed: boolean;
+      description?: string;
+      displayName?: string;
+      labels?: string[];
+      source?: string;
+    };
+    resultStatistics: Record<string, string | number | undefined>;
+    provisioningState: string;
+    retentionInDays: number;
+    searchResults?: Record<string, string | number | undefined>;
+    systemData?: Record<string, string | number | undefined>;
+  };
+  id: string;
+  name: string;
+  type?: string;
+}
+
+export interface GetLogAnalyticsTableErrorResponse {
+  error: {
+    target: string;
+    message: string;
+    code: string;
+  };
+}
+
+export type GetLogAnalyticsTableResponse = GetLogAnalyticsTableSuccessResponse | GetLogAnalyticsTableErrorResponse;
+
+export function instanceOfLogAnalyticsTableError(
+  response: GetLogAnalyticsTableSuccessResponse | GetLogAnalyticsTableErrorResponse
+): response is GetLogAnalyticsTableErrorResponse {
+  if (!response) {
+    return false;
+  }
+  return response.hasOwnProperty('error');
+}
+
+export interface ResourceGraphFilters {
+  subscriptions: string[];
+  types: string[];
+  locations: string[];
+}

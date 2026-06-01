@@ -2,15 +2,20 @@ import { css } from '@emotion/css';
 import { useMemo } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import {
+  useGetDashboardByUidQuery,
+  useGetLibraryElementByUidQuery,
+} from '@grafana/api-clients/rtkq/legacy/migrate-to-cloud';
 import { DataSourceInstanceSettings } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
 import { CellProps, Stack, Text, Icon, useStyles2 } from '@grafana/ui';
-import { getSvgSize } from '@grafana/ui/src/components/Icon/utils';
-import { Trans } from 'app/core/internationalization';
-import { useGetFolderQuery } from 'app/features/browse-dashboards/api/browseDashboardsAPI';
+import { getSvgSize } from '@grafana/ui/internal';
+import { useGetFolderQueryFacade } from 'app/api/clients/folder/v1beta1/hooks';
 
-import { useGetDashboardByUidQuery, useGetLibraryElementByUidQuery } from '../api';
+import { LocalPlugin } from '../../plugins/admin/types';
 
+import { iconNameForResource } from './resourceInfo';
 import { ResourceTableItem } from './types';
 
 export function NameCell(props: CellProps<ResourceTableItem>) {
@@ -37,16 +42,9 @@ function ResourceInfo({ data }: { data: ResourceTableItem }) {
       return <FolderInfo data={data} />;
     case 'LIBRARY_ELEMENT':
       return <LibraryElementInfo data={data} />;
-    case 'ALERT_RULE':
-      return null;
-    case 'CONTACT_POINT':
-      return null;
-    case 'NOTIFICATION_POLICY':
-      return null;
-    case 'NOTIFICATION_TEMPLATE':
-      return null;
-    case 'MUTE_TIMING':
-      return null;
+    // Starting from 11.4.x, new resources have both `name` and optionally a `parentName`, so we can use this catch-all component.
+    default:
+      return <BasicResourceInfo data={data} />;
   }
 }
 
@@ -103,7 +101,9 @@ function DashboardInfo({ data }: { data: ResourceTableItem }) {
         <Text italic>
           <Trans i18nKey="migrate-to-cloud.resource-table.dashboard-load-error">Unable to load dashboard</Trans>
         </Text>
-        <Text color="secondary">Dashboard {dashboardUID}</Text>
+        <Text color="secondary">
+          <Trans i18nKey="migrate-to-cloud.dashboard-info.dashboard">Dashboard {{ dashboardUID }}</Trans>
+        </Text>
       </>
     );
   }
@@ -124,7 +124,7 @@ function FolderInfo({ data }: { data: ResourceTableItem }) {
   const folderUID = data.refId;
   const skipApiCall = !!data.name && !!data.parentName;
 
-  const { data: folderData, isLoading, isError } = useGetFolderQuery(folderUID, { skip: skipApiCall });
+  const { data: folderData, isLoading, isError } = useGetFolderQueryFacade(skipApiCall ? undefined : folderUID);
 
   const folderName = data.name || folderData?.title;
   const folderParentName = data.parentName || folderData?.parents?.[folderData.parents.length - 1]?.title;
@@ -132,8 +132,14 @@ function FolderInfo({ data }: { data: ResourceTableItem }) {
   if (isError) {
     return (
       <>
-        <Text italic>Unable to load folder</Text>
-        <Text color="secondary">Folder {data.refId}</Text>
+        <Text italic>
+          <Trans i18nKey="migrate-to-cloud.folder-info.unable-to-load-folder">Unable to load folder</Trans>
+        </Text>
+        <Text color="secondary">
+          <Trans i18nKey="migrate-to-cloud.folder-info.folder" values={{ folderUid: data.refId }}>
+            Folder {'{{folderUid}}'}
+          </Trans>
+        </Text>
       </>
     );
   }
@@ -173,7 +179,7 @@ function LibraryElementInfo({ data }: { data: ResourceTableItem }) {
         </Text>
 
         <Text color="secondary">
-          <Trans i18nKey="migrate-to-cloud.resource-table.error-library-element-sub">Library Element {uid}</Trans>
+          <Trans i18nKey="migrate-to-cloud.resource-table.error-library-element-sub">Library Element {{ uid }}</Trans>
         </Text>
       </>
     );
@@ -200,20 +206,31 @@ function InfoSkeleton() {
   );
 }
 
+function BasicResourceInfo({ data }: { data: ResourceTableItem }) {
+  return (
+    <>
+      <span>{data.name}</span>
+      {data.parentName && <Text color="secondary">{data.parentName}</Text>}
+    </>
+  );
+}
+
 function ResourceIcon({ resource }: { resource: ResourceTableItem }) {
   const styles = useStyles2(getIconStyles);
   const datasource = useDatasource(resource.type === 'DATASOURCE' ? resource.refId : undefined);
+  const pluginLogo = usePluginLogo(resource.type === 'PLUGIN' ? resource.plugin : undefined);
 
-  if (resource.type === 'DASHBOARD') {
-    return <Icon size="xl" name="dashboard" />;
-  } else if (resource.type === 'FOLDER') {
-    return <Icon size="xl" name="folder" />;
-  } else if (resource.type === 'DATASOURCE' && datasource?.meta?.info?.logos?.small) {
+  // Handle special cases for icons.
+  if (resource.type === 'DATASOURCE' && datasource?.meta?.info?.logos?.small) {
     return <img className={styles.icon} src={datasource.meta.info.logos.small} alt="" />;
-  } else if (resource.type === 'DATASOURCE') {
-    return <Icon size="xl" name="database" />;
-  } else if (resource.type === 'LIBRARY_ELEMENT') {
-    return <Icon size="xl" name="library-panel" />;
+  } else if (resource.type === 'PLUGIN' && pluginLogo) {
+    return <img className={styles.icon} src={pluginLogo} alt="" />;
+  } else {
+    // Generic icons for all other resource types.
+    const iconName = iconNameForResource(resource.type);
+    if (iconName) {
+      return <Icon size="xl" name={iconName} />;
+    }
   }
 
   return undefined;
@@ -241,4 +258,15 @@ function useDatasource(datasourceUID: string | undefined): DataSourceInstanceSet
   }, [datasourceUID]);
 
   return datasource;
+}
+
+function usePluginLogo(plugin: LocalPlugin | undefined): string | undefined {
+  const logos = useMemo(() => {
+    if (!plugin) {
+      return undefined;
+    }
+    return plugin?.info?.logos;
+  }, [plugin]);
+
+  return logos?.small;
 }

@@ -7,14 +7,15 @@ import InfiniteLoader from 'react-window-infinite-loader';
 import { Observable } from 'rxjs';
 
 import { Field, GrafanaTheme2 } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
+import { reportInteraction } from '@grafana/runtime';
 import { TableCellHeight } from '@grafana/schema';
 import { useStyles2, useTheme2 } from '@grafana/ui';
-import { TableCell } from '@grafana/ui/src/components/Table/TableCell';
-import { useTableStyles } from '@grafana/ui/src/components/Table/styles';
+import { useTableStyles, TableCell } from '@grafana/ui/internal';
 import { useCustomFlexLayout } from 'app/features/browse-dashboards/components/customFlexTableLayout';
 
 import { useSearchKeyboardNavigation } from '../../hooks/useSearchKeyboardSelection';
-import { QueryResponse } from '../../service';
+import { QueryResponse } from '../../service/types';
 import { SelectionChecker, SelectionToggle } from '../selection';
 
 import { generateColumns } from './columns';
@@ -30,6 +31,7 @@ export type SearchResultsProps = {
   onDatasourceChange?: (datasource?: string) => void;
   onClickItem?: (event: React.MouseEvent<HTMLElement>) => void;
   keyboardEvents: Observable<React.KeyboardEvent>;
+  trackingSource?: string;
 };
 
 export type TableColumn = Column & {
@@ -50,6 +52,7 @@ export const SearchResultsTable = React.memo(
     onDatasourceChange,
     onClickItem,
     keyboardEvents,
+    trackingSource,
   }: SearchResultsProps) => {
     const styles = useStyles2(getStyles);
     const columnStyles = useStyles2(getColumnStyles);
@@ -141,6 +144,35 @@ export const SearchResultsTable = React.memo(
         return (
           <div key={key} {...rowProps} className={className}>
             {row.cells.map((cell: Cell, index: number) => {
+              const href = onClickItem ? url : undefined;
+
+              let userProps = {
+                href,
+                onClick: onClickItem,
+              };
+
+              if (cell.column.id === 'column-name' && href) {
+                const item = response.view.get(rowIndex);
+                const itemKind = item.kind;
+                const parent = item.location || 'general';
+                const parentType = parent === 'general' ? 'general' : 'folder';
+
+                userProps.onClick = (evt: React.MouseEvent<HTMLElement>) => {
+                  try {
+                    reportInteraction('grafana_browse_dashboards_page_click_list_item', {
+                      itemKind: itemKind,
+                      parent: parentType,
+                      source: trackingSource,
+                    });
+                  } catch (e) {
+                    // ignore analytics errors
+                  }
+                  if (onClickItem) {
+                    onClickItem(evt);
+                  }
+                };
+              }
+
               return (
                 <TableCell
                   key={index}
@@ -148,7 +180,7 @@ export const SearchResultsTable = React.memo(
                   cell={cell}
                   columnIndex={index}
                   columnCount={row.cells.length}
-                  userProps={{ href: url, onClick: onClickItem }}
+                  userProps={userProps}
                   frame={response.view.dataFrame}
                 />
               );
@@ -156,24 +188,23 @@ export const SearchResultsTable = React.memo(
           </div>
         );
       },
-      [
-        rows,
-        prepareRow,
-        response.view.fields.url?.values,
-        highlightIndex,
-        styles,
-        tableStyles,
-        onClickItem,
-        response.view.dataFrame,
-      ]
+      [rows, prepareRow, highlightIndex, styles, tableStyles, onClickItem, response.view, trackingSource]
     );
 
     if (!rows.length) {
-      return <div className={styles.noData}>No data</div>;
+      return (
+        <div className={styles.noData}>
+          <Trans i18nKey="search.search-results-table.no-data">No values</Trans>
+        </div>
+      );
     }
 
     return (
-      <div {...getTableProps()} aria-label="Search results table" role="table">
+      <div
+        {...getTableProps()}
+        aria-label={t('search.search-results-table.aria-label-search-results-table', 'Search results table')}
+        role="table"
+      >
         {headerGroups.map((headerGroup) => {
           const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps({
             style: { width },
@@ -225,47 +256,47 @@ export const SearchResultsTable = React.memo(
 SearchResultsTable.displayName = 'SearchResultsTable';
 
 const getStyles = (theme: GrafanaTheme2) => {
-  const rowHoverBg = theme.colors.emphasize(theme.colors.background.primary, 0.03);
+  const rowHoverBg = theme.colors.action.hover;
 
   return {
-    noData: css`
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-    `,
-    headerCell: css`
-      align-items: center;
-      display: flex;
-      overflo: hidden;
-      padding: ${theme.spacing(1)};
-    `,
-    headerRow: css`
-      background-color: ${theme.colors.background.secondary};
-      display: flex;
-      gap: ${theme.spacing(1)};
-      height: ${ROW_HEIGHT}px;
-    `,
-    selectedRow: css`
-      background-color: ${rowHoverBg};
-      box-shadow: inset 3px 0px ${theme.colors.primary.border};
-    `,
-    rowContainer: css`
-      display: flex;
-      gap: ${theme.spacing(1)};
-      height: ${ROW_HEIGHT}px;
-      label: row;
-      &:hover {
-        background-color: ${rowHoverBg};
-      }
+    noData: css({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+    }),
+    headerCell: css({
+      alignItems: 'center',
+      display: 'flex',
+      overflo: 'hidden',
+      padding: theme.spacing(1),
+    }),
+    headerRow: css({
+      backgroundColor: theme.colors.background.secondary,
+      display: 'flex',
+      gap: theme.spacing(1),
+      height: `${ROW_HEIGHT}px`,
+    }),
+    selectedRow: css({
+      backgroundColor: rowHoverBg,
+      boxShadow: `inset 3px 0px ${theme.colors.primary.border}`,
+    }),
+    rowContainer: css({
+      display: 'flex',
+      gap: theme.spacing(1),
+      height: `${ROW_HEIGHT}px`,
+      label: 'row',
+      '&:hover': {
+        backgroundColor: rowHoverBg,
+      },
 
-      &:not(:hover) div[role='cell'] {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    `,
+      "&:not(:hover) div[role='cell']": {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+      },
+    }),
   };
 };
 
@@ -278,53 +309,54 @@ const getColumnStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       alignItems: 'center',
     }),
-    nameCellStyle: css`
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: text;
-      white-space: nowrap;
-    `,
+    nameCellStyle: css({
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      userSelect: 'text',
+      whiteSpace: 'nowrap',
+    }),
     typeCell: css({
       gap: theme.spacing(0.5),
     }),
-    typeIcon: css`
-      fill: ${theme.colors.text.secondary};
-    `,
-    datasourceItem: css`
-      span {
-        &:hover {
-          color: ${theme.colors.text.link};
-        }
-      }
-    `,
-    missingTitleText: css`
-      color: ${theme.colors.text.disabled};
-      font-style: italic;
-    `,
-    invalidDatasourceItem: css`
-      color: ${theme.colors.error.main};
-      text-decoration: line-through;
-    `,
+    typeIcon: css({
+      fill: theme.colors.text.secondary,
+    }),
+    datasourceItem: css({
+      span: {
+        '&:hover': {
+          color: theme.colors.text.link,
+        },
+      },
+    }),
+    missingTitleText: css({
+      color: theme.colors.text.disabled,
+      fontStyle: 'italic',
+    }),
+    invalidDatasourceItem: css({
+      color: theme.colors.error.main,
+      textDecoration: 'line-through',
+    }),
     locationContainer: css({
       display: 'flex',
       flexWrap: 'nowrap',
       gap: theme.spacing(1),
+      // No overflow:hidden here — it would clip the focus ring (box-shadow) from child <a> elements.
+      // The parent cell already clips the container width. Each locationItem handles its own truncation.
+    }),
+    locationItem: css({
+      alignItems: 'center',
+      color: theme.colors.text.secondary,
+      display: 'flex',
+      flexWrap: 'nowrap',
+      gap: '4px',
       overflow: 'hidden',
     }),
-    locationItem: css`
-      align-items: center;
-      color: ${theme.colors.text.secondary};
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 4px;
-      overflow: hidden;
-    `,
-    explainItem: css`
-      cursor: pointer;
-    `,
-    tagList: css`
-      justify-content: flex-start;
-      flex-wrap: nowrap;
-    `,
+    explainItem: css({
+      cursor: 'pointer',
+    }),
+    tagList: css({
+      justifyContent: 'flex-start',
+      flexWrap: 'nowrap',
+    }),
   };
 };

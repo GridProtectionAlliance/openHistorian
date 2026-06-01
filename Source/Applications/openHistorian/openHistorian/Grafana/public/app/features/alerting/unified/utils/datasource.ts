@@ -1,58 +1,88 @@
 import { DataSourceInstanceSettings, DataSourceJsonData, DataSourceSettings } from '@grafana/data';
-import { getDataSourceSrv } from '@grafana/runtime';
+import { config, getDataSourceSrv } from '@grafana/runtime';
 import { contextSrv } from 'app/core/services/context_srv';
+import { PERMISSIONS_TIME_INTERVALS } from 'app/features/alerting/unified/components/mute-timings/permissions';
+import { PERMISSIONS_NOTIFICATION_POLICIES } from 'app/features/alerting/unified/components/notification-policies/permissions';
 import {
   AlertManagerDataSourceJsonData,
   AlertManagerImplementation,
   AlertmanagerChoice,
 } from 'app/plugins/datasource/alertmanager/types';
-import { AccessControlAction } from 'app/types';
-import { RulesSource } from 'app/types/unified-alerting';
-import { PromApplication, RulesSourceApplication } from 'app/types/unified-alerting-dto';
+import { AccessControlAction } from 'app/types/accessControl';
+import {
+  DataSourceRulesSourceIdentifier as DataSourceRulesSourceIdentifier,
+  GrafanaRulesSourceIdentifier,
+  GrafanaRulesSourceSymbol,
+  RuleIdentifier,
+  RulesSource,
+  RulesSourceIdentifier,
+  RulesSourceUid,
+} from 'app/types/unified-alerting';
+import grafanaIconSvg from 'img/grafana_icon.svg';
 
 import { alertmanagerApi } from '../api/alertmanagerApi';
 import { PERMISSIONS_CONTACT_POINTS } from '../components/contact-points/permissions';
+import { PERMISSIONS_TEMPLATES } from '../components/templates/permissions';
 import { useAlertManagersByPermission } from '../hooks/useAlertManagerSources';
 import { isAlertManagerWithConfigAPI } from '../state/AlertmanagerContext';
 
 import { instancesPermissions, notificationsPermissions, silencesPermissions } from './access-control';
+import { isExtraConfig } from './alertmanager/extraConfigs';
 import { getAllDataSources } from './config';
+import { isGrafanaRuleIdentifier } from './rules';
 
 export const GRAFANA_RULES_SOURCE_NAME = 'grafana';
 export const GRAFANA_DATASOURCE_NAME = '-- Grafana --';
 
+export const GrafanaRulesSource: GrafanaRulesSourceIdentifier = {
+  uid: GrafanaRulesSourceSymbol,
+  name: GRAFANA_RULES_SOURCE_NAME,
+  ruleSourceType: 'grafana',
+};
+
+/**
+ * @deprecated use "SupportedRulesSourceType" and related types instead
+ */
 export enum DataSourceType {
   Alertmanager = 'alertmanager',
   Loki = 'loki',
   Prometheus = 'prometheus',
+  AmazonPrometheus = 'grafana-amazonprometheus-datasource',
+  AzurePrometheus = 'grafana-azureprometheus-datasource',
 }
 
 export interface AlertManagerDataSource {
   name: string;
+  displayName?: string;
   imgUrl: string;
   meta?: DataSourceInstanceSettings['meta'];
   hasConfigurationAPI?: boolean;
   handleGrafanaManagedAlerts?: boolean;
 }
 
-export const RulesDataSourceTypes: string[] = [DataSourceType.Loki, DataSourceType.Prometheus];
-
 export function getRulesDataSources() {
-  if (!contextSrv.hasPermission(AccessControlAction.AlertingRuleExternalRead)) {
+  const hasReadPermission = contextSrv.hasPermission(AccessControlAction.AlertingRuleExternalRead);
+  const hasWritePermission = contextSrv.hasPermission(AccessControlAction.AlertingRuleExternalWrite);
+  if (!hasReadPermission && !hasWritePermission) {
     return [];
   }
 
   return getAllDataSources()
-    .filter((ds) => RulesDataSourceTypes.includes(ds.type) && ds.jsonData.manageAlerts !== false)
+    .filter((ds) => isSupportedExternalRulesSourceType(ds.type))
+    .filter((ds) => isDataSourceManagingAlerts(ds))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getRulesSourceUniqueKey(rulesSource: RulesSource): string {
-  return isGrafanaRulesSource(rulesSource) ? 'grafana' : (rulesSource.uid ?? rulesSource.id);
+  return isGrafanaRulesSource(rulesSource) ? 'grafana' : rulesSource.uid;
 }
 
 export function getRulesDataSource(rulesSourceName: string) {
   return getRulesDataSources().find((x) => x.name === rulesSourceName);
+}
+
+export function getRulesDataSourceByUID(uid: string) {
+  return getRulesDataSources().find((x) => x.uid === uid);
 }
 
 export function getAlertManagerDataSources() {
@@ -85,7 +115,7 @@ export function isAlertmanagerDataSourceInterestedInAlerts(
 
 const grafanaAlertManagerDataSource: AlertManagerDataSource = {
   name: GRAFANA_RULES_SOURCE_NAME,
-  imgUrl: 'public/img/grafana_icon.svg',
+  imgUrl: grafanaIconSvg,
   hasConfigurationAPI: true,
 };
 
@@ -151,6 +181,9 @@ export function getAlertManagerDataSourcesByPermission(permission: 'instance' | 
   const builtinAlertmanagerPermissions = [
     ...Object.values(permissions).flatMap((permissions) => permissions.grafana),
     ...PERMISSIONS_CONTACT_POINTS,
+    ...PERMISSIONS_NOTIFICATION_POLICIES,
+    ...PERMISSIONS_TEMPLATES,
+    ...PERMISSIONS_TIME_INTERVALS,
   ];
 
   const hasPermissionsForInternalAlertmanager = builtinAlertmanagerPermissions.some((permission) =>
@@ -176,17 +209,6 @@ export function getAlertManagerDataSourcesByPermission(permission: 'instance' | 
   return { availableInternalDataSources, availableExternalDataSources };
 }
 
-export function getLotexDataSourceByName(dataSourceName: string): DataSourceInstanceSettings {
-  const dataSource = getDataSourceByName(dataSourceName);
-  if (!dataSource) {
-    throw new Error(`Data source ${dataSourceName} not found`);
-  }
-  if (dataSource.type !== DataSourceType.Loki && dataSource.type !== DataSourceType.Prometheus) {
-    throw new Error(`Unexpected data source type ${dataSource.type}`);
-  }
-  return dataSource;
-}
-
 export function getAllRulesSourceNames(): string[] {
   const availableRulesSources: string[] = getRulesDataSources().map((r) => r.name);
 
@@ -197,11 +219,19 @@ export function getAllRulesSourceNames(): string[] {
   return availableRulesSources;
 }
 
+export function getExternalRulesSources(): DataSourceRulesSourceIdentifier[] {
+  return getRulesDataSources().map((ds) => ({
+    name: ds.name,
+    uid: ds.uid,
+    ruleSourceType: 'datasource',
+  }));
+}
+
 export function getAllRulesSources(): RulesSource[] {
   const availableRulesSources: RulesSource[] = getRulesDataSources();
 
   if (contextSrv.hasPermission(AccessControlAction.AlertingRuleRead)) {
-    availableRulesSources.push(GRAFANA_RULES_SOURCE_NAME);
+    availableRulesSources.unshift(GRAFANA_RULES_SOURCE_NAME);
   }
 
   return availableRulesSources;
@@ -240,6 +270,10 @@ export function getDataSourceByName(name: string): DataSourceInstanceSettings<Da
   return getAllDataSources().find((source) => source.name === name);
 }
 
+export function getDataSourceByUid(dsUid: string): DataSourceInstanceSettings<DataSourceJsonData> | undefined {
+  return getAllDataSources().find((source) => source.uid === dsUid);
+}
+
 export function getAlertmanagerDataSourceByName(name: string) {
   return getAllDataSources()
     .filter(isAlertmanagerDataSourceInstance)
@@ -253,24 +287,34 @@ export function getRulesSourceByName(name: string): RulesSource | undefined {
   return getDataSourceByName(name);
 }
 
-export function getDatasourceAPIId(dataSourceName: string) {
-  if (dataSourceName === GRAFANA_RULES_SOURCE_NAME) {
-    return GRAFANA_RULES_SOURCE_NAME;
-  }
-  const ds = getDataSourceByName(dataSourceName);
-  if (!ds) {
-    throw new Error(`Datasource "${dataSourceName}" not found`);
-  }
-  return String(ds.id);
-}
-
 export function getDatasourceAPIUid(dataSourceName: string) {
   if (dataSourceName === GRAFANA_RULES_SOURCE_NAME) {
     return GRAFANA_RULES_SOURCE_NAME;
   }
+
+  if (isExtraConfig(dataSourceName)) {
+    return dataSourceName;
+  }
+
   const ds = getDataSourceByName(dataSourceName);
   if (!ds) {
     throw new Error(`Datasource "${dataSourceName}" not found`);
+  }
+  return ds.uid;
+}
+
+export function getDataSourceUID(rulesSourceIdentifier: { rulesSourceName: string } | { uid: RulesSourceUid }) {
+  if ('uid' in rulesSourceIdentifier) {
+    return rulesSourceIdentifier.uid;
+  }
+
+  if (rulesSourceIdentifier.rulesSourceName === GRAFANA_RULES_SOURCE_NAME) {
+    return GrafanaRulesSourceSymbol;
+  }
+
+  const ds = getRulesDataSource(rulesSourceIdentifier.rulesSourceName);
+  if (!ds) {
+    return undefined;
   }
   return ds.uid;
 }
@@ -287,22 +331,65 @@ export function getDefaultOrFirstCompatibleDataSource(): DataSourceInstanceSetti
 }
 
 export function isDataSourceManagingAlerts(ds: DataSourceInstanceSettings<DataSourceJsonData>) {
-  return ds.jsonData.manageAlerts !== false; //if this prop is undefined it defaults to true
+  return ds.jsonData.manageAlerts ?? config.defaultDatasourceManageAlertsUiToggle;
 }
 
-export function getApplicationFromRulesSource(rulesSource: RulesSource): RulesSourceApplication {
-  if (isGrafanaRulesSource(rulesSource)) {
-    return 'grafana';
+export function isDataSourceAllowedAsRecordingRulesTarget(ds: DataSourceInstanceSettings<DataSourceJsonData>) {
+  return ds.jsonData.allowAsRecordingRulesTarget !== false; // if this prop is undefined it defaults to true
+}
+
+export function ruleIdentifierToRuleSourceIdentifier(ruleIdentifier: RuleIdentifier): RulesSourceIdentifier {
+  if (isGrafanaRuleIdentifier(ruleIdentifier)) {
+    return { uid: GrafanaRulesSourceSymbol, name: GRAFANA_RULES_SOURCE_NAME, ruleSourceType: 'grafana' };
   }
 
-  // @TODO use buildinfo
-  if ('prometheusType' in rulesSource.jsonData) {
-    return rulesSource.jsonData?.prometheusType ?? PromApplication.Prometheus;
-  }
+  return {
+    uid: getDatasourceAPIUid(ruleIdentifier.ruleSourceName),
+    name: ruleIdentifier.ruleSourceName,
+    ruleSourceType: 'datasource',
+  };
+}
 
-  if (rulesSource.type === 'loki') {
-    return 'loki';
-  }
+/**
+ * Check if the given type is a supported external Prometheus flavored rules source type.
+ */
+export function isSupportedExternalPrometheusFlavoredRulesSourceType(
+  type: string
+): type is SupportedExternalPrometheusFlavoredRulesSourceType {
+  return SUPPORTED_EXTERNAL_PROMETHEUS_FLAVORED_RULE_SOURCE_TYPES.find((t) => t === type) !== undefined;
+}
+export const SUPPORTED_EXTERNAL_PROMETHEUS_FLAVORED_RULE_SOURCE_TYPES = [
+  'prometheus',
+  'grafana-amazonprometheus-datasource',
+  'grafana-azureprometheus-datasource',
+] as const;
+export type SupportedExternalPrometheusFlavoredRulesSourceType =
+  (typeof SUPPORTED_EXTERNAL_PROMETHEUS_FLAVORED_RULE_SOURCE_TYPES)[number]; // infer the type from the tuple above so we can maintain a single source of truth
 
-  return PromApplication.Prometheus; // assume Prometheus if nothing matches
+/**
+ * Check if the given type is a supported external rules source type. Includes Loki and Prometheus flavored types.
+ */
+export function isSupportedExternalRulesSourceType(type: string): type is SupportedExternalRulesSourceType {
+  return SUPPORTED_EXTERNAL_RULE_SOURCE_TYPES.find((t) => t === type) !== undefined;
+}
+export type SupportedExternalRulesSourceType = 'loki' | SupportedExternalPrometheusFlavoredRulesSourceType;
+export const SUPPORTED_EXTERNAL_RULE_SOURCE_TYPES = [
+  'loki',
+  ...SUPPORTED_EXTERNAL_PROMETHEUS_FLAVORED_RULE_SOURCE_TYPES,
+] as const;
+
+/**
+ * Check if the given type is a supported rules source type. Includes "grafana" for Grafana Managed Rules.
+ */
+export function isSupportedRulesSourceType(type: string): type is SupportedRulesSourceType {
+  return type === GRAFANA_RULES_SOURCE_NAME || isSupportedExternalRulesSourceType(type);
+}
+export type SupportedRulesSourceType = 'grafana' | SupportedExternalRulesSourceType;
+export const SUPPORTED_RULE_SOURCE_TYPES = [
+  GRAFANA_RULES_SOURCE_NAME,
+  ...SUPPORTED_EXTERNAL_RULE_SOURCE_TYPES,
+] as const satisfies string[];
+
+export function isValidRecordingRulesTarget(ds: DataSourceInstanceSettings<DataSourceJsonData>): boolean {
+  return isSupportedExternalPrometheusFlavoredRulesSourceType(ds.type) && isDataSourceAllowedAsRecordingRulesTarget(ds);
 }

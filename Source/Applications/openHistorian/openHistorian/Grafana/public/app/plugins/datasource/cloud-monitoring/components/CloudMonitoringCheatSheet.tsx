@@ -1,15 +1,12 @@
 import { css } from '@emotion/css';
-import { PureComponent } from 'react';
+import { memo } from 'react';
 
 import { QueryEditorHelpProps } from '@grafana/data';
 
 import { CloudMonitoringQuery } from '../types/query';
 
-export default class CloudMonitoringCheatSheet extends PureComponent<
-  QueryEditorHelpProps<CloudMonitoringQuery>,
-  { userExamples: string[] }
-> {
-  render() {
+const CloudMonitoringCheatSheet = memo(
+  ({ query, datasource, onClickExample }: QueryEditorHelpProps<CloudMonitoringQuery>) => {
     return (
       <div>
         <h2>Cloud Monitoring alias patterns</h2>
@@ -27,9 +24,9 @@ export default class CloudMonitoringCheatSheet extends PureComponent<
           <span>Patterns:</span>
           <br />
           <ul
-            className={css`
-              list-style: none;
-            `}
+            className={css({
+              listStyle: 'none',
+            })}
           >
             <li>
               <code>{`${'{{metric.type}}'}`}</code> = metric type e.g. compute.googleapis.com/instance/cpu/usage_time
@@ -75,4 +72,8 @@ export default class CloudMonitoringCheatSheet extends PureComponent<
       </div>
     );
   }
-}
+);
+
+CloudMonitoringCheatSheet.displayName = 'CloudMonitoringCheatSheet';
+
+export default CloudMonitoringCheatSheet;

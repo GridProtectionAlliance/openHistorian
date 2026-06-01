@@ -1,14 +1,11 @@
 import { useAsyncFn } from 'react-use';
 import { lastValueFrom } from 'rxjs';
 
-import { DataSourceInstanceSettings } from '@grafana/data';
-import { getDataSourceSrv, FetchResponse } from '@grafana/runtime';
+import { getDataSourceSrv, FetchResponse, CorrelationData, CorrelationsData } from '@grafana/runtime';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 
 import {
   Correlation,
-  CorrelationExternal,
-  CorrelationQuery,
   CreateCorrelationParams,
   CreateCorrelationResponse,
   GetCorrelationsParams,
@@ -26,23 +23,7 @@ export interface CorrelationsResponse {
   totalCount: number;
 }
 
-export type CorrelationData =
-  | (Omit<CorrelationExternal, 'sourceUID'> & {
-      source: DataSourceInstanceSettings;
-    })
-  | (Omit<CorrelationQuery, 'sourceUID' | 'targetUID'> & {
-      source: DataSourceInstanceSettings;
-      target: DataSourceInstanceSettings;
-    });
-
-export interface CorrelationsData {
-  correlations: CorrelationData[];
-  page: number;
-  limit: number;
-  totalCount: number;
-}
-
-const toEnrichedCorrelationData = ({ sourceUID, ...correlation }: Correlation): CorrelationData | undefined => {
+export const toEnrichedCorrelationData = ({ sourceUID, ...correlation }: Correlation): CorrelationData | undefined => {
   const sourceDatasource = getDataSourceSrv().getInstanceSettings(sourceUID);
   const targetDatasource =
     correlation.type === 'query' ? getDataSourceSrv().getInstanceSettings(correlation.targetUID) : undefined;
@@ -109,8 +90,8 @@ export const useCorrelations = () => {
   const { backend } = useGrafana();
 
   const [getInfo, get] = useAsyncFn<(params: GetCorrelationsParams) => Promise<CorrelationsData>>(
-    (params) =>
-      lastValueFrom(
+    async (params) => {
+      return lastValueFrom(
         backend.fetch<CorrelationsResponse>({
           url: '/api/datasources/correlations',
           params: { page: params.page },
@@ -119,13 +100,15 @@ export const useCorrelations = () => {
         })
       )
         .then(getData)
-        .then(toEnrichedCorrelationsData),
+        .then(toEnrichedCorrelationsData);
+    },
+
     [backend]
   );
 
   const [createInfo, create] = useAsyncFn<(params: CreateCorrelationParams) => Promise<CorrelationData>>(
-    ({ sourceUID, ...correlation }) =>
-      backend
+    async ({ sourceUID, ...correlation }) => {
+      return backend
         .post<CreateCorrelationResponse>(`/api/datasources/uid/${sourceUID}/correlations`, correlation)
         .then((response) => {
           const enrichedCorrelation = toEnrichedCorrelationData(response.result);
@@ -134,7 +117,8 @@ export const useCorrelations = () => {
           } else {
             throw new Error('invalid sourceUID');
           }
-        }),
+        });
+    },
     [backend]
   );
 

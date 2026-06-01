@@ -1,32 +1,44 @@
-import { config } from '@grafana/runtime';
+import { config, setBackendSrv } from '@grafana/runtime';
+import { setupMockServer } from '@grafana/test-utils/server';
+import { backendSrv } from 'app/core/services/backend_srv';
 import { DashboardScene } from 'app/features/dashboard-scene/scene/DashboardScene';
 
-import { scopesDashboardsScene, scopesSelectorScene } from '../instance';
+import { ScopesService } from '../ScopesService';
 
 import { enterEditMode, openSelector, toggleDashboards } from './utils/actions';
-import { expectDashboardsClosed, expectDashboardsDisabled, expectScopesSelectorClosed } from './utils/assertions';
-import { getDatasource, getInstanceSettings, getMock } from './utils/mocks';
+import {
+  expectDashboardsClosed,
+  expectDashboardsDisabled,
+  expectScopesSelectorClosed,
+  expectScopesSelectorDisabled,
+} from './utils/assertions';
+import { getDatasource, getInstanceSettings } from './utils/mocks';
 import { renderDashboard, resetScenes } from './utils/render';
 
 jest.mock('@grafana/runtime', () => ({
   __esModule: true,
   ...jest.requireActual('@grafana/runtime'),
   useChromeHeaderHeight: jest.fn(),
-  getBackendSrv: () => ({ get: getMock }),
   getDataSourceSrv: () => ({ get: getDatasource, getInstanceSettings }),
   usePluginLinks: jest.fn().mockReturnValue({ links: [] }),
 }));
 
+setBackendSrv(backendSrv);
+setupMockServer();
+
 describe('View mode', () => {
   let dashboardScene: DashboardScene;
+  let scopesService: ScopesService;
 
   beforeAll(() => {
     config.featureToggles.scopeFilters = true;
     config.featureToggles.groupByVariable = true;
   });
 
-  beforeEach(() => {
-    dashboardScene = renderDashboard();
+  beforeEach(async () => {
+    const renderResult = await renderDashboard();
+    dashboardScene = renderResult.scene;
+    scopesService = renderResult.scopesService;
   });
 
   afterEach(async () => {
@@ -35,8 +47,8 @@ describe('View mode', () => {
 
   it('Enters view mode', async () => {
     await enterEditMode(dashboardScene);
-    expect(scopesSelectorScene?.state?.isReadOnly).toEqual(true);
-    expect(scopesDashboardsScene?.state?.isPanelOpened).toEqual(false);
+    expect(scopesService.state.readOnly).toEqual(true);
+    expect(scopesService.state.drawerOpened).toEqual(false);
   });
 
   it('Closes selector on enter', async () => {
@@ -51,13 +63,12 @@ describe('View mode', () => {
     expectDashboardsClosed();
   });
 
-  it('Does not open selector when view mode is active', async () => {
+  it('Does not show selector when view mode is active', async () => {
     await enterEditMode(dashboardScene);
-    await openSelector();
-    expectScopesSelectorClosed();
+    expectScopesSelectorDisabled();
   });
 
-  it('Disables the expand button when view mode is active', async () => {
+  it('Does not show the expand button when view mode is active', async () => {
     await enterEditMode(dashboardScene);
     expectDashboardsDisabled();
   });

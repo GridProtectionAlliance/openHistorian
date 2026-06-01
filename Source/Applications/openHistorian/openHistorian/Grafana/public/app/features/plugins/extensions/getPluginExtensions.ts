@@ -1,20 +1,23 @@
 import { isString } from 'lodash';
+import { combineLatest, from, map, Observable, switchMap } from 'rxjs';
 
 import {
-  type PluginExtension,
   PluginExtensionTypes,
+  type PluginExtension,
   type PluginExtensionLink,
   type PluginExtensionComponent,
 } from '@grafana/data';
-import { GetPluginExtensions } from '@grafana/runtime';
+import { type GetObservablePluginLinks, type GetObservablePluginComponents } from '@grafana/runtime/internal';
 
+import { log } from './logs/log';
 import { AddedComponentRegistryItem } from './registry/AddedComponentsRegistry';
 import { AddedLinkRegistryItem } from './registry/AddedLinksRegistry';
 import { RegistryType } from './registry/Registry';
+import { getPluginExtensionRegistries } from './registry/setup';
 import type { PluginExtensionRegistries } from './registry/types';
+import { GetExtensions, GetExtensionsOptions, GetPluginExtensions } from './types';
 import {
   getReadOnlyProxy,
-  logWarning,
   generateExtensionId,
   wrapWithPluginContext,
   getLinkExtensionOnClick,
@@ -22,19 +25,53 @@ import {
   getLinkExtensionPathWithTracking,
 } from './utils';
 
-type GetExtensions = ({
-  context,
-  extensionPointId,
-  limitPerPlugin,
-  addedLinksRegistry,
-  addedComponentsRegistry,
-}: {
-  context?: object | Record<string | symbol, unknown>;
-  extensionPointId: string;
-  limitPerPlugin?: number;
-  addedComponentsRegistry: RegistryType<AddedComponentRegistryItem[]> | undefined;
-  addedLinksRegistry: RegistryType<AddedLinkRegistryItem[]> | undefined;
-}) => { extensions: PluginExtension[] };
+/**
+ * Returns an observable that emits plugin extensions whenever the core extensions registries change.
+ * The observable will emit the initial state of the extensions and then emit again whenever
+ * either the added components registry or the added links registry changes.
+ *
+ * @param options - The options for getting plugin extensions
+ * @returns An Observable that emits the plugin extensions for the given extension point any time the registries change
+ */
+
+export const getObservablePluginExtensions = (
+  options: Omit<GetExtensionsOptions, 'addedComponentsRegistry' | 'addedLinksRegistry'>
+): Observable<ReturnType<GetExtensions>> => {
+  const { extensionPointId } = options;
+
+  return from(getPluginExtensionRegistries()).pipe(
+    switchMap((registries) =>
+      combineLatest([
+        registries.addedComponentsRegistry.asObservableSlice((state) => state[extensionPointId]),
+        registries.addedLinksRegistry.asObservableSlice((state) => state[extensionPointId]),
+      ]).pipe(
+        map(([components, links]) =>
+          getPluginExtensions({
+            ...options,
+            addedComponentsRegistry: {
+              [extensionPointId]: components,
+            },
+            addedLinksRegistry: {
+              [extensionPointId]: links,
+            },
+          })
+        )
+      )
+    )
+  );
+};
+
+export const getObservablePluginLinks: GetObservablePluginLinks = (options) => {
+  return getObservablePluginExtensions(options).pipe(
+    map((value) => value.extensions.filter((extension) => extension.type === PluginExtensionTypes.link))
+  );
+};
+
+export const getObservablePluginComponents: GetObservablePluginComponents = (options) => {
+  return getObservablePluginExtensions(options).pipe(
+    map((value) => value.extensions.filter((extension) => extension.type === PluginExtensionTypes.component))
+  );
+};
 
 export function createPluginExtensionsGetter(registries: PluginExtensionRegistries): GetPluginExtensions {
   let addedComponentsRegistry: RegistryType<AddedComponentRegistryItem[]>;
@@ -78,8 +115,16 @@ export const getPluginExtensions: GetExtensions = ({
         extensionsByPlugin[pluginId] = 0;
       }
 
+      const linkLog = log.child({
+        pluginId,
+        extensionPointId,
+        path: addedLink.path ?? '',
+        title: addedLink.title,
+        description: addedLink.description ?? '',
+        onClick: typeof addedLink.onClick,
+      });
       // Run the configure() function with the current context, and apply the ovverides
-      const overrides = getLinkExtensionOverrides(pluginId, addedLink, frozenContext);
+      const overrides = getLinkExtensionOverrides(pluginId, addedLink, linkLog, frozenContext);
 
       // configure() returned an `undefined` -> hide the extension
       if (addedLink.configure && overrides === undefined) {
@@ -91,21 +136,25 @@ export const getPluginExtensions: GetExtensions = ({
         id: generateExtensionId(pluginId, extensionPointId, addedLink.title),
         type: PluginExtensionTypes.link,
         pluginId: pluginId,
-        onClick: getLinkExtensionOnClick(pluginId, extensionPointId, addedLink, frozenContext),
+        onClick: getLinkExtensionOnClick(pluginId, extensionPointId, addedLink, linkLog, frozenContext),
 
         // Configurable properties
         icon: overrides?.icon || addedLink.icon,
         title: overrides?.title || addedLink.title,
-        description: overrides?.description || addedLink.description,
+        description: overrides?.description || addedLink.description || '',
         path: isString(path) ? getLinkExtensionPathWithTracking(pluginId, path, extensionPointId) : undefined,
         category: overrides?.category || addedLink.category,
+        openInNewTab: overrides?.openInNewTab ?? addedLink.openInNewTab,
       };
 
       extensions.push(extension);
       extensionsByPlugin[pluginId] += 1;
     } catch (error) {
       if (error instanceof Error) {
-        logWarning(error.message);
+        log.error(error.message, {
+          stack: error.stack ?? '',
+          message: error.message,
+        });
       }
     }
   }
@@ -120,13 +169,25 @@ export const getPluginExtensions: GetExtensions = ({
     if (extensionsByPlugin[addedComponent.pluginId] === undefined) {
       extensionsByPlugin[addedComponent.pluginId] = 0;
     }
+
+    const componentLog = log.child({
+      title: addedComponent.title,
+      description: addedComponent.description ?? '',
+      pluginId: addedComponent.pluginId,
+    });
+
     const extension: PluginExtensionComponent = {
       id: generateExtensionId(addedComponent.pluginId, extensionPointId, addedComponent.title),
       type: PluginExtensionTypes.component,
       pluginId: addedComponent.pluginId,
       title: addedComponent.title,
-      description: addedComponent.description,
-      component: wrapWithPluginContext(addedComponent.pluginId, addedComponent.component),
+      description: addedComponent.description ?? '',
+      component: wrapWithPluginContext({
+        pluginId: addedComponent.pluginId,
+        extensionTitle: addedComponent.title,
+        Component: addedComponent.component,
+        log: componentLog,
+      }),
     };
 
     extensions.push(extension);

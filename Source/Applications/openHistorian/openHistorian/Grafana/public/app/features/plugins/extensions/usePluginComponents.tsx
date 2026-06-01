@@ -1,53 +1,42 @@
-import { useMemo } from 'react';
-import { useObservable } from 'react-use';
+import { useMemo, type JSX } from 'react';
 
-import { usePluginContext } from '@grafana/data';
 import {
-  UsePluginComponentOptions,
-  UsePluginComponentsResult,
-} from '@grafana/runtime/src/services/pluginExtensions/getPluginExtensions';
+  type ComponentTypeWithExtensionMeta,
+  type PluginExtensionComponentMeta,
+  PluginExtensionTypes,
+  usePluginContext,
+} from '@grafana/data';
+import { UsePluginComponentsOptions, UsePluginComponentsResult } from '@grafana/runtime';
 
-import { useAddedComponentsRegistry } from './ExtensionRegistriesContext';
-import { isExtensionPointMetaInfoMissing, isGrafanaDevMode, logWarning } from './utils';
-import { isExtensionPointIdValid } from './validators';
+import { AddedComponentRegistryItem } from './registry/AddedComponentsRegistry';
+import { useAddedComponentsRegistrySlice } from './registry/useRegistrySlice';
+import { useLoadAppPlugins } from './useLoadAppPlugins';
+import { generateExtensionId, getExtensionPointPluginDependencies } from './utils';
+import { validateExtensionPoint } from './validateExtensionPoint';
 
 // Returns an array of component extensions for the given extension point
 export function usePluginComponents<Props extends object = {}>({
   limitPerPlugin,
   extensionPointId,
-}: UsePluginComponentOptions): UsePluginComponentsResult<Props> {
-  const registry = useAddedComponentsRegistry();
-  const registryState = useObservable(registry.asObservable());
+}: UsePluginComponentsOptions): UsePluginComponentsResult<Props> {
+  const registryItems = useAddedComponentsRegistrySlice<Props>(extensionPointId);
   const pluginContext = usePluginContext();
+  const { isLoading: isLoadingAppPlugins } = useLoadAppPlugins(extensionPointId, getExtensionPointPluginDependencies);
 
   return useMemo(() => {
-    // For backwards compatibility we don't enable restrictions in production or when the hook is used in core Grafana.
-    const enableRestrictions = isGrafanaDevMode() && pluginContext;
-    const components: Array<React.ComponentType<Props>> = [];
+    const { result } = validateExtensionPoint({ extensionPointId, pluginContext, isLoadingAppPlugins });
+
+    if (result) {
+      return {
+        isLoading: result.isLoading,
+        components: [],
+      };
+    }
+
+    const components: Array<ComponentTypeWithExtensionMeta<Props>> = [];
     const extensionsByPlugin: Record<string, number> = {};
-    const pluginId = pluginContext?.meta.id ?? '';
 
-    if (enableRestrictions && !isExtensionPointIdValid({ extensionPointId, pluginId })) {
-      logWarning(
-        `Extension point usePluginComponents("${extensionPointId}") - the id should be prefixed with your plugin id ("${pluginId}/").`
-      );
-      return {
-        isLoading: false,
-        components: [],
-      };
-    }
-
-    if (enableRestrictions && isExtensionPointMetaInfoMissing(extensionPointId, pluginContext)) {
-      logWarning(
-        `usePluginComponents("${extensionPointId}") - The extension point is missing from the "plugin.json" file.`
-      );
-      return {
-        isLoading: false,
-        components: [],
-      };
-    }
-
-    for (const registryItem of registryState?.[extensionPointId] ?? []) {
+    for (const registryItem of registryItems ?? []) {
       const { pluginId } = registryItem;
 
       // Only limit if the `limitPerPlugin` is set
@@ -59,7 +48,9 @@ export function usePluginComponents<Props extends object = {}>({
         extensionsByPlugin[pluginId] = 0;
       }
 
-      components.push(registryItem.component as React.ComponentType<Props>);
+      const component = createComponentWithMeta<Props>(registryItem, extensionPointId);
+
+      components.push(component);
       extensionsByPlugin[pluginId] += 1;
     }
 
@@ -67,5 +58,24 @@ export function usePluginComponents<Props extends object = {}>({
       isLoading: false,
       components,
     };
-  }, [extensionPointId, limitPerPlugin, pluginContext, registryState]);
+  }, [extensionPointId, limitPerPlugin, pluginContext, registryItems, isLoadingAppPlugins]);
+}
+
+export function createComponentWithMeta<Props extends JSX.IntrinsicAttributes>(
+  registryItem: AddedComponentRegistryItem<Props>,
+  extensionPointId: string
+): ComponentTypeWithExtensionMeta<Props> {
+  const { component: Component, ...config } = registryItem;
+
+  const ComponentWithMeta: ComponentTypeWithExtensionMeta<Props> = Object.assign(Component, {
+    meta: {
+      pluginId: config.pluginId,
+      title: config.title ?? '',
+      description: config.description ?? '',
+      id: generateExtensionId(config.pluginId, extensionPointId, config.title),
+      type: PluginExtensionTypes.component,
+    } satisfies PluginExtensionComponentMeta,
+  });
+
+  return ComponentWithMeta;
 }

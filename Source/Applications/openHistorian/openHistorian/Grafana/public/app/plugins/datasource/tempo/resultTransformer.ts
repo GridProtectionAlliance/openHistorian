@@ -1,6 +1,7 @@
 import { SpanStatus } from '@opentelemetry/api';
 import { collectorTypes } from '@opentelemetry/exporter-collector';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
+import { isEqual } from 'lodash';
 
 import {
   createDataFrame,
@@ -15,7 +16,6 @@ import {
   FieldDTO,
   FieldType,
   getDisplayProcessor,
-  Labels,
   MutableDataFrame,
   toDataFrame,
   TraceKeyValuePair,
@@ -23,20 +23,11 @@ import {
   TraceSpanReference,
   TraceSpanRow,
 } from '@grafana/data';
-import { TraceToProfilesData } from '@grafana/o11y-ds-frontend';
+import { createNodeGraphFrames, TraceToProfilesData } from '@grafana/o11y-ds-frontend';
 import { getDataSourceSrv } from '@grafana/runtime';
 
 import { SearchTableType } from './dataquery.gen';
-import { createGraphFrames } from './graphTransform';
-import {
-  ProtoValue,
-  Span,
-  SpanAttributes,
-  Spanset,
-  TempoJsonData,
-  TraceqlMetricsResponse,
-  TraceSearchMetadata,
-} from './types';
+import { Span, SpanAttributes, Spanset, TempoJsonData, TraceSearchMetadata } from './types';
 
 function getAttributeValue(value: collectorTypes.opentelemetryProto.common.v1.AnyValue): any {
   if (value.stringValue) {
@@ -176,7 +167,7 @@ export function transformFromOTLP(
       for (const librarySpan of data.instrumentationLibrarySpans) {
         for (const span of librarySpan.spans) {
           frame.add({
-            traceID: span.traceId.length > 16 ? span.traceId.slice(16) : span.traceId,
+            traceID: span.traceId,
             spanID: span.spanId,
             parentSpanID: span.parentSpanId || '',
             operationName: span.name || '',
@@ -204,7 +195,7 @@ export function transformFromOTLP(
 
   let data = [frame];
   if (nodeGraph) {
-    data.push(...(createGraphFrames(frame) as MutableDataFrame[]));
+    data.push(...(createNodeGraphFrames(frame) as MutableDataFrame[]));
   }
 
   return { data };
@@ -455,7 +446,7 @@ export function transformTrace(
 
   let data = [...response.data];
   if (nodeGraph) {
-    data.push(...createGraphFrames(toDataFrame(frame)));
+    data.push(...createNodeGraphFrames(toDataFrame(frame)));
   }
 
   return {
@@ -474,54 +465,51 @@ function transformToTraceData(data: TraceSearchMetadata) {
   };
 }
 
-const metricsValueToString = (value: ProtoValue): string => {
-  if (value.stringValue) {
-    return `"${value.stringValue}"`;
-  }
-  return '' + (value.intValue || value.doubleValue || value.boolValue || '""');
-};
+export function enhanceTraceQlMetricsResponse(
+  data: DataQueryResponse,
+  instanceSettings: DataSourceInstanceSettings
+): DataQueryResponse {
+  data.data
+    ?.filter((f) => f.name === 'exemplar' && f.meta?.dataTopic === 'annotations')
+    .map((frame) => {
+      const traceIDField = frame.fields.find((field: Field) => field.name === 'traceId');
+      if (traceIDField) {
+        const links = getDataLinks(instanceSettings);
+        const existingLinks = traceIDField.config.links || [];
 
-export function formatTraceQLMetrics(query: string, data: TraceqlMetricsResponse) {
-  const frames = data.series.map((series, index) => {
-    const labels: Labels = {};
-    series.labels?.forEach((label) => {
-      labels[label.key] = metricsValueToString(label.value);
-    });
-    // If it's a single series, use the query as the displayName fallback
-    let name = data.series.length === 1 ? query : '';
-    if (series.labels) {
-      if (series.labels.length === 1) {
-        // For single label series, use the label value as the displayName to improve readability
-        name = metricsValueToString(series.labels[0].value);
-      } else {
-        // otherwise build a string using the label keys and values
-        name = `{${series.labels.map((label) => `${label.key}=${metricsValueToString(label.value)}`).join(', ')}}`;
+        // Filter out links that already exist
+        const newLinks = links.filter(
+          (link) =>
+            !existingLinks.some(
+              (existing: DataLink) =>
+                existing.title === link.title &&
+                existing.internal?.datasourceUid === link.internal?.datasourceUid &&
+                isEqual(existing.internal?.query, link.internal?.query)
+            )
+        );
+
+        traceIDField.config.links = existingLinks.length ? [...existingLinks, ...newLinks] : newLinks;
       }
-    }
-    return createDataFrame({
-      refId: name || `A${index}`,
-      fields: [
-        {
-          name: 'time',
-          type: FieldType.time,
-          values: series.samples.map((sample) => parseInt(sample.timestampMs, 10)),
-        },
-        {
-          name: name,
-          labels,
-          type: FieldType.number,
-          values: series.samples.map((sample) => sample.value),
-          config: {
-            displayNameFromDS: name,
-          },
-        },
-      ],
-      meta: {
-        preferredVisualisationType: 'graph',
+      return frame;
+    });
+  return data;
+}
+
+function getDataLinks(instanceSettings: DataSourceInstanceSettings): DataLink[] {
+  const dataLinks: DataLink[] = [];
+
+  if (instanceSettings.uid) {
+    dataLinks.push({
+      title: 'View trace',
+      url: '',
+      internal: {
+        query: { query: '${__value.raw}', queryType: 'traceql' },
+        datasourceUid: instanceSettings.uid,
+        datasourceName: instanceSettings?.name ?? 'Data source not found',
       },
     });
-  });
-  return frames;
+  }
+  return dataLinks;
 }
 
 export function formatTraceQLResponse(
@@ -923,7 +911,7 @@ const traceSubFrame = (
     subFrame.add(transformSpanToTraceData(span, spanSet, trace));
   });
 
-  return subFrame;
+  return toDataFrame(subFrame);
 };
 
 interface TraceTableData {

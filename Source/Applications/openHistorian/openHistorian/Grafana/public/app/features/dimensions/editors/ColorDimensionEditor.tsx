@@ -1,15 +1,11 @@
 import { css } from '@emotion/css';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { GrafanaTheme2, SelectableValue, StandardEditorProps, FieldNamePickerBaseNameMode } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { ColorDimensionConfig } from '@grafana/schema';
 import { Select, ColorPicker, useStyles2 } from '@grafana/ui';
-import { useFieldDisplayNames, useSelectOptions } from '@grafana/ui/src/components/MatchersUI/utils';
-
-const fixedColorOption: SelectableValue<string> = {
-  label: 'Fixed color',
-  value: '_____fixed_____',
-};
+import { useFieldDisplayNames, useSelectOptions } from '@grafana/ui/internal';
 
 interface ColorDimensionSettings {
   isClearable?: boolean;
@@ -18,7 +14,14 @@ interface ColorDimensionSettings {
 }
 
 export const ColorDimensionEditor = (props: StandardEditorProps<ColorDimensionConfig, ColorDimensionSettings>) => {
-  const { value, context, onChange, item } = props;
+  const fixedColorOption: SelectableValue<string> = useMemo(
+    () => ({
+      label: t('dimensions.color-dimension-editor.label-fixed-color', 'Fixed color'),
+      value: '_____fixed_____',
+    }),
+    []
+  );
+  const { value, context, onChange, item, id } = props;
 
   const defaultColor = 'dark-green';
 
@@ -50,7 +53,7 @@ export const ColorDimensionEditor = (props: StandardEditorProps<ColorDimensionCo
         });
       }
     },
-    [onChange, value]
+    [fixedColorOption.value, onChange, value]
   );
 
   const onColorChange = useCallback(
@@ -68,10 +71,11 @@ export const ColorDimensionEditor = (props: StandardEditorProps<ColorDimensionCo
     <>
       <div className={styles.container}>
         <Select
+          inputId={id}
           value={selectedOption}
           options={selectOptions}
           onChange={onSelectChange}
-          noOptionsMessage="No fields found"
+          noOptionsMessage={t('dimensions.color-dimension-editor.noOptionsMessage-no-fields-found', 'No fields found')}
           isClearable={item.settings?.isClearable}
           placeholder={item.settings?.placeholder}
         />
@@ -86,13 +90,13 @@ export const ColorDimensionEditor = (props: StandardEditorProps<ColorDimensionCo
 };
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    align-items: center;
-  `,
-  picker: css`
-    padding-left: 8px;
-  `,
+  container: css({
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  }),
+  picker: css({
+    paddingLeft: theme.spacing(1),
+  }),
 });

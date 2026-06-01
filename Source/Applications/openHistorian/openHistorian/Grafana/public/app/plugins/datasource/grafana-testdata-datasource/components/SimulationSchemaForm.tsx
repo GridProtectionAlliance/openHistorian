@@ -4,7 +4,7 @@ import { FormEvent, useState, ChangeEvent } from 'react';
 import { DataFrameSchema, FieldSchema, GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, TextArea, InlineField, Input, FieldSet, InlineSwitch } from '@grafana/ui';
 
-type Config = Record<string, any>;
+export type Config = Record<string, any>;
 
 interface SchemaFormProps {
   config: Config;
@@ -50,9 +50,9 @@ const renderInput = (field: FieldSchema, onChange: SchemaFormProps['onChange'], 
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
-    jsonView: css`
-      margin-bottom: ${theme.spacing(1)};
-    `,
+    jsonView: css({
+      marginBottom: theme.spacing(1),
+    }),
   };
 };
 

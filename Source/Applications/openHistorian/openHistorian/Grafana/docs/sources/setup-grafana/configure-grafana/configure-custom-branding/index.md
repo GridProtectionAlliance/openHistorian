@@ -14,13 +14,10 @@ weight: 300
 
 Custom branding enables you to replace the Grafana Labs brand and logo with your corporate brand and logo.
 
-{{% admonition type="note" %}}
-Available in [Grafana Enterprise]({{< relref "../../../introduction/grafana-enterprise" >}}) and [Grafana Cloud](/docs/grafana-cloud). For Cloud Advanced and Enterprise customers, please provide custom elements and logos to our Support team. We will help you host your images and update your custom branding.
+{{< admonition type="note" >}}
+Available in [Grafana Enterprise](../../../introduction/grafana-enterprise/) and to customers on select Grafana Cloud plans. For pricing information, visit [pricing](https://grafana.com/pricing/) or contact our sales team. For Cloud customers, please provide custom elements and logos to our Support team. We will help you host your images and update your custom branding.
 
-This feature is not available for Grafana Free and Pro tiers.
-For more information on feature availability across plans, refer to our [feature comparison page](/docs/grafana-cloud/cost-management-and-billing/understand-grafana-cloud-features/)
-
-{{% /admonition %}}
+{{< /admonition >}}
 
 The `grafana.ini` file includes Grafana Enterprise custom branding. As with all configuration options, you can use environment variables to set custom branding.
 
@@ -32,14 +29,14 @@ With custom branding, you have the ability to modify the following elements:
 - Side menu top logo
 - Footer and help menu links
 - Fav icon (shown in browser tab)
-- Login title (will not appear if a login logo is set, Grafana v7.0+)
-- Login subtitle (will not appear if a login logo is set, Grafana v7.0+)
-- Login box background (Grafana v7.0+)
+- Login title (will not appear if a login logo is set)
+- Login subtitle (will not appear if a login logo is set)
+- Login box background
 - Loading logo
 
 > You will have to host your logo and other images used by the custom branding feature separately. Make sure Grafana can access the URL where the assets are stored.
 
-The configuration file in Grafana Enterprise contains the following options. For more information about configuring Grafana, refer to [Configure Grafana]({{< relref "../../configure-grafana" >}}).
+The configuration file in Grafana Enterprise contains the following options. For more information about configuring Grafana, refer to [Configure Grafana](../).
 
 ```ini
 # Enterprise only
@@ -79,6 +76,17 @@ The configuration file in Grafana Enterprise contains the following options. For
 ;hide_edition =
 ```
 
+{{< admonition type="note" >}}
+For the `login_logo` option, Grafana recommends using SVG files that are 48 pixels by 48 pixels or smaller. You also don't need to use the `url()` function for `login_logo`.
+
+Additionally, you can copy images to the local Grafana image directory, `/usr/share/grafana/public/img/`, and set `login_logo` to the stored image. For example:
+
+```ini
+login_logo = /public/img/<YOUR_LOGO.svg>
+```
+
+{{< /admonition >}}
+
 You have the option of adding custom links in place of the default footer links (Documentation, Support, Community). Below is an example of how to replace the default footer and help links with custom links.
 
 ```ini
@@ -103,31 +111,31 @@ GF_WHITE_LABELING_FOOTER_LINKS_EXTRACUSTOM_TEXT=Custom Text
 GF_WHITE_LABELING_FOOTER_LINKS_EXTRACUSTOM_URL=http://your.custom.site
 ```
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 The following two links are always present in the footer:
-{{% /admonition %}}
+{{< /admonition >}}
 
 - Grafana edition
 - Grafana version with build number
 
 If you specify `footer_links` or `GF_WHITE_LABELING_FOOTER_LINKS`, then all other default links are removed from the footer, and only what is specified is included.
 
-## Custom branding for public dashboards
+## Custom branding for shared dashboards
 
-In addition to the customizations described below, you can customize the footer of your public dashboards.
-To customize the footer of a public dashboard, add the following section to the `grafana.ini` file.
+In addition to the customizations described below, you can customize the footer of your shared dashboards.
+To customize the footer of a shared dashboard, add the following section to the `grafana.ini` file.
 
 ```ini
 [white_labeling.public_dashboards]
 
-# Hides the footer for the public dashboards if set to `true`.
+# Hides the footer for the shared dashboards if set to `true`.
 # example: footer_hide = "true"
 ;footer_hide =
 
 # Set to text shown in the footer
 ;footer_text =
 
-# Set to complete url to override public dashboard footer logo. Default is `grafana-logo` and will display the Grafana logo.
+# Set to complete url to override shared dashboard footer logo. Default is `grafana-logo` and will display the Grafana logo.
 # An empty value will hide the footer logo.
 ;footer_logo =
 

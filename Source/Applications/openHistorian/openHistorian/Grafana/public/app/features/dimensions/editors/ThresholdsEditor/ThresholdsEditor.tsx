@@ -12,16 +12,8 @@ import {
   ThresholdsMode,
   ThemeContext,
 } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { Button, ColorPicker, colors, IconButton, Input, Label, RadioButtonGroup, stylesFactory } from '@grafana/ui';
-
-const modes: Array<SelectableValue<ThresholdsMode>> = [
-  { value: ThresholdsMode.Absolute, label: 'Absolute', description: 'Pick thresholds based on the absolute values' },
-  {
-    value: ThresholdsMode.Percentage,
-    label: 'Percentage',
-    description: 'Pick threshold based on the percent between min/max',
-  },
-];
 
 export interface Props {
   thresholds: ThresholdsConfig;
@@ -145,13 +137,16 @@ export class ThresholdsEditor extends PureComponent<Props, State> {
 
   renderInput(threshold: ThresholdWithKey, styles: ThresholdStyles, idx: number) {
     const isPercent = this.props.thresholds.mode === ThresholdsMode.Percentage;
+    const thresholdNumber = idx + 1;
 
-    const ariaLabel = `Threshold ${idx + 1}`;
+    const ariaLabel = t('dimensions.thresholds-editor.aria-label-threshold', 'Threshold {{thresholdNumber}}', {
+      thresholdNumber,
+    });
     if (!isFinite(threshold.value)) {
       return (
         <Input
           type="text"
-          value={'Base'}
+          value={t('dimensions.thresholds-editor.value-base', 'Base')}
           aria-label={ariaLabel}
           disabled
           prefix={
@@ -194,7 +189,9 @@ export class ThresholdsEditor extends PureComponent<Props, State> {
             className={styles.trashIcon}
             name="trash-alt"
             onClick={() => this.onRemoveThreshold(threshold)}
-            tooltip={`Remove ${ariaLabel}`}
+            tooltip={t('dimensions.threshold-editor.tooltip-remove-threshold', 'Remove threshold {{thresholdNumber}}', {
+              thresholdNumber,
+            })}
           />
         }
       />
@@ -204,6 +201,25 @@ export class ThresholdsEditor extends PureComponent<Props, State> {
   render() {
     const { thresholds } = this.props;
     const { steps } = this.state;
+
+    const modes: Array<SelectableValue<ThresholdsMode>> = [
+      {
+        value: ThresholdsMode.Absolute,
+        label: t('dimensions.thresholds-editor.modes.label.absolute', 'Absolute'),
+        description: t(
+          'dimensions.thresholds-editor.modes.description.thresholds-based-absolute-values',
+          'Pick thresholds based on the absolute values'
+        ),
+      },
+      {
+        value: ThresholdsMode.Percentage,
+        label: t('dimensions.thresholds-editor.modes.label.percentage', 'Percentage'),
+        description: t(
+          'dimensions.thresholds-editor.modes.description.threshold-based-percent-between-minmax',
+          'Pick threshold based on the percent between min/max'
+        ),
+      },
+    ];
 
     return (
       <ThemeContext.Consumer>
@@ -219,7 +235,7 @@ export class ThresholdsEditor extends PureComponent<Props, State> {
                 className={styles.addButton}
                 fullWidth
               >
-                Add threshold
+                <Trans i18nKey="dimensions.thresholds-editor.add-threshold">Add threshold</Trans>
               </Button>
               <div className={styles.thresholds}>
                 {steps
@@ -233,7 +249,14 @@ export class ThresholdsEditor extends PureComponent<Props, State> {
               </div>
 
               <div>
-                <Label description="Percentage means thresholds relative to min & max">Thresholds mode</Label>
+                <Label
+                  description={t(
+                    'dimensions.thresholds-editor.description-percentage-means-thresholds-relative',
+                    'Percentage means thresholds relative to min & max'
+                  )}
+                >
+                  <Trans i18nKey="dimensions.thresholds-editor.thresholds-mode">Thresholds mode</Trans>
+                </Label>
                 <RadioButtonGroup options={modes} onChange={this.onModeChanged} value={thresholds.mode} />
               </div>
             </div>
@@ -290,44 +313,44 @@ interface ThresholdStyles {
 
 const getStyles = stylesFactory((theme: GrafanaTheme2): ThresholdStyles => {
   return {
-    wrapper: css`
-      display: flex;
-      flex-direction: column;
-    `,
-    thresholds: css`
-      display: flex;
-      flex-direction: column;
-      margin-bottom: ${theme.spacing(2)};
-    `,
-    item: css`
-      margin-bottom: ${theme.spacing(1)};
+    wrapper: css({
+      display: 'flex',
+      flexDirection: 'column',
+    }),
+    thresholds: css({
+      display: 'flex',
+      flexDirection: 'column',
+      marginBottom: theme.spacing(2),
+    }),
+    item: css({
+      marginBottom: theme.spacing(1),
 
-      &:last-child {
-        margin-bottom: 0;
-      }
-    `,
-    colorPicker: css`
-      padding: 0 ${theme.spacing(1)};
-    `,
-    addButton: css`
-      margin-bottom: ${theme.spacing(1)};
-    `,
-    percentIcon: css`
-      font-size: ${theme.typography.bodySmall.fontSize};
-      color: ${theme.colors.text.secondary};
-    `,
-    inputPrefix: css`
-      display: flex;
-      align-items: center;
-    `,
-    trashIcon: css`
-      color: ${theme.colors.text.secondary};
-      cursor: pointer;
-      margin-right: 0;
+      '&:last-child': {
+        marginBottom: 0,
+      },
+    }),
+    colorPicker: css({
+      padding: theme.spacing(0, 1),
+    }),
+    addButton: css({
+      marginBottom: theme.spacing(1),
+    }),
+    percentIcon: css({
+      fontSize: theme.typography.bodySmall.fontSize,
+      color: theme.colors.text.secondary,
+    }),
+    inputPrefix: css({
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    trashIcon: css({
+      color: theme.colors.text.secondary,
+      cursor: 'pointer',
+      marginRight: 0,
 
-      &:hover {
-        color: ${theme.colors.text};
-      }
-    `,
+      '&:hover': {
+        color: theme.colors.text.primary,
+      },
+    }),
   };
 });

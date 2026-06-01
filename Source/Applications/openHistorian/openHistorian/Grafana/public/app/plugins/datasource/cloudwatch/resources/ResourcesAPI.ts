@@ -12,7 +12,6 @@ import {
   ResourceResponse,
   DescribeLogGroupsRequest,
   LogGroupResponse,
-  GetLogGroupFieldsRequest,
   GetMetricsRequest,
   GetDimensionKeysRequest,
   GetDimensionValuesRequest,
@@ -32,7 +31,7 @@ export class ResourcesAPI extends CloudWatchRequest {
   }
 
   private getRequest<T>(subtype: string, parameters?: Record<string, string | string[] | number>): Promise<T> {
-    return getBackendSrv().get(`/api/datasources/${this.instanceSettings.id}/resources/${subtype}`, parameters);
+    return getBackendSrv().get(`/api/datasources/uid/${this.instanceSettings.uid}/resources/${subtype}`, parameters);
   }
 
   async getExternalId(): Promise<string> {
@@ -79,15 +78,10 @@ export class ResourcesAPI extends CloudWatchRequest {
     });
   }
 
-  getLogGroupFields({
-    region,
-    arn,
-    logGroupName,
-  }: GetLogGroupFieldsRequest): Promise<Array<ResourceResponse<LogGroupField>>> {
+  getLogGroupFields(region: string, logGroupName: string): Promise<Array<ResourceResponse<LogGroupField>>> {
     return this.memoizedGetRequest<Array<ResourceResponse<LogGroupField>>>('log-group-fields', {
       region: this.templateSrv.replace(this.getActualRegion(region)),
-      logGroupName: this.templateSrv.replace(logGroupName, {}),
-      logGroupArn: this.templateSrv.replace(arn),
+      logGroupName: logGroupName,
     });
   }
 

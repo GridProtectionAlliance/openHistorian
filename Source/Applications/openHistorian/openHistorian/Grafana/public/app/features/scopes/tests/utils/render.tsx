@@ -1,20 +1,16 @@
-import { cleanup } from '@testing-library/react';
+import { cleanup, waitFor } from '@testing-library/react';
 import { KBarProvider } from 'kbar';
 import { render } from 'test/test-utils';
 
-import { getPanelPlugin } from '@grafana/data/test/__mocks__/pluginMocks';
+import { getPanelPlugin } from '@grafana/data/test';
 import { config, setPluginImportUtils } from '@grafana/runtime';
+import { sceneGraph } from '@grafana/scenes';
 import { defaultDashboard } from '@grafana/schema';
 import { AppChrome } from 'app/core/components/AppChrome/AppChrome';
 import { transformSaveModelToScene } from 'app/features/dashboard-scene/serialization/transformSaveModelToScene';
-import { DashboardDataDTO, DashboardDTO, DashboardMeta } from 'app/types';
+import { DashboardDataDTO, DashboardDTO, DashboardMeta } from 'app/types/dashboard';
 
-import { initializeScopes, scopesDashboardsScene, scopesSelectorScene } from '../../instance';
-import { getInitialDashboardsState } from '../../internal/ScopesDashboardsScene';
-import { initialSelectorState } from '../../internal/ScopesSelectorScene';
-import { DASHBOARDS_OPENED_KEY } from '../../internal/const';
-
-import { clearMocks } from './actions';
+import { defaultScopesServices, ScopesContextProvider } from '../../ScopesContextProvider';
 
 const getDashboardDTO: (
   overrideDashboard: Partial<DashboardDataDTO>,
@@ -49,6 +45,50 @@ const getDashboardDTO: (
           label: 'Group By',
           name: 'groupBy',
           type: 'groupby',
+        },
+        {
+          current: {
+            text: ['1'],
+            value: ['1'],
+          },
+          multi: true,
+          name: 'myVar',
+          options: [
+            {
+              selected: true,
+              text: '1',
+              value: '1',
+            },
+            {
+              selected: false,
+              text: '2',
+              value: '2',
+            },
+          ],
+          query: '1, 2',
+          type: 'custom',
+        },
+        {
+          current: {
+            text: ['1'],
+            value: ['1'],
+          },
+          multi: true,
+          name: 'myVar2',
+          options: [
+            {
+              selected: true,
+              text: '1',
+              value: '1',
+            },
+            {
+              selected: false,
+              text: '2',
+              value: '2',
+            },
+          ],
+          query: '1, 2',
+          type: 'custom',
         },
       ],
     },
@@ -133,34 +173,39 @@ setPluginImportUtils({
   getPanelPluginFromCache: () => undefined,
 });
 
-export function renderDashboard(
+export async function renderDashboard(
   overrideDashboard: Partial<DashboardDataDTO> = {},
   overrideMeta: Partial<DashboardMeta> = {}
 ) {
   jest.useFakeTimers({ advanceTimers: true });
   jest.spyOn(console, 'error').mockImplementation(jest.fn());
-  clearMocks();
-  initializeScopes();
 
   const dto: DashboardDTO = getDashboardDTO(overrideDashboard, overrideMeta);
   const scene = transformSaveModelToScene(dto);
 
+  const services = defaultScopesServices();
+
   render(
     <KBarProvider>
-      <AppChrome>
-        <scene.Component model={scene} />
-      </AppChrome>
+      <ScopesContextProvider services={services}>
+        <AppChrome>
+          <scene.Component model={scene} />
+        </AppChrome>
+      </ScopesContextProvider>
     </KBarProvider>
   );
 
-  return scene;
+  await waitFor(() => expect(sceneGraph.getScopes(scene)).toBeDefined());
+
+  return {
+    scene,
+    ...services,
+  };
 }
 
-export async function resetScenes() {
+export async function resetScenes(spies: jest.SpyInstance[] = []) {
   await jest.runOnlyPendingTimersAsync();
   jest.useRealTimers();
-  scopesSelectorScene?.setState(initialSelectorState);
-  localStorage.removeItem(DASHBOARDS_OPENED_KEY);
-  scopesDashboardsScene?.setState(getInitialDashboardsState());
+  spies.forEach((spy) => spy.mockClear());
   cleanup();
 }

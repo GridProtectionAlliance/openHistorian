@@ -2,20 +2,20 @@ import { css, cx } from '@emotion/css';
 import { useFormContext } from 'react-hook-form';
 
 import { GrafanaTheme2 } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { Field, FieldSet, Input, TextArea, useStyles2 } from '@grafana/ui';
-import { Trans, t } from 'app/core/internationalization';
 
 import { useCorrelationsFormContext } from './correlationsFormContext';
 import { FormDTO } from './types';
 import { getInputId } from './utils';
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  label: css`
-    max-width: ${theme.spacing(80)};
-  `,
-  description: css`
-    max-width: ${theme.spacing(80)};
-  `,
+  label: css({
+    maxWidth: theme.spacing(80),
+  }),
+  description: css({
+    maxWidth: theme.spacing(80),
+  }),
 });
 
 export const ConfigureCorrelationBasicInfoForm = () => {

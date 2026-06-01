@@ -1,38 +1,43 @@
+import { skipToken } from '@reduxjs/toolkit/query/react';
 import * as React from 'react';
+import { useMemo } from 'react';
 
 import { PageLayoutType, dateTimeFormat, dateTimeFormatTimeAgo } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { Trans } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, sceneGraph } from '@grafana/scenes';
-import { Spinner, Stack } from '@grafana/ui';
+import { Alert, Spinner, Stack } from '@grafana/ui';
+import { useGetDisplayMappingQuery } from 'app/api/clients/iam/v0alpha1';
 import { Page } from 'app/core/components/Page/Page';
+import {
+  AnnoKeyCreatedBy,
+  AnnoKeyMessage,
+  AnnoKeyUpdatedBy,
+  AnnoKeyUpdatedTimestamp,
+  Resource,
+} from 'app/features/apiserver/types';
+import { getDashboardAPI } from 'app/features/dashboard/api/dashboard_api';
+import {
+  DecoratedRevisionModel,
+  RevisionModel,
+  VERSIONS_FETCH_LIMIT,
+} from 'app/features/dashboard/types/revisionModels';
 
 import { DashboardScene } from '../scene/DashboardScene';
-import { NavToolbarActions, ToolbarActions } from '../scene/NavToolbarActions';
+import { NavToolbarActions } from '../scene/NavToolbarActions';
 import { getDashboardSceneFor } from '../utils/utils';
 
 import { DashboardEditView, DashboardEditViewState, useDashboardEditPageNav } from './utils';
-import {
-  RevisionsModel,
-  VersionHistoryComparison,
-  VersionHistoryHeader,
-  VersionHistoryTable,
-  VersionsHistoryButtons,
-  historySrv,
-} from './version-history';
-
-export const VERSIONS_FETCH_LIMIT = 10;
-
-export type DecoratedRevisionModel = RevisionsModel & {
-  createdDateString: string;
-  ageString: string;
-};
+import { VersionsHistoryButtons } from './version-history/VersionHistoryButtons';
+import { VersionHistoryComparison } from './version-history/VersionHistoryComparison';
+import { VersionHistoryHeader } from './version-history/VersionHistoryHeader';
+import { VersionHistoryTable } from './version-history/VersionHistoryTable';
 
 export interface VersionsEditViewState extends DashboardEditViewState {
   versions?: DecoratedRevisionModel[];
   isLoading?: boolean;
   isAppending?: boolean;
   viewMode?: 'list' | 'compare';
-  diffData?: { lhs: string; rhs: string };
+  diffData?: { lhs: object; rhs: object };
   newInfo?: DecoratedRevisionModel;
   baseInfo?: DecoratedRevisionModel;
   isNewLatest?: boolean;
@@ -41,7 +46,7 @@ export interface VersionsEditViewState extends DashboardEditViewState {
 export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> implements DashboardEditView {
   public static Component = VersionsEditorSettingsListView;
   private _limit: number = VERSIONS_FETCH_LIMIT;
-  private _start = 0;
+  private _continueToken = '';
 
   constructor(state: VersionsEditViewState) {
     super({
@@ -51,10 +56,7 @@ export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> imp
       isAppending: true,
       viewMode: 'list',
       isNewLatest: false,
-      diffData: {
-        lhs: '',
-        rhs: '',
-      },
+      diffData: { lhs: {}, rhs: {} },
     });
 
     this.addActivationHandler(() => {
@@ -66,8 +68,8 @@ export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> imp
     return getDashboardSceneFor(this);
   }
 
-  public get diffData(): { lhs: string; rhs: string } {
-    return this.state.diffData ?? { lhs: '', rhs: '' };
+  public get diffData(): { lhs: object; rhs: object } {
+    return this.state.diffData ?? { lhs: {}, rhs: {} };
   }
 
   public get versions(): DecoratedRevisionModel[] {
@@ -78,8 +80,8 @@ export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> imp
     return this._limit;
   }
 
-  public get start(): number {
-    return this._start;
+  public get continueToken(): string {
+    return this._continueToken;
   }
 
   public getUrlKey(): string {
@@ -103,55 +105,63 @@ export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> imp
 
     this.setState({ isAppending: append });
 
-    historySrv
-      .getHistoryList(uid, { limit: this._limit, start: this._start })
+    const options = append ? { limit: this._limit, continueToken: this._continueToken } : { limit: this._limit };
+
+    getDashboardAPI()
+      .listDashboardHistory(uid, options)
       .then((result) => {
+        const versions = this.transformToRevisionModels(result.items);
         this.setState({
           isLoading: false,
-          versions: [...(this.state.versions ?? []), ...this.decorateVersions(result)],
+          versions: [...(append ? (this.state.versions ?? []) : []), ...this.decorateVersions(versions)],
         });
-        this._start += this._limit;
+        // Update the continueToken for the next request, if available
+        this._continueToken = result.metadata.continue ?? '';
       })
       .catch((err) => console.log(err))
       .finally(() => this.setState({ isAppending: false }));
   };
 
-  public getDiff = async () => {
+  private transformToRevisionModels(items: Array<Resource<unknown>>): RevisionModel[] {
+    return items.map(
+      (item): RevisionModel => ({
+        id: item.metadata.generation ?? 0,
+        checked: false,
+        uid: item.metadata.name,
+        version: item.metadata.generation ?? 0,
+        created:
+          item.metadata.annotations?.[AnnoKeyUpdatedTimestamp] ??
+          item.metadata.creationTimestamp ??
+          new Date().toISOString(),
+        createdBy: item.metadata.annotations?.[AnnoKeyUpdatedBy] ?? item.metadata.annotations?.[AnnoKeyCreatedBy] ?? '',
+        message: item.metadata.annotations?.[AnnoKeyMessage] ?? '',
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        data: item.spec as object,
+      })
+    );
+  }
+
+  public getDiff = () => {
     const selectedVersions = this.versions.filter((version) => version.checked);
     const [newInfo, baseInfo] = selectedVersions;
     const isNewLatest = newInfo.version === this._dashboard.state.version;
 
-    this.setState({
-      isLoading: true,
-    });
-
-    if (!this._dashboard.state.uid) {
-      return;
-    }
-
-    const lhs = await historySrv.getDashboardVersion(this._dashboard.state.uid, baseInfo.version);
-    const rhs = await historySrv.getDashboardVersion(this._dashboard.state.uid, newInfo.version);
-
+    // Use the already-loaded data from listDashboardHistory - no need for another API call
     this.setState({
       baseInfo,
       isLoading: false,
       isNewLatest,
       newInfo,
       viewMode: 'compare',
-      diffData: {
-        lhs: lhs.data,
-        rhs: rhs.data,
-      },
+      diffData: { lhs: baseInfo.data, rhs: newInfo.data },
     });
   };
 
   public reset = () => {
+    this._continueToken = '';
     this.setState({
       baseInfo: undefined,
-      diffData: {
-        lhs: '',
-        rhs: '',
-      },
+      diffData: { lhs: {}, rhs: {} },
       isNewLatest: false,
       newInfo: undefined,
       versions: this.versions.map((version) => ({ ...version, checked: false })),
@@ -167,7 +177,7 @@ export class VersionsEditView extends SceneObjectBase<VersionsEditViewState> imp
     });
   };
 
-  private decorateVersions(versions: RevisionsModel[]): DecoratedRevisionModel[] {
+  private decorateVersions(versions: RevisionModel[]): DecoratedRevisionModel[] {
     const timeZone = this.getTimeRange().getTimeZone();
 
     return versions.map((version) => {
@@ -185,11 +195,39 @@ function VersionsEditorSettingsListView({ model }: SceneComponentProps<VersionsE
   const dashboard = model.getDashboard();
   const { isLoading, isAppending, viewMode, baseInfo, newInfo, isNewLatest } = model.useState();
   const { navModel, pageNav } = useDashboardEditPageNav(dashboard, model.getUrlKey());
+
+  const userKeys = useMemo(
+    () => [...new Set(model.versions.map((v) => v.createdBy).filter(Boolean))],
+    [model.versions]
+  );
+  const { data: displayData } = useGetDisplayMappingQuery(userKeys.length > 0 ? { key: userKeys } : skipToken);
+  const isLoadingUserDisplayNames = userKeys.length > 0 && !displayData;
+
+  const versionsWithDisplayNames = useMemo(() => {
+    if (!displayData) {
+      return model.versions;
+    }
+    const displayMap = new Map<string, string>();
+    for (const item of displayData.display) {
+      displayMap.set(`${item.identity.type}:${item.identity.name}`, item.displayName);
+      if (item.internalId) {
+        displayMap.set(String(item.internalId), item.displayName);
+      }
+    }
+    return model.versions.map((version) => {
+      const displayName = version.createdBy ? displayMap.get(version.createdBy) : undefined;
+      return displayName ? { ...version, createdBy: displayName } : version;
+    });
+  }, [model.versions, displayData]);
+
   const canCompare = model.versions.filter((version) => version.checked).length === 2;
   const showButtons = model.versions.length > 1;
   const hasMore = model.versions.length >= model.limit;
-  const isLastPage = model.versions.find((rev) => rev.version === 1);
-  const isSingleTopNav = config.featureToggles.singleTopNav;
+  // older versions may have been cleaned up in the db, so also check if the last page is less than the limit, if so, we are at the end
+  let isLastPage =
+    model.versions.find((rev) => rev.version === 1) ||
+    model.versions.length % model.limit !== 0 ||
+    model.continueToken === '';
 
   const viewModeCompare = (
     <>
@@ -219,10 +257,11 @@ function VersionsEditorSettingsListView({ model }: SceneComponentProps<VersionsE
         <VersionsHistorySpinner msg="Fetching history list&hellip;" />
       ) : (
         <VersionHistoryTable
-          versions={model.versions}
+          versions={versionsWithDisplayNames}
           onCheck={model.onCheck}
           canCompare={canCompare}
           onRestore={dashboard.onRestore}
+          isLoadingUserDisplayNames={isLoadingUserDisplayNames}
         />
       )}
       {isAppending && <VersionsHistorySpinner msg="Fetching more entries&hellip;" />}
@@ -238,15 +277,22 @@ function VersionsEditorSettingsListView({ model }: SceneComponentProps<VersionsE
     </>
   );
 
+  const isProvisioned = dashboard.isManagedRepository();
+
   return (
-    <Page
-      navModel={navModel}
-      pageNav={pageNav}
-      layout={PageLayoutType.Standard}
-      toolbar={isSingleTopNav ? <ToolbarActions dashboard={dashboard} /> : undefined}
-    >
-      {!isSingleTopNav && <NavToolbarActions dashboard={dashboard} />}
-      {viewMode === 'compare' ? viewModeCompare : viewModeList}
+    <Page navModel={navModel} pageNav={pageNav} layout={PageLayoutType.Standard}>
+      <NavToolbarActions dashboard={dashboard} />
+      {isProvisioned ? (
+        <Alert title="" severity="info">
+          <Trans i18nKey="dashboard-settings.versions.provisioned-warning">
+            This dashboard is managed by a repository. Version history is not available for provisioned dashboards.
+          </Trans>
+        </Alert>
+      ) : viewMode === 'compare' ? (
+        viewModeCompare
+      ) : (
+        viewModeList
+      )}
     </Page>
   );
 }

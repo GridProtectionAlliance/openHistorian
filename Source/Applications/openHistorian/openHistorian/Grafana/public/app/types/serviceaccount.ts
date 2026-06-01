@@ -1,6 +1,7 @@
-import { WithAccessControlMetadata } from '@grafana/data';
+import { OrgRole, WithAccessControlMetadata } from '@grafana/data';
 
-import { ApiKey, OrgRole, Role } from '.';
+import { Role } from './accessControl';
+import { ApiKey } from './apiKeys';
 
 export interface OrgServiceAccount extends WithAccessControlMetadata {
   serviceAccountId: number;
@@ -27,6 +28,7 @@ export interface ServiceAccount {
 
 export interface ServiceAccountDTO extends WithAccessControlMetadata {
   id: number;
+  uid: string;
   orgId: number;
   tokens: number;
   name: string;
@@ -44,6 +46,7 @@ export interface ServiceAccountDTO extends WithAccessControlMetadata {
 export interface ServiceAccountCreateApiResponse {
   avatarUrl?: string;
   id: number;
+  uid: string;
   isDisabled: boolean;
   login: string;
   name: string;

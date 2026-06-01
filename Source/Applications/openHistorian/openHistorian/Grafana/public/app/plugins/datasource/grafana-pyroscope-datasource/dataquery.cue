@@ -37,9 +37,15 @@ composableKinds: DataQuery: {
 				profileTypeId: string
 				// Allows to group the results.
 				groupBy: [...string]
+				// Sets the maximum number of time series.
+				limit?: int64
 				// Sets the maximum number of nodes in the flamegraph.
 				maxNodes?:           int64
 				#PyroscopeQueryType: "metrics" | "profile" | *"both" @cuetsy(kind="type")
+				// If set to true, the response will contain annotations
+				annotations?: bool
+				// If set to true, exemplars will be requested
+				includeExemplars: bool | *false
 			}
 		}]
 		lenses: []

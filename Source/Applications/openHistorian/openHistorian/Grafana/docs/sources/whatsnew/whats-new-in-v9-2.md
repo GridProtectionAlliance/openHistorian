@@ -45,7 +45,7 @@ Canvas visualizations are extensible form-built panels that allow you to explici
 
 For example, you can place image layers and then overlay text that's updated by Grafana data sources, and display icons that can change color conditionally based on data.
 
-We've planned additional features and design elements for future releases to make Canvas panels even more powerful tools for creating custom, interactive, data-driven visualizations. To learn more about the Canvas panel, see the [documentation]({{< relref "../panels-visualizations/visualizations/canvas" >}}).
+We've planned additional features and design elements for future releases to make Canvas panels even more powerful tools for creating custom, interactive, data-driven visualizations. To learn more about the Canvas panel, see the [documentation](../../panels-visualizations/visualizations/canvas/).
 
 {{< video-embed src="/static/img/docs/canvas-panel/canvas-beta-overview-9-2-0.mp4" max-width="750px" caption="Canvas panel beta overview" >}}
 
@@ -95,7 +95,7 @@ External alertmanagers should now be configured as data sources using Grafana Co
 _Available in Experimental in Grafana Open Source, Enterprise, and Cloud._
 _To enable public dashboards, you must enable a feature flag or request this feature from support._
 
-[Public dashboards](/docs/grafana/latest/dashboards/dashboard-public/) launched as an experimental feature in Grafana v9.1.
+[Public dashboards](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/share-dashboards-panels/shared-dashboards) launched as an experimental feature in Grafana v9.1.
 We've received lots of great feedback on this much-anticipated feature and thank everyone who has helped us improve it.
 The team has been hard at work polishing public dashboards, and we've closed quite a few bugs related to community reports.
 If you're trying out public dashboards, let us know how it is going in the [open discussion in GitHub](https://github.com/grafana/grafana/discussions/49253).
@@ -145,8 +145,8 @@ For details on using this functionality, see [GitHub pull request #55313](https:
 
 ## Transformations: INNER JOINs
 
-[Transformations]({{< relref "../panels-visualizations/query-transform-data/transform-data" >}}) allow you to shape raw data from data sources, like metrics series or GitHub issues, into a format that's appropriate for the chosen visualization.
-We have extended the [Join transformation]({{< relref "../panels-visualizations/query-transform-data/transform-data#join-by-field" >}}) to support INNER JOINs in addition to OUTER JOINs. These work similarly to SQL JOINs.
+[Transformations](../../panels-visualizations/query-transform-data/transform-data/) allow you to shape raw data from data sources, like metrics series or GitHub issues, into a format that's appropriate for the chosen visualization.
+We have extended the [Join transformation](../../panels-visualizations/query-transform-data/transform-data/#join-by-field) to support INNER JOINs in addition to OUTER JOINs. These work similarly to SQL JOINs.
 
 {{< figure src="/static/img/docs/transformations/transform-outer-join-9-2.png" max-width="750px" caption="Query builder groupings for Google Cloud monitoring" >}}
 
@@ -205,7 +205,7 @@ _Generally available in Grafana Enterprise, Grafana Cloud Pro, and Advanced._
 ### Map a user to all organizations in Grafana
 
 You can now use `*` as the Grafana organization in the mapping to add all users from a given SAML Organization to all existing Grafana organizations.
-For more information, see ["Configure SAML authentication"](/docs/grafana/next/setup-grafana/configure-security/configure-authentication/saml/#configure-organization-mapping) in the documentation.
+For more information, see ["Configure SAML authentication"](/docs/grafana/next/setup-grafana/configure-access/configure-authentication/saml/#configure-organization-mapping) in the documentation.
 
 ### Skip organization role sync
 
@@ -215,24 +215,24 @@ If you use a SAML identity provider to manage your users but prefer to assign ro
 
 Use the `skip_org_role_sync` configuration option when configuring SAML to prevent synchronization with SAML roles and make user roles editable from within Grafana.
 
-For more information, see the [SAML configuration documentation](/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/saml/).
+For more information, see the [SAML configuration documentation](/docs/grafana/<GRAFANA_VERSION>/setup-grafana/configure-access/configure-authentication/saml/).
 
 ## Assign Server Admin permissions from Oauth
 
 You can now map OAuth groups and roles to Server Admin for the GitLab, GitHub, AzureAD, Okta, and Generic OAuth integrations.
 To enable this functionality, set the `allow_assign_grafana_admin` configuration option to `true` in the desired OAuth integration section.
-For more information, see the [authentication configuration documentation](/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/) for each OAuth client.
+For more information, see the [authentication configuration documentation](/docs/grafana/<GRAFANA_VERSION>/setup-grafana/configure-access/configure-authentication/) for each OAuth client.
 
 ## Match parameter support in prometheus labels API
 
-Prometheus users running Prometheus v2.24 and higher can use the [labels endpoint](https://prometheus.io/docs/prometheus/latest/querying/api/#querying-label-values) instead of the [series endpoint](https://prometheus.io/docs/prometheus/latest/querying/api/#finding-series-by-label-matchers) for the [`label_values` function]({{< relref "../datasources/prometheus#query-variable" >}}).
+Prometheus users running Prometheus v2.24 and higher can use the [labels endpoint](https://prometheus.io/docs/prometheus/latest/querying/api/#querying-label-values) instead of the [series endpoint](https://prometheus.io/docs/prometheus/latest/querying/api/#finding-series-by-label-matchers) for the [`label_values` function](../../datasources/prometheus/#query-variable).
 This decreases load times for templated high-cardinality Prometheus instances.
 
-If you want to benefit from this endpoint you must first configure the Prometheus type and version in any Prometheus data sources' [configuration]({{< relref "../datasources/prometheus" >}}).
+If you want to benefit from this endpoint you must first configure the Prometheus type and version in any Prometheus data sources' [configuration](../../datasources/prometheus/).
 
 ## New Prometheus streaming parser
 
-In Grafana v9.2, you can enable the `prometheusStreamingJSONParser` [feature toggle]({{< relref "../setup-grafana/configure-grafana#feature_toggles" >}}) to use a better-performing, memory-efficient streaming JSON client for Prometheus.
+In Grafana v9.2, you can enable the `prometheusStreamingJSONParser` [feature toggle](../../setup-grafana/configure-grafana/#feature_toggles) to use a better-performing, memory-efficient streaming JSON client for Prometheus.
 We'll make this client the default in Grafana v9.3.
 
 When Prometheus returns `NaN` values, this new client doesn't change them, neither to the value `null` nor to `0` as in recent Grafana versions.

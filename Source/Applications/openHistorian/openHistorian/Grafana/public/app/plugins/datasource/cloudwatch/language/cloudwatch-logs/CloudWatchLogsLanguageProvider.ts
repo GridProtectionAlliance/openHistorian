@@ -5,9 +5,10 @@ import { AbsoluteTimeRange, HistoryItem, LanguageProvider } from '@grafana/data'
 import { BackendDataSourceResponse, FetchResponse, TemplateSrv, getTemplateSrv } from '@grafana/runtime';
 import { CompletionItemGroup, SearchFunctionType, Token, TypeaheadInput, TypeaheadOutput } from '@grafana/ui';
 
+import { LogGroup } from '../../dataquery.gen';
 import { CloudWatchDatasource } from '../../datasource';
-import { CloudWatchQuery, LogGroup } from '../../types';
-import { interpolateStringArrayUsingSingleOrMultiValuedVariable } from '../../utils/templateVariableUtils';
+import { CloudWatchQuery } from '../../types';
+import { fetchLogGroupFields } from '../utils';
 
 import syntax, {
   AGGREGATION_FUNCTIONS_STATS,
@@ -35,13 +36,11 @@ export class CloudWatchLogsLanguageProvider extends LanguageProvider {
   datasource: CloudWatchDatasource;
   templateSrv: TemplateSrv;
 
-  constructor(datasource: CloudWatchDatasource, templateSrv?: TemplateSrv, initialValues?: any) {
+  constructor(datasource: CloudWatchDatasource, templateSrv?: TemplateSrv) {
     super();
 
     this.datasource = datasource;
     this.templateSrv = templateSrv ?? getTemplateSrv();
-
-    Object.assign(this, initialValues);
   }
 
   // Strip syntax chars
@@ -90,15 +89,17 @@ export class CloudWatchLogsLanguageProvider extends LanguageProvider {
     const { value } = input;
 
     // Get tokens
-    const tokens = value?.data.get('tokens');
+    const tokens: Token[] = value?.data.get('tokens');
 
     if (!tokens || !tokens.length) {
       return { suggestions: [] };
     }
 
-    const curToken: Token = tokens.filter(
-      (token: any) =>
-        token.offsets.start <= value!.selection?.start?.offset && token.offsets.end >= value!.selection?.start?.offset
+    const curToken = tokens.filter(
+      (token) =>
+        token.offsets &&
+        token.offsets.start <= value!.selection?.start?.offset &&
+        token.offsets.end >= value!.selection?.start?.offset
     )[0];
 
     const isFirstToken = !curToken.prev;
@@ -130,24 +131,6 @@ export class CloudWatchLogsLanguageProvider extends LanguageProvider {
       suggestions: [],
     };
   }
-
-  private fetchFields = async (logGroups: LogGroup[], region: string): Promise<string[]> => {
-    const interpolatedLogGroups = interpolateStringArrayUsingSingleOrMultiValuedVariable(
-      this.templateSrv,
-      logGroups.map((lg) => lg.name),
-      {},
-      'text'
-    );
-    const results = await Promise.all(
-      interpolatedLogGroups.map((logGroupName) =>
-        this.datasource.resources
-          .getLogGroupFields({ logGroupName, region })
-          .then((fields) => fields.filter((f) => f).map((f) => f.value.name ?? ''))
-      )
-    );
-
-    return results.flat();
-  };
 
   private handleKeyword = async (context?: TypeaheadContext): Promise<TypeaheadOutput> => {
     const suggs = await this.getFieldCompletionItems(context?.logGroups, context?.region || 'default');
@@ -312,7 +295,7 @@ export class CloudWatchLogsLanguageProvider extends LanguageProvider {
       return { suggestions: [] };
     }
 
-    const fields = await this.fetchFields(logGroups, region);
+    const fields = await fetchLogGroupFields(logGroups, region, this.templateSrv, this.datasource.resources);
     return {
       suggestions: [
         {

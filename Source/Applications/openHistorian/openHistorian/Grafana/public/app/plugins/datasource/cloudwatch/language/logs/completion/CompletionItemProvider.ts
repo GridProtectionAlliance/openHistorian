@@ -1,13 +1,14 @@
 import { getTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import { Monaco, monacoTypes } from '@grafana/ui';
 
+import { LogGroup } from '../../../dataquery.gen';
 import { type ResourcesAPI } from '../../../resources/ResourcesAPI';
-import { LogGroup } from '../../../types';
 import { CompletionItemProvider } from '../../monarch/CompletionItemProvider';
 import { LinkedToken } from '../../monarch/LinkedToken';
 import { TRIGGER_SUGGEST } from '../../monarch/commands';
 import { CompletionItem, CompletionItemPriority, StatementPosition, SuggestionKind } from '../../monarch/types';
-import { LOGS_COMMANDS, LOGS_FUNCTION_OPERATORS, SORT_DIRECTION_KEYWORDS } from '../language';
+import { fetchLogGroupFields } from '../../utils';
+import { LOGS_COMMANDS, LOGS_FUNCTION_OPERATORS, SORT_DIRECTION_KEYWORDS, DIFF_MODIFIERS } from '../language';
 
 import { getStatementPosition } from './statementPosition';
 import { getSuggestionKinds } from './suggestionKinds';
@@ -86,7 +87,12 @@ export class LogsCompletionItemProvider extends CompletionItemProvider {
           });
 
           if (this.queryContext.logGroups && this.queryContext.logGroups.length > 0) {
-            let fields = await this.fetchFields(this.queryContext.logGroups, this.queryContext.region);
+            let fields = await fetchLogGroupFields(
+              this.queryContext.logGroups,
+              this.queryContext.region,
+              this.templateSrv,
+              this.resources
+            );
             fields.push('@log');
             fields.forEach((field) => {
               if (field !== '') {
@@ -106,6 +112,14 @@ export class LogsCompletionItemProvider extends CompletionItemProvider {
             addSuggestion(direction, {
               sortText: CompletionItemPriority.High,
               kind: monaco.languages.CompletionItemKind.Operator,
+            });
+          });
+          break;
+        case SuggestionKind.DiffModifier:
+          DIFF_MODIFIERS.forEach((modifier) => {
+            addSuggestion(modifier, {
+              sortText: CompletionItemPriority.High,
+              kind: monaco.languages.CompletionItemKind.Keyword,
             });
           });
           break;
@@ -133,16 +147,4 @@ export class LogsCompletionItemProvider extends CompletionItemProvider {
 
     return suggestions;
   }
-
-  private fetchFields = async (logGroups: LogGroup[], region: string): Promise<string[]> => {
-    const results = await Promise.all(
-      logGroups.map((logGroup) =>
-        this.resources
-          .getLogGroupFields({ logGroupName: logGroup.name, arn: logGroup.arn, region })
-          .then((fields) => fields.filter((f) => f).map((f) => f.value.name ?? ''))
-      )
-    );
-    // Deduplicate fields
-    return [...new Set(results.flat())];
-  };
 }

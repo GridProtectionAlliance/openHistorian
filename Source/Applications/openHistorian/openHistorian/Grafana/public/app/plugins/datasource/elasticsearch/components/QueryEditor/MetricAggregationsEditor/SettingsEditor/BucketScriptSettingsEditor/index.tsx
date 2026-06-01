@@ -2,10 +2,10 @@ import { css } from '@emotion/css';
 import { uniqueId } from 'lodash';
 import { Fragment, useEffect } from 'react';
 
-import { Input, InlineLabel } from '@grafana/ui';
+import { InlineLabel, Input } from '@grafana/ui';
 
-import { useStatelessReducer, useDispatch } from '../../../../../hooks/useStatelessReducer';
-import { BucketScript, MetricAggregation } from '../../../../../types';
+import { BucketScript, MetricAggregation } from '../../../../../dataquery.gen';
+import { useDispatch, useStatelessReducer } from '../../../../../hooks/useStatelessReducer';
 import { AddRemove } from '../../../../AddRemove';
 import { MetricPicker } from '../../../../MetricPicker';
 import { changeMetricAttribute } from '../../state/actions';
@@ -13,9 +13,9 @@ import { SettingField } from '../SettingField';
 
 import {
   addPipelineVariable,
+  changePipelineVariableMetric,
   removePipelineVariable,
   renamePipelineVariable,
-  changePipelineVariableMetric,
 } from './state/actions';
 import { reducer } from './state/reducer';
 
@@ -45,18 +45,18 @@ export const BucketScriptSettingsEditor = ({ value, previousMetrics }: Props) =>
   return (
     <>
       <div
-        className={css`
-          display: flex;
-        `}
+        className={css({
+          display: 'flex',
+        })}
       >
         <InlineLabel width={16}>Variables</InlineLabel>
         <div
-          className={css`
-            display: grid;
-            grid-template-columns: 1fr auto;
-            row-gap: 4px;
-            margin-bottom: 4px;
-          `}
+          className={css({
+            display: 'grid',
+            gridTemplateColumns: '1fr auto',
+            rowGap: '4px',
+            marginBottom: '4px',
+          })}
         >
           {value.pipelineVariables!.map((pipelineVar, index) => (
             // index as a key doesn't work here since removing an element
@@ -68,11 +68,11 @@ export const BucketScriptSettingsEditor = ({ value, previousMetrics }: Props) =>
             // ensures the UI is in a correct state. We might want to optimize this if we see perf issue in the future.
             <Fragment key={uniqueId('es-bs-')}>
               <div
-                className={css`
-                  display: grid;
-                  column-gap: 4px;
-                  grid-template-columns: auto auto;
-                `}
+                className={css({
+                  display: 'grid',
+                  columnGap: '4px',
+                  gridTemplateColumns: 'auto auto',
+                })}
               >
                 <Input
                   aria-label="Variable name"
@@ -101,6 +101,7 @@ export const BucketScriptSettingsEditor = ({ value, previousMetrics }: Props) =>
       <SettingField
         label="Script"
         metric={value}
+        inputType="textarea"
         settingName="script"
         tooltip="Elasticsearch v5.0 and above: Scripting language is Painless. Use params.<var> to reference a variable. Elasticsearch pre-v5.0: Scripting language is per default Groovy if not changed. For Groovy use <var> to reference a variable."
         placeholder="params.var1 / params.var2"

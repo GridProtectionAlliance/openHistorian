@@ -3,7 +3,7 @@ import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 
 import { dateTime, GrafanaTheme2, LogRowModel, renderMarkdown, SelectableValue } from '@grafana/data';
-import { RawQuery } from '@grafana/experimental';
+import { RawQuery } from '@grafana/plugin-ui';
 import { reportInteraction } from '@grafana/runtime';
 import {
   Alert,
@@ -42,71 +42,71 @@ export interface LokiContextUiProps {
 
 function getStyles(theme: GrafanaTheme2) {
   return {
-    labels: css`
-      display: flex;
-      gap: ${theme.spacing(0.5)};
-    `,
-    wrapper: css`
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      gap: ${theme.spacing(0.5)};
-      position: relative;
-    `,
-    textWrapper: css`
-      display: flex;
-      align-items: center;
-    `,
-    hidden: css`
-      visibility: hidden;
-    `,
-    label: css`
-      max-width: 100%;
-      &:first-of-type {
-        margin-bottom: ${theme.spacing(2)};
-      }
-      &:not(:first-of-type) {
-        margin: ${theme.spacing(2)} 0;
-      }
-    `,
-    rawQueryContainer: css`
-      text-align: start;
-      line-break: anywhere;
-      margin-top: -${theme.spacing(0.25)};
-      margin-right: ${theme.spacing(6)};
-      min-height: ${theme.spacing(4)};
-    `,
-    ui: css`
-      background-color: ${theme.colors.background.secondary};
-      padding: ${theme.spacing(2)};
-    `,
+    labels: css({
+      display: 'flex',
+      gap: theme.spacing(0.5),
+    }),
+    wrapper: css({
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      gap: theme.spacing(0.5),
+      position: 'relative',
+    }),
+    textWrapper: css({
+      display: 'flex',
+      alignItems: 'center',
+    }),
+    hidden: css({
+      visibility: 'hidden',
+    }),
+    label: css({
+      maxWidth: '100%',
+      '&:first-of-type': {
+        marginBottom: theme.spacing(2),
+      },
+      '&:not(:first-of-type)': {
+        margin: theme.spacing(2, 0),
+      },
+    }),
+    rawQueryContainer: css({
+      textAlign: 'start',
+      lineBreak: 'anywhere',
+      marginTop: theme.spacing(-0.25),
+      marginRight: theme.spacing(6),
+      minHeight: theme.spacing(4),
+    }),
+    ui: css({
+      backgroundColor: theme.colors.background.secondary,
+      padding: theme.spacing(2),
+    }),
     notification: css({
       position: 'absolute',
       zIndex: theme.zIndex.portal,
       top: 0,
       right: 0,
     }),
-    rawQuery: css`
-      display: inline;
-    `,
-    queryDescription: css`
-      margin-left: ${theme.spacing(0.5)};
-    `,
-    iconButton: css`
-      position: absolute;
-      top: ${theme.spacing(1)};
-      right: ${theme.spacing(1)};
-      z-index: ${theme.zIndex.navbarFixed};
-    `,
-    operationsToggle: css`
-      margin: ${theme.spacing(1)} 0 ${theme.spacing(-1)} 0;
-      & > div {
-        margin: 0;
-        & > label {
-          padding: 0;
-        }
-      }
-    `,
+    rawQuery: css({
+      display: 'inline',
+    }),
+    queryDescription: css({
+      marginLeft: theme.spacing(0.5),
+    }),
+    iconButton: css({
+      position: 'absolute',
+      top: theme.spacing(1),
+      right: theme.spacing(1),
+      zIndex: theme.zIndex.navbarFixed,
+    }),
+    operationsToggle: css({
+      margin: theme.spacing(1, 0, -1, 0),
+      '& > div': {
+        margin: 0,
+        '& > label': {
+          padding: 0,
+        },
+      },
+    }),
   };
 }
 
@@ -126,7 +126,7 @@ export function LokiContextUi(props: LokiContextUiProps) {
     window.localStorage.getItem(SHOULD_INCLUDE_PIPELINE_OPERATIONS) === 'true'
   );
 
-  const timerHandle = useRef<number>();
+  const timerHandle = useRef<number | undefined>(undefined);
   const previousInitialized = useRef<boolean>(false);
   const previousContextFilters = useRef<ContextFilter[]>([]);
 
@@ -191,14 +191,18 @@ export function LokiContextUi(props: LokiContextUiProps) {
     }, 1500);
 
     return () => {
-      clearTimeout(timerHandle.current);
+      if (timerHandle.current) {
+        clearTimeout(timerHandle.current);
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextFilters, initialized]);
 
   useEffect(() => {
     return () => {
-      clearTimeout(timerHandle.current);
+      if (timerHandle.current) {
+        clearTimeout(timerHandle.current);
+      }
       onClose();
     };
   }, [onClose]);
@@ -269,35 +273,33 @@ export function LokiContextUi(props: LokiContextUiProps) {
           elevated={true}
         ></Alert>
       )}
-      <Tooltip content={'Revert to initial log context query.'}>
-        <div className={styles.iconButton}>
-          <Button
-            data-testid="revert-button"
-            icon="history-alt"
-            variant="secondary"
-            disabled={isInitialState}
-            onClick={(e) => {
-              reportInteraction('grafana_explore_logs_loki_log_context_reverted', {
-                logRowUid: row.uid,
-              });
-              setContextFilters((contextFilters) => {
-                return contextFilters.map((contextFilter) => ({
-                  ...contextFilter,
-                  // For revert to initial query we need to enable all labels and disable all parsed labels
-                  enabled: !contextFilter.nonIndexed,
-                }));
-              });
-              // We are removing the preserved labels from local storage so we can preselect the labels in the UI
-              window.localStorage.removeItem(LOKI_LOG_CONTEXT_PRESERVED_LABELS);
-              window.localStorage.removeItem(SHOULD_INCLUDE_PIPELINE_OPERATIONS);
-              setIncludePipelineOperations(false);
-            }}
-          />
-        </div>
-      </Tooltip>
+      <div className={styles.iconButton}>
+        <Button
+          tooltip="Revert to initial log context query"
+          data-testid="revert-button"
+          icon="history-alt"
+          variant="secondary"
+          disabled={isInitialState}
+          onClick={(e) => {
+            reportInteraction('grafana_explore_logs_loki_log_context_reverted', {
+              logRowUid: row.uid,
+            });
+            setContextFilters((contextFilters) => {
+              return contextFilters.map((contextFilter) => ({
+                ...contextFilter,
+                // For revert to initial query we need to enable all labels and disable all parsed labels
+                enabled: !contextFilter.nonIndexed,
+              }));
+            });
+            // We are removing the preserved labels from local storage so we can preselect the labels in the UI
+            window.localStorage.removeItem(LOKI_LOG_CONTEXT_PRESERVED_LABELS);
+            window.localStorage.removeItem(SHOULD_INCLUDE_PIPELINE_OPERATIONS);
+            setIncludePipelineOperations(false);
+          }}
+        />
+      </div>
 
       <Collapse
-        collapsible={true}
         isOpen={isOpen}
         onToggle={() => {
           window.localStorage.setItem(IS_LOKI_LOG_CONTEXT_UI_OPEN, (!isOpen).toString());

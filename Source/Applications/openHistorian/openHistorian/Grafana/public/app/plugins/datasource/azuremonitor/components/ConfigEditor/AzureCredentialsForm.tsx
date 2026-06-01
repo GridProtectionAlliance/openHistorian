@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, type JSX } from 'react';
 
-import { getAzureClouds } from '@grafana/azure-sdk';
+import { AzureAuthType, AzureCredentials, getAzureClouds } from '@grafana/azure-sdk';
 import { SelectableValue } from '@grafana/data';
-import { ConfigSection } from '@grafana/experimental';
+import { t } from '@grafana/i18n';
+import { ConfigSection } from '@grafana/plugin-ui';
 import { Select, Field } from '@grafana/ui';
 
 import { selectors } from '../../e2e/selectors';
-import { AzureAuthType, AzureCredentials } from '../../types';
 
 import { AppRegistrationCredentials } from './AppRegistrationCredentials';
 import CurrentUserFallbackCredentials from './CurrentUserFallbackCredentials';
@@ -74,26 +74,39 @@ export const AzureCredentialsForm = (props: Props) => {
   }, [managedIdentityEnabled, workloadIdentityEnabled, userIdentityEnabled]);
 
   const onAuthTypeChange = (selected: SelectableValue<AzureAuthType>) => {
-    const defaultAuthType = managedIdentityEnabled
-      ? 'msi'
-      : workloadIdentityEnabled
-        ? 'workloadidentity'
-        : userIdentityEnabled
-          ? 'currentuser'
-          : 'clientsecret';
+    const defaultAuthType = (() => {
+      if (managedIdentityEnabled) {
+        return 'msi';
+      }
+
+      if (workloadIdentityEnabled) {
+        return 'workloadidentity';
+      }
+
+      if (userIdentityEnabled) {
+        return 'currentuser';
+      }
+
+      return 'clientsecret';
+    })();
+
     const updated: AzureCredentials = {
       ...credentials,
       authType: selected.value || defaultAuthType,
     };
+
     onCredentialsChange(updated);
   };
 
   return (
-    <ConfigSection title="Authentication">
+    <ConfigSection title={t('components.azure-credentials-form.title-authentication', 'Authentication')}>
       {authTypeOptions.length > 1 && (
         <Field
-          label="Authentication"
-          description="Choose the type of authentication to Azure services"
+          label={t('components.azure-credentials-form.label-authentication', 'Authentication')}
+          description={t(
+            'components.azure-credentials-form.description-authentication',
+            'Choose the type of authentication to Azure services'
+          )}
           data-testid={selectors.components.configEditor.authType.select}
           htmlFor="authentication-type"
         >
@@ -123,7 +136,6 @@ export const AzureCredentialsForm = (props: Props) => {
           disabled={disabled}
           managedIdentityEnabled={managedIdentityEnabled}
           workloadIdentityEnabled={workloadIdentityEnabled}
-          userIdentityEnabled={userIdentityEnabled}
         />
       )}
     </ConfigSection>

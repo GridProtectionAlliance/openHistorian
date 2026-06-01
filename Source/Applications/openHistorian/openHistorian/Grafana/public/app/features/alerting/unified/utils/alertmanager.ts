@@ -1,5 +1,6 @@
 import { isEqual, uniqWith } from 'lodash';
 
+import { matchLabelsSet } from '@grafana/alerting/unstable';
 import { SelectableValue } from '@grafana/data';
 import {
   AlertManagerCortexConfig,
@@ -16,7 +17,13 @@ import { MatcherFieldValue } from '../types/silence-form';
 
 import { getAllDataSources } from './config';
 import { DataSourceType, GRAFANA_RULES_SOURCE_NAME } from './datasource';
-import { MatcherFormatter, parsePromQLStyleMatcherLooseSafe, unquoteWithUnescape } from './matchers';
+import { objectLabelsToArray } from './labels';
+import {
+  MatcherFormatter,
+  convertObjectMatcherToAlertingPackageMatcher,
+  parsePromQLStyleMatcherLooseSafe,
+  unquoteWithUnescape,
+} from './matchers';
 
 export function addDefaultsToAlertmanagerConfig(config: AlertManagerCortexConfig): AlertManagerCortexConfig {
   // add default receiver if it does not exist
@@ -125,26 +132,10 @@ export function matcherToObjectMatcher(matcher: Matcher): ObjectMatcher {
 }
 
 export function labelsMatchMatchers(labels: Labels, matchers: Matcher[]): boolean {
-  return matchers.every(({ name, value, isRegex, isEqual }) => {
-    return Object.entries(labels).some(([labelKey, labelValue]) => {
-      const nameMatches = name === labelKey;
-      let valueMatches;
-      if (isEqual && !isRegex) {
-        valueMatches = value === labelValue;
-      }
-      if (!isEqual && !isRegex) {
-        valueMatches = value !== labelValue;
-      }
-      if (isEqual && isRegex) {
-        valueMatches = new RegExp(value).test(labelValue);
-      }
-      if (!isEqual && isRegex) {
-        valueMatches = !new RegExp(value).test(labelValue);
-      }
+  const labelsArray = objectLabelsToArray(labels);
+  const labelMatchers = matchers.map(matcherToObjectMatcher).map(convertObjectMatcherToAlertingPackageMatcher);
 
-      return nameMatches && valueMatches;
-    });
-  });
+  return matchLabelsSet(labelMatchers, labelsArray);
 }
 
 export function combineMatcherStrings(...matcherStrings: string[]): string {

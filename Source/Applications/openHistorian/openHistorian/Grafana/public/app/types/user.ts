@@ -1,11 +1,11 @@
-import { SelectableValue, WithAccessControlMetadata } from '@grafana/data';
-import { Role } from 'app/types';
+import { OrgRole, SelectableValue, WithAccessControlMetadata } from '@grafana/data';
 
-import { OrgRole } from '.';
+import { Role } from './accessControl';
 
 export interface OrgUser extends WithAccessControlMetadata {
   avatarUrl: string;
   email: string;
+  created?: string;
   lastSeenAt: string;
   lastSeenAtAge: string;
   login: string;
@@ -15,9 +15,12 @@ export interface OrgUser extends WithAccessControlMetadata {
   // RBAC roles
   roles?: Role[];
   userId: number;
+  uid: string;
   isDisabled: boolean;
   authLabels?: string[];
   isExternallySynced?: boolean;
+  // Externally provisioned
+  isProvisioned?: boolean;
 }
 
 export interface User {
@@ -34,6 +37,7 @@ export type Unit = { name: string; url: string };
 
 export interface UserDTO extends WithAccessControlMetadata {
   id: number;
+  uid: string;
   login: string;
   email: string;
   name: string;
@@ -46,6 +50,7 @@ export interface UserDTO extends WithAccessControlMetadata {
   theme?: string;
   avatarUrl?: string;
   orgId?: number;
+  created?: string;
   lastSeenAt?: string;
   lastSeenAtAge?: string;
   licensedRole?: string;
@@ -54,6 +59,7 @@ export interface UserDTO extends WithAccessControlMetadata {
   orgs?: Unit[];
   isExternallySynced?: boolean;
   isGrafanaAdminExternallySynced?: boolean;
+  isProvisioned?: boolean;
 }
 
 export interface Invitee {
@@ -95,6 +101,7 @@ export interface UserSession {
   seenAt: string;
   browser: string;
   browserVersion: string;
+  authModule?: string;
   os: string;
   osVersion: string;
   device: string;

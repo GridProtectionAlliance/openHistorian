@@ -1,7 +1,7 @@
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, SceneObjectRef, SceneObjectState, VizPanel } from '@grafana/scenes';
 import { LibraryPanel } from '@grafana/schema';
 import { Drawer } from '@grafana/ui';
-import { t } from 'app/core/internationalization';
 import {
   LibraryPanelsSearch,
   LibraryPanelsSearchVariant,
@@ -9,8 +9,8 @@ import {
 
 import { getDashboardSceneFor, getDefaultVizPanel } from '../utils/utils';
 
-import { DashboardGridItem } from './DashboardGridItem';
 import { LibraryPanelBehavior } from './LibraryPanelBehavior';
+import { isDashboardLayoutItem } from './types/DashboardLayoutItem';
 
 export interface AddLibraryPanelDrawerState extends SceneObjectState {
   panelToReplaceRef?: SceneObjectRef<VizPanel>;
@@ -23,23 +23,26 @@ export class AddLibraryPanelDrawer extends SceneObjectBase<AddLibraryPanelDrawer
 
   public onAddLibraryPanel = (panelInfo: LibraryPanel) => {
     const dashboard = getDashboardSceneFor(this);
-
-    const newPanel = getDefaultVizPanel(dashboard);
+    const newPanel = getDefaultVizPanel();
 
     newPanel.setState({
+      // Panel title takes precedence over library panel title when resolving the library panel
+      title: panelInfo.model.title,
+      hoverHeader: !panelInfo.model.title,
       $behaviors: [new LibraryPanelBehavior({ uid: panelInfo.uid, name: panelInfo.name })],
     });
 
     const panelToReplace = this.state.panelToReplaceRef?.resolve();
 
     if (panelToReplace) {
-      const gridItemToReplace = panelToReplace.parent;
+      const layoutItem = panelToReplace.parent;
 
-      if (!(gridItemToReplace instanceof DashboardGridItem)) {
-        throw new Error('Trying to replace a panel that does not have a DashboardGridItem');
+      if (layoutItem && isDashboardLayoutItem(layoutItem)) {
+        // keep the same key from the panelToReplace
+        // this is important for edit mode
+        newPanel.setState({ key: panelToReplace.state.key });
+        layoutItem.setElementBody(newPanel);
       }
-
-      gridItemToReplace.setState({ body: newPanel });
     } else {
       dashboard.addPanel(newPanel);
     }

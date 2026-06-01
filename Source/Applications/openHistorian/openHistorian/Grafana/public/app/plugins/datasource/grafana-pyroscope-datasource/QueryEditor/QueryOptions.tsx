@@ -2,7 +2,8 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 
 import { CoreApp, GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { useStyles2, RadioButtonGroup, MultiSelect, Input } from '@grafana/ui';
+import { config } from '@grafana/runtime';
+import { useStyles2, RadioButtonGroup, MultiSelect, Input, InlineSwitch } from '@grafana/ui';
 
 import { Query } from '../types';
 
@@ -47,11 +48,17 @@ export function QueryOptions({ query, onQueryChange, app, labels }: Props) {
   if (query.groupBy?.length) {
     collapsedInfo.push(`Group by: ${query.groupBy.join(', ')}`);
   }
+  if (query.limit) {
+    collapsedInfo.push(`Limit: ${query.limit}`);
+  }
   if (query.spanSelector?.length) {
     collapsedInfo.push(`Span ID: ${query.spanSelector.join(', ')}`);
   }
   if (query.maxNodes) {
     collapsedInfo.push(`Max nodes: ${query.maxNodes}`);
+  }
+  if (query.includeExemplars) {
+    collapsedInfo.push(`With exemplars`);
   }
 
   return (
@@ -86,6 +93,26 @@ export function QueryOptions({ query, onQueryChange, app, labels }: Props) {
               }}
             />
           </EditorField>
+          <EditorField
+            label={'Limit'}
+            tooltip={
+              <>
+                When &quot;Group by&quot; is set, limits the maximum number of series to return. Does not apply to
+                profile query.
+              </>
+            }
+          >
+            <Input
+              value={query.limit || ''}
+              type="number"
+              placeholder="0"
+              onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
+                let newValue = parseInt(event.currentTarget.value, 10);
+                newValue = isNaN(newValue) ? 0 : newValue;
+                onQueryChange({ ...query, limit: newValue });
+              }}
+            />
+          </EditorField>
           <EditorField label={'Span ID'} tooltip={<>Sets the span ID from which to search for profiles.</>}>
             <Input
               value={query.spanSelector || ['']}
@@ -111,6 +138,24 @@ export function QueryOptions({ query, onQueryChange, app, labels }: Props) {
               }}
             />
           </EditorField>
+          <EditorField label={'Annotations'} tooltip={<>Include profiling annotations in the time series.</>}>
+            <InlineSwitch
+              value={query.annotations || false}
+              onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
+                onQueryChange({ ...query, annotations: event.currentTarget.checked });
+              }}
+            />
+          </EditorField>
+          {config.featureToggles.profilesExemplars && (
+            <EditorField label={'Exemplars'} tooltip={<>Include profile exemplars in the time series.</>}>
+              <InlineSwitch
+                value={query.includeExemplars || false}
+                onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
+                  onQueryChange({ ...query, includeExemplars: event.currentTarget.checked });
+                }}
+              />
+            </EditorField>
+          )}
         </div>
       </QueryOptionGroup>
     </Stack>

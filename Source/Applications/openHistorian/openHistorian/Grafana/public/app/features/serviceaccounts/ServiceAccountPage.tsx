@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { useEffect, useState, type JSX } from 'react';
+import { ConnectedProps, connect } from 'react-redux';
 import { useParams } from 'react-router-dom-v5-compat';
 
-import { getTimeZone, NavModelItem } from '@grafana/data';
+import { NavModelItem, getTimeZone } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { Button, ConfirmModal, IconButton, Stack } from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
-import { contextSrv } from 'app/core/core';
-import { AccessControlAction, ApiKey, ServiceAccountDTO, StoreState } from 'app/types';
+import { contextSrv } from 'app/core/services/context_srv';
+import { AccessControlAction } from 'app/types/accessControl';
+import { ApiKey } from 'app/types/apiKeys';
+import { ServiceAccountDTO } from 'app/types/serviceaccount';
+import { StoreState } from 'app/types/store';
 
 import { ServiceAccountPermissions } from './ServiceAccountPermissions';
 import { CreateTokenModal, ServiceAccountToken } from './components/CreateTokenModal';
@@ -68,7 +72,6 @@ export const ServiceAccountPageUnconnected = ({
   const [isDisableModalOpen, setIsDisableModalOpen] = useState(false);
   const { id = '' } = useParams();
 
-  const serviceAccountId = parseInt(id, 10);
   const tokenActionsDisabled =
     serviceAccount.isDisabled ||
     serviceAccount.isExternal ||
@@ -83,16 +86,19 @@ export const ServiceAccountPageUnconnected = ({
   const pageNav: NavModelItem = {
     text: serviceAccount.name,
     img: serviceAccount.avatarUrl,
-    subTitle: 'Manage settings for an individual service account.',
+    subTitle: t(
+      'serviceaccounts.service-account-page-unconnected.page-nav.subTitle.manage-settings-individual-service-account',
+      'Manage settings for an individual service account.'
+    ),
   };
 
   useEffect(() => {
-    loadServiceAccount(serviceAccountId);
-    loadServiceAccountTokens(serviceAccountId);
+    loadServiceAccount(id);
+    loadServiceAccountTokens(id);
     if (contextSrv.licensedAccessControlEnabled()) {
       fetchACOptions();
     }
-  }, [loadServiceAccount, loadServiceAccountTokens, serviceAccountId]);
+  }, [loadServiceAccount, loadServiceAccountTokens, id]);
 
   const onProfileChange = (serviceAccount: ServiceAccountDTO) => {
     updateServiceAccount(serviceAccount);
@@ -107,7 +113,7 @@ export const ServiceAccountPageUnconnected = ({
   };
 
   const handleServiceAccountDelete = () => {
-    deleteServiceAccount(serviceAccount.id);
+    deleteServiceAccount(serviceAccount.uid);
   };
 
   const handleServiceAccountDisable = () => {
@@ -120,11 +126,11 @@ export const ServiceAccountPageUnconnected = ({
   };
 
   const onDeleteServiceAccountToken = (key: ApiKey) => {
-    deleteServiceAccountToken(serviceAccount?.id, key.id!);
+    deleteServiceAccountToken(serviceAccount?.uid, key.id!);
   };
 
   const onCreateToken = (token: ServiceAccountToken) => {
-    createServiceAccountToken(serviceAccount?.id, token, setNewToken);
+    createServiceAccountToken(serviceAccount?.uid, token, setNewToken);
   };
 
   const onTokenModalClose = () => {
@@ -144,7 +150,9 @@ export const ServiceAccountPageUnconnected = ({
                 onClick={showDeleteServiceAccountModal(true)}
                 disabled={!contextSrv.hasPermission(AccessControlAction.ServiceAccountsDelete)}
               >
-                Delete service account
+                <Trans i18nKey="serviceaccounts.service-account-page-unconnected.delete-service-account">
+                  Delete service account
+                </Trans>
               </Button>
               {serviceAccount.isDisabled ? (
                 <Button
@@ -153,7 +161,9 @@ export const ServiceAccountPageUnconnected = ({
                   onClick={handleServiceAccountEnable}
                   disabled={!ableToWrite}
                 >
-                  Enable service account
+                  <Trans i18nKey="serviceaccounts.service-account-page-unconnected.enable-service-account">
+                    Enable service account
+                  </Trans>
                 </Button>
               ) : (
                 <Button
@@ -162,7 +172,9 @@ export const ServiceAccountPageUnconnected = ({
                   onClick={showDisableServiceAccountModal(true)}
                   disabled={!ableToWrite}
                 >
-                  Disable service account
+                  <Trans i18nKey="serviceaccounts.service-account-page-unconnected.disable-service-account">
+                    Disable service account
+                  </Trans>
                 </Button>
               )}
             </Stack>
@@ -173,7 +185,10 @@ export const ServiceAccountPageUnconnected = ({
                 disabled={true}
                 name="lock"
                 size="md"
-                tooltip={`This is a managed service account and cannot be modified.`}
+                tooltip={t(
+                  'serviceaccounts.service-account-page-unconnected.tooltip-managed-service-account-cannot-modified',
+                  'This is a managed service account and cannot be modified'
+                )}
               />
             </Stack>
           )}
@@ -181,10 +196,19 @@ export const ServiceAccountPageUnconnected = ({
             <ServiceAccountProfile serviceAccount={serviceAccount} timeZone={timezone} onChange={onProfileChange} />
           )}
           <Stack justifyContent="space-between" height="auto">
-            <h3>Tokens</h3>
+            <h3>
+              <Trans i18nKey="serviceaccounts.service-account-page-unconnected.tokens">Tokens</Trans>
+            </h3>
             {!serviceAccount.isExternal && (
-              <Button onClick={() => setIsTokenModalOpen(true)} disabled={tokenActionsDisabled}>
-                Add service account token
+              <Button
+                onClick={() => setIsTokenModalOpen(true)}
+                disabled={tokenActionsDisabled}
+                key="add-service-account-token"
+                icon="plus"
+              >
+                <Trans i18nKey="serviceaccounts.service-account-page-unconnected.add-service-account-token">
+                  Add service account token
+                </Trans>
               </Button>
             )}
           </Stack>
@@ -203,17 +227,35 @@ export const ServiceAccountPageUnconnected = ({
 
         <ConfirmModal
           isOpen={isDeleteModalOpen}
-          title="Delete service account"
-          body="Are you sure you want to delete this service account?"
-          confirmText="Delete service account"
+          title={t(
+            'serviceaccounts.service-account-page-unconnected.title-delete-service-account',
+            'Delete service account'
+          )}
+          body={t(
+            'serviceaccounts.service-account-page-unconnected.body-delete-service-account',
+            'Are you sure you want to delete this service account?'
+          )}
+          confirmText={t(
+            'serviceaccounts.service-account-page-unconnected.confirmText-delete-service-account',
+            'Delete service account'
+          )}
           onConfirm={handleServiceAccountDelete}
           onDismiss={showDeleteServiceAccountModal(false)}
         />
         <ConfirmModal
           isOpen={isDisableModalOpen}
-          title="Disable service account"
-          body="Are you sure you want to disable this service account?"
-          confirmText="Disable service account"
+          title={t(
+            'serviceaccounts.service-account-page-unconnected.title-disable-service-account',
+            'Disable service account'
+          )}
+          body={t(
+            'serviceaccounts.service-account-page-unconnected.body-disable-service-account',
+            'Are you sure you want to disable this service account?'
+          )}
+          confirmText={t(
+            'serviceaccounts.service-account-page-unconnected.confirmText-disable-service-account',
+            'Disable service account'
+          )}
           onConfirm={handleServiceAccountDisable}
           onDismiss={showDisableServiceAccountModal(false)}
         />

@@ -19,8 +19,8 @@ const promDatasource = mockDataSource({
   type: 'prometheus',
 });
 
-jest.mock('@grafana/runtime/src/services/dataSourceSrv', () => ({
-  ...jest.requireActual('@grafana/runtime/src/services/dataSourceSrv'),
+jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
   getDataSourceSrv: () => ({
     get: async () => ({
       ...defaultDatasource,
@@ -38,10 +38,14 @@ jest.mock('@grafana/runtime/src/services/dataSourceSrv', () => ({
 describe('GroupByVariableForm', () => {
   const onDataSourceChangeMock = jest.fn();
   const onDefaultOptionsChangeMock = jest.fn();
+  const onAllowCustomValueChangeMock = jest.fn();
 
   const defaultProps: GroupByVariableFormProps = {
+    allowCustomValue: true,
+    onAllowCustomValueChange: onAllowCustomValueChangeMock,
     onDataSourceChange: onDataSourceChangeMock,
     onDefaultOptionsChange: onDefaultOptionsChangeMock,
+    datasourceSupported: true,
   };
 
   function setup(props?: Partial<GroupByVariableFormProps>) {
@@ -53,6 +57,23 @@ describe('GroupByVariableForm', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('should render the form with allow custom value true', async () => {
+    const mockOnAllowCustomValueChange = jest.fn();
+    const {
+      renderer: { getByTestId },
+    } = setup({
+      allowCustomValue: true,
+      onAllowCustomValueChange: mockOnAllowCustomValueChange,
+    });
+
+    const allowCustomValueCheckbox = getByTestId(
+      selectors.pages.Dashboard.Settings.Variables.Edit.General.selectionOptionsAllowCustomValueSwitch
+    );
+
+    expect(allowCustomValueCheckbox).toBeInTheDocument();
+    expect(allowCustomValueCheckbox).toBeChecked();
   });
 
   it('should call onDataSourceChange when changing the datasource', async () => {
@@ -109,5 +130,28 @@ describe('GroupByVariableForm', () => {
     await userEvent.click(toggle);
     expect(onDefaultOptionsChangeMock).toHaveBeenCalledTimes(1);
     expect(onDefaultOptionsChangeMock).toHaveBeenCalledWith(undefined);
+  });
+
+  it('should render only datasource picker and alert when not supported', async () => {
+    const mockOnAllowCustomValueChange = jest.fn();
+    const { renderer } = await setup({
+      ...defaultProps,
+      datasourceSupported: false,
+      onAllowCustomValueChange: mockOnAllowCustomValueChange,
+    });
+
+    const dataSourcePicker = renderer.getByTestId(
+      selectors.pages.Dashboard.Settings.Variables.Edit.GroupByVariable.dataSourceSelect
+    );
+
+    const allowCustomValueCheckbox = renderer.queryByTestId(
+      selectors.pages.Dashboard.Settings.Variables.Edit.General.selectionOptionsAllowCustomValueSwitch
+    );
+
+    const alertText = renderer.getByTestId(selectors.pages.Dashboard.Settings.Variables.Edit.GroupByVariable.infoText);
+
+    expect(dataSourcePicker).toBeInTheDocument();
+    expect(allowCustomValueCheckbox).not.toBeInTheDocument();
+    expect(alertText).toBeInTheDocument();
   });
 });

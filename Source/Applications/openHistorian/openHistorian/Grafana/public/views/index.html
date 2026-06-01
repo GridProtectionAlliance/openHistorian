@@ -18,6 +18,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]" />
     <link rel="mask-icon" href="[[.Assets.ContentDeliveryURL]]public/img/grafana_mask_icon.svg" color="#F05A28" />
 
+    [[range $asset := .Assets.CSSFiles]]
+      <link rel="stylesheet" href="[[$asset.FilePath]]" />
+    [[end]]
+
     <!-- If theme is "system", we inject the stylesheets with javascript further down the page -->
     [[ if eq .ThemeType "light" ]]
     <link rel="stylesheet" href="[[.Assets.Light]]" />
@@ -30,6 +34,7 @@
     </script>
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="msapplication-TileColor" content="#2b5797" />
     <meta name="msapplication-config" content="public/img/browserconfig.xml" />
@@ -170,7 +175,7 @@
       .preloader--done .preloader__text--fail a {
         color: white;
       }
-      
+
       .theme-light .preloader--done .preloader__text--fail a {
         color: rgb(31, 98, 224);
       }
@@ -270,6 +275,9 @@
         assets: [[.Assets]]
       };
 
+      // FEMT index.html uses this, and we want to keep the index.ts the same for both
+      window.__grafana_boot_data_promise = Promise.resolve();
+
       // Set theme to match system only on startup.
       // Do not react to changes in system theme after startup.
       if (window.grafanaBootData.user.theme === "system") {
@@ -350,13 +358,26 @@
     <!-- End Google Tag Manager -->
     [[end]]
 
-    [[range $asset := .Assets.JSFiles]]
-      <script
-      nonce="[[$.Nonce]]"
-      src="[[$asset.FilePath]]"
-      type="text/javascript"
-      defer
-    ></script>
+    [[if .Settings.FeatureToggles.assetSriChecks ]]
+      [[range $asset := .Assets.JSFiles]]
+        <script
+        nonce="[[$.Nonce]]"
+        src="[[$asset.FilePath]]"
+        integrity="[[$asset.Integrity]]"
+        crossorigin="anonymous"
+        type="text/javascript"
+        defer
+      ></script>
+      [[end]]
+    [[else]]
+      [[range $asset := .Assets.JSFiles]]
+        <script
+        nonce="[[$.Nonce]]"
+        src="[[$asset.FilePath]]"
+        type="text/javascript"
+        defer
+      ></script>
+      [[end]]
     [[end]]
 
     <script nonce="[[.Nonce]]">

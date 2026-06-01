@@ -19,15 +19,15 @@ weight: 800
 
 Auditing allows you to track important changes to your Grafana instance. By default, audit logs are logged to file but the auditing feature also supports sending logs directly to Loki.
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 To enable sending Grafana Cloud audit logs to your Grafana Cloud Logs instance, please [file a support ticket](/profile/org/tickets/new). Note that standard ingest and retention rates apply for ingesting these audit logs.
-{{% /admonition %}}
+{{< /admonition >}}
 
 Only API requests or UI actions that trigger an API request generate an audit log.
 
-{{% admonition type="note" %}}
-Available in [Grafana Enterprise]({{< relref "../../introduction/grafana-enterprise" >}}) version 7.3 and later, and [Grafana Cloud](/docs/grafana-cloud).
-{{% /admonition %}}
+{{< admonition type="note" >}}
+Available in [Grafana Enterprise](../../../introduction/grafana-enterprise/) and [Grafana Cloud](/docs/grafana-cloud).
+{{< /admonition >}}
 
 ## Audit logs
 
@@ -48,7 +48,7 @@ Audit logs contain the following fields. The fields followed by **\*** are alway
 | `user.orgId`\*          | number  | Current organization of the user that made the request.                                                                                                                                                                  |
 | `user.orgRole`          | string  | Current role of the user that made the request.                                                                                                                                                                          |
 | `user.name`             | string  | Name of the Grafana user that made the request.                                                                                                                                                                          |
-| `user.tokenId`          | number  | ID of the user authentication token.                                                                                                                                                                                     |
+| `user.authTokenId`      | number  | ID of the user authentication token.                                                                                                                                                                                     |
 | `user.apiKeyId`         | number  | ID of the Grafana API key used to make the request.                                                                                                                                                                      |
 | `user.isAnonymous`\*    | boolean | If an anonymous user made the request, `true`. Otherwise, `false`.                                                                                                                                                       |
 | `action`\*              | string  | The request action. For example, `create`, `update`, or `manage-permissions`.                                                                                                                                            |
@@ -145,7 +145,7 @@ to the action when the user requests a report's preview to be sent through email
 
 \* Where `AUTH-MODULE` is the name of the authentication module: `grafana`, `saml`,
 `ldap`, etc. \
-\*\* Includes manual log out, token expired/revoked, and [SAML Single Logout]({{< relref "./configure-authentication/saml#single-logout" >}}).
+\*\* Includes manual log out, token expired/revoked, and [SAML Single Logout](../configure-authentication/saml/#single-logout).
 
 #### Service accounts
 
@@ -326,6 +326,15 @@ external group.
 | Set licensing token      | `{"action": "create", "requestUri": "/api/licensing/token"}` |
 | Save billing information | `{"action": "billing-information"}`                          |
 
+#### Cloud migration management
+
+| Action                           | Distinguishing fields                                       |
+| -------------------------------- | ----------------------------------------------------------- |
+| Connect to a cloud instance      | `{"action": "connect-instance"}`                            |
+| Disconnect from a cloud instance | `{"action": "disconnect-instance"}`                         |
+| Build a snapshot                 | `{"action": "build", "resources": [{"type": "snapshot"}]}`  |
+| Upload a snapshot                | `{"action": "upload", "resources": [{"type": "snapshot"}]}` |
+
 #### Generic actions
 
 In addition to the actions listed above, any HTTP request (`POST`, `PATCH`, `PUT`, and `DELETE`)
@@ -343,12 +352,12 @@ Furthermore, you can also record `GET` requests. See below how to configure it.
 
 ## Configuration
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 The auditing feature is disabled by default.
-{{% /admonition %}}
+{{< /admonition >}}
 
 Audit logs can be saved into files, sent to a Loki instance or sent to the Grafana default logger. By default, only the file exporter is enabled.
-You can choose which exporter to use in the [configuration file]({{< relref "../configure-grafana" >}}).
+You can choose which exporter to use in the [configuration file](../../configure-grafana/).
 
 Options are `file`, `loki`, and `logger`. Use spaces to separate multiple modes, such as `file loki`.
 
@@ -362,6 +371,10 @@ enabled = false
 loggers = file
 # Keep dashboard content in the logs (request or response fields); this can significantly increase the size of your logs.
 log_dashboard_content = false
+# Whether to record data source queries' request body. This can significantly increase the size of your logs. Enabled by default.
+log_datasource_query_request_body = true
+# Whether to record data source queries' response body. This can significantly increase the size of your logs. Enabled by default.
+log_datasource_query_response_body = true
 # Keep requests and responses body; this can significantly increase the size of your logs.
 verbose = false
 # Write an audit log for every status code.
@@ -392,9 +405,9 @@ max_file_size_mb = 256
 
 Audit logs are sent to a [Loki](/oss/loki/) service, through HTTP or gRPC.
 
-{{% admonition type="note" %}}
+{{< admonition type="note" >}}
 The HTTP option for the Loki exporter is available only in Grafana Enterprise version 7.4 and later.
-{{% /admonition %}}
+{{< /admonition >}}
 
 ```ini
 [auditing.logs.loki]
@@ -411,9 +424,11 @@ tenant_id =
 
 If you have multiple Grafana instances sending logs to the same Loki service or if you are using Loki for non-audit logs, audit logs come with additional labels to help identifying them:
 
-- **host** - OS hostname on which the Grafana instance is running.
-- **grafana_instance** - Application URL.
-- **kind** - `auditing`
+| Label            | Value                                                |
+| ---------------- | ---------------------------------------------------- |
+| host             | OS hostname on which the Grafana instance is running |
+| grafana_instance | Application URL                                      |
+| kind             | `auditing`                                           |
 
 When basic authentication is needed to ingest logs in your Loki instance, you can specify credentials in the URL field. For example:
 
@@ -426,4 +441,4 @@ url = user:password@localhost:3000
 
 ### Console exporter
 
-Audit logs are sent to the Grafana default logger. The audit logs use the `auditing.console` logger and are logged on `debug`-level, learn how to enable debug logging in the [log configuration]({{< relref "../configure-grafana#log" >}}) section of the documentation. Accessing the audit logs in this way is not recommended for production use.
+Audit logs are sent to the Grafana default logger. The audit logs use the `auditing.console` logger and are logged on `debug`-level, learn how to enable debug logging in the [log configuration](../../configure-grafana/#log) section of the documentation. Accessing the audit logs in this way is not recommended for production use.

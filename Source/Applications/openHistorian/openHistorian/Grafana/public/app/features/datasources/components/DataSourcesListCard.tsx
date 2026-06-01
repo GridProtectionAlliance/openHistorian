@@ -2,10 +2,11 @@ import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 
 import { DataSourceSettings, GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
 import { Card, LinkButton, Stack, Tag, useStyles2 } from '@grafana/ui';
 
-import { useDataSourcesRoutes } from '../state';
+import { ROUTES } from '../../connections/constants';
 import { trackCreateDashboardClicked, trackExploreClicked } from '../tracking';
 import { constructDataSourceExploreUrl } from '../utils';
 
@@ -16,12 +17,11 @@ export interface Props {
 }
 
 export function DataSourcesListCard({ dataSource, hasWriteRights, hasExploreRights }: Props) {
-  const dataSourcesRoutes = useDataSourcesRoutes();
-  const dsLink = config.appSubUrl + dataSourcesRoutes.Edit.replace(/:uid/gi, dataSource.uid);
+  const dsLink = config.appSubUrl + ROUTES.DataSourcesEdit.replace(/:uid/gi, dataSource.uid);
   const styles = useStyles2(getStyles);
 
   return (
-    <Card href={hasWriteRights ? dsLink : undefined}>
+    <Card noMargin href={hasWriteRights ? dsLink : undefined}>
       <Card.Heading>{dataSource.name}</Card.Heading>
       <Card.Figure>
         <img src={dataSource.typeLogoUrl} alt="" height="40px" width="40px" className={styles.logo} />
@@ -45,11 +45,11 @@ export function DataSourcesListCard({ dataSource, hasWriteRights, hasExploreRigh
               grafana_version: config.buildInfo.version,
               datasource_uid: dataSource.uid,
               plugin_name: dataSource.typeName,
-              path: location.pathname,
+              path: window.location.pathname,
             });
           }}
         >
-          Build a dashboard
+          <Trans i18nKey="datasources.data-sources-list-card.build-a-dashboard">Build a dashboard</Trans>
         </LinkButton>
 
         {/* Explore */}
@@ -65,11 +65,11 @@ export function DataSourcesListCard({ dataSource, hasWriteRights, hasExploreRigh
                 grafana_version: config.buildInfo.version,
                 datasource_uid: dataSource.uid,
                 plugin_name: dataSource.typeName,
-                path: location.pathname,
+                path: window.location.pathname,
               });
             }}
           >
-            Explore
+            <Trans i18nKey="datasources.data-sources-list-card.explore">Explore</Trans>
           </LinkButton>
         )}
       </Card.Tags>
@@ -80,7 +80,7 @@ export function DataSourcesListCard({ dataSource, hasWriteRights, hasExploreRigh
 function DataSourcesListCardSkeleton({ hasExploreRights }: Pick<Props, 'hasExploreRights'>) {
   const skeletonStyles = useStyles2(getSkeletonStyles);
   return (
-    <Card>
+    <Card noMargin>
       <Card.Heading>
         <Skeleton width={140} />
       </Card.Heading>

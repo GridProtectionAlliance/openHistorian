@@ -1,28 +1,21 @@
 import { css, cx } from '@emotion/css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import { CoreApp, GrafanaTheme2 } from '@grafana/data';
-import { config } from '@grafana/runtime';
-import { DataQuery } from '@grafana/schema/dist/esm/index';
-import { ErrorBoundaryAlert, Modal, useStyles2, useTheme2 } from '@grafana/ui';
-import { QueryOperationAction } from 'app/core/components/QueryOperationRow/QueryOperationAction';
+import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
+import { ErrorBoundaryAlert, LoadingPlaceholder, useStyles2, useTheme2 } from '@grafana/ui';
 import { SplitPaneWrapper } from 'app/core/components/SplitPaneWrapper/SplitPaneWrapper';
 import { useGrafana } from 'app/core/context/GrafanaContext';
 import { useNavModel } from 'app/core/hooks/useNavModel';
-import { Trans, t } from 'app/core/internationalization';
 import { GrafanaRouteComponentProps } from 'app/core/navigation/types';
-import { useSelector } from 'app/types';
 import { ExploreQueryParams } from 'app/types/explore';
-
-import { RowActionComponents } from '../query/components/QueryActionComponent';
+import { useSelector } from 'app/types/store';
 
 import { CorrelationEditorModeBar } from './CorrelationEditorModeBar';
 import { ExploreActions } from './ExploreActions';
 import { ExploreDrawer } from './ExploreDrawer';
 import { ExplorePaneContainer } from './ExplorePaneContainer';
-import { QueriesDrawerContextProvider, useQueriesDrawerContext } from './QueriesDrawer/QueriesDrawerContext';
-import { queryLibraryTrackAddFromQueryRow } from './QueryLibrary/QueryLibraryAnalyticsEvents';
-import { QueryTemplateForm } from './QueryLibrary/QueryTemplateForm';
+import { useQueriesDrawerContext } from './QueriesDrawer/QueriesDrawerContext';
 import RichHistoryContainer from './RichHistory/RichHistoryContainer';
 import { useExplorePageTitle } from './hooks/useExplorePageTitle';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -32,14 +25,9 @@ import { useTimeSrvFix } from './hooks/useTimeSrvFix';
 import { isSplit, selectCorrelationDetails, selectPanesEntries } from './state/selectors';
 
 const MIN_PANE_WIDTH = 200;
-const QUERY_LIBRARY_ACTION_KEY = 'queryLibraryAction';
 
 export default function ExplorePage(props: GrafanaRouteComponentProps<{}, ExploreQueryParams>) {
-  return (
-    <QueriesDrawerContextProvider>
-      <ExplorePageContent {...props} />
-    </QueriesDrawerContextProvider>
-  );
+  return <ExplorePageContent {...props} />;
 }
 
 function ExplorePageContent(props: GrafanaRouteComponentProps<{}, ExploreQueryParams>) {
@@ -60,9 +48,8 @@ function ExplorePageContent(props: GrafanaRouteComponentProps<{}, ExploreQueryPa
   const panes = useSelector(selectPanesEntries);
   const hasSplit = useSelector(isSplit);
   const correlationDetails = useSelector(selectCorrelationDetails);
-  const { drawerOpened, setDrawerOpened, queryLibraryAvailable } = useQueriesDrawerContext();
-  const showCorrelationEditorBar = config.featureToggles.correlations && (correlationDetails?.editorMode || false);
-  const [queryToAdd, setQueryToAdd] = useState<DataQuery | undefined>();
+  const { drawerOpened, setDrawerOpened } = useQueriesDrawerContext();
+  const showCorrelationEditorBar = correlationDetails?.editorMode || false;
 
   useEffect(() => {
     //This is needed for breadcrumbs and topnav.
@@ -71,25 +58,6 @@ function ExplorePageContent(props: GrafanaRouteComponentProps<{}, ExploreQueryPa
       sectionNav: navModel,
     });
   }, [chrome, navModel]);
-
-  useEffect(() => {
-    const hasQueryLibrary = config.featureToggles.queryLibrary || false;
-    if (hasQueryLibrary) {
-      RowActionComponents.addKeyedExtraRenderAction(QUERY_LIBRARY_ACTION_KEY, {
-        scope: CoreApp.Explore,
-        queryActionComponent: (props) => (
-          <QueryOperationAction
-            key={props.key}
-            title={t('query-operation.header.save-to-query-library', 'Save to query library')}
-            icon="save"
-            onClick={() => {
-              setQueryToAdd(props.query);
-            }}
-          />
-        ),
-      });
-    }
-  }, []);
 
   useKeyboardShortcuts();
 
@@ -115,16 +83,20 @@ function ExplorePageContent(props: GrafanaRouteComponentProps<{}, ExploreQueryPa
         paneStyle={{ overflow: 'auto', display: 'flex', flexDirection: 'column' }}
         onDragFinished={(size) => size && updateSplitSize(size)}
       >
-        {panes.map(([exploreId]) => {
+        {panes.map(([exploreId, pane]) => {
           return (
-            <ErrorBoundaryAlert key={exploreId} style="page">
-              <ExplorePaneContainer exploreId={exploreId} />
+            <ErrorBoundaryAlert boundaryName="explore-pane" key={exploreId} style="page">
+              {pane.initialized ? (
+                <ExplorePaneContainer exploreId={exploreId} />
+              ) : (
+                <LoadingPlaceholder text={t('explore.pane.loading-placeholder', 'Loading...')} />
+              )}
             </ErrorBoundaryAlert>
           );
         })}
       </SplitPaneWrapper>
       {drawerOpened && (
-        <ExploreDrawer initialHeight={queryLibraryAvailable ? '75vh' : undefined}>
+        <ExploreDrawer>
           <RichHistoryContainer
             onClose={() => {
               setDrawerOpened(false);
@@ -132,24 +104,6 @@ function ExplorePageContent(props: GrafanaRouteComponentProps<{}, ExploreQueryPa
           />
         </ExploreDrawer>
       )}
-      <Modal
-        title={t('explore.query-template-modal.add-title', 'Add query to Query Library')}
-        isOpen={queryToAdd !== undefined}
-        onDismiss={() => setQueryToAdd(undefined)}
-      >
-        <QueryTemplateForm
-          onCancel={() => {
-            setQueryToAdd(undefined);
-          }}
-          onSave={(isSuccess) => {
-            if (isSuccess) {
-              setQueryToAdd(undefined);
-              queryLibraryTrackAddFromQueryRow(queryToAdd?.datasource?.type || '');
-            }
-          }}
-          queryToAdd={queryToAdd!}
-        />
-      </Modal>
     </div>
   );
 }

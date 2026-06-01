@@ -1,24 +1,24 @@
 import { css } from '@emotion/css';
 
-import { Field, GrafanaTheme2 } from '@grafana/data/';
+import { Field, GrafanaTheme2 } from '@grafana/data';
 import { InstantQueryRefIdIndex } from '@grafana/prometheus';
-import { useStyles2 } from '@grafana/ui/';
+import { useStyles2 } from '@grafana/ui';
 
 import { rawListItemColumnWidth } from './RawListItem';
 
 const getItemLabelsStyles = (theme: GrafanaTheme2, expanded: boolean) => {
   return {
-    valueNavigation: css`
-      width: ${rawListItemColumnWidth};
-      font-weight: bold;
-    `,
-    valueNavigationWrapper: css`
-      display: flex;
-      justify-content: flex-end;
-    `,
-    itemLabelsWrap: css`
-      ${!expanded ? `border-bottom: 1px solid ${theme.colors.border.medium}` : ''};
-    `,
+    valueNavigation: css({
+      width: rawListItemColumnWidth,
+      fontWeight: 'bold',
+    }),
+    valueNavigationWrapper: css({
+      display: 'flex',
+      justifyContent: 'flex-end',
+    }),
+    itemLabelsWrap: css({
+      borderBottom: expanded ? `1px solid ${theme.colors.border.medium}` : '',
+    }),
   };
 };
 

@@ -18,6 +18,7 @@ import {
   LiveChannelAddress,
   StreamingDataFrame,
 } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { config, getGrafanaLiveSrv } from '@grafana/runtime';
 import { Alert, stylesFactory, JSONFormatter, CustomScrollbar } from '@grafana/ui';
 
@@ -125,9 +126,12 @@ export class LivePanel extends PureComponent<Props, State> {
     const preformatted = `[feature_toggles]
     enable = live`;
     return (
-      <Alert title="Grafana Live" severity="info">
-        <p>Grafana live requires a feature flag to run</p>
+      <Alert title={t('live.live-panel.title-grafana-live', 'Grafana Live')} severity="info">
+        <p>
+          <Trans i18nKey="live.live-panel.grafana-requires-feature">Grafana live requires a feature flag to run</Trans>
+        </p>
 
+        {/* eslint-disable-next-line @grafana/i18n/no-untranslated-strings */}
         <b>custom.ini:</b>
         <pre>{preformatted}</pre>
       </Alert>
@@ -141,8 +145,10 @@ export class LivePanel extends PureComponent<Props, State> {
     if (!message) {
       return (
         <div>
-          <h4>Waiting for data:</h4>
-          {options.channel?.scope}/{options.channel?.namespace}/{options.channel?.path}
+          <h4>
+            <Trans i18nKey="live.live-panel.waiting-for-data">Waiting for data:</Trans>
+          </h4>
+          {options.channel?.scope}/{options.channel?.stream}/{options.channel?.path}
         </div>
       );
     }
@@ -246,15 +252,17 @@ export class LivePanel extends PureComponent<Props, State> {
     const { addr, error } = this.state;
     if (!addr) {
       return (
-        <Alert title="Grafana Live" severity="info">
-          Use the panel editor to pick a channel
+        <Alert title={t('live.live-panel.title-grafana-live', 'Grafana Live')} severity="info">
+          <Trans i18nKey="live.live-panel.panel-editor-channel">Use the panel editor to pick a channel</Trans>
         </Alert>
       );
     }
     if (error) {
       return (
         <div>
-          <h2>ERROR</h2>
+          <h2>
+            <Trans i18nKey="live.live-panel.error">Error</Trans>
+          </h2>
           <div>{JSON.stringify(error)}</div>
         </div>
       );
@@ -269,33 +277,33 @@ export class LivePanel extends PureComponent<Props, State> {
 }
 
 const getStyles = stylesFactory((theme: GrafanaTheme2) => ({
-  statusWrap: css`
-    margin: auto;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: ${theme.components.panel.background};
-    padding: 10px;
-    z-index: ${theme.zIndex.modal};
-  `,
+  statusWrap: css({
+    margin: 'auto',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    background: theme.components.panel.background,
+    padding: '10px',
+    zIndex: theme.zIndex.modal,
+  }),
   status: {
-    [LiveChannelConnectionState.Pending]: css`
-      border: 1px solid ${theme.v1.palette.orange};
-    `,
-    [LiveChannelConnectionState.Connected]: css`
-      border: 1px solid ${theme.colors.success.main};
-    `,
-    [LiveChannelConnectionState.Connecting]: css`
-      border: 1px solid ${theme.v1.palette.brandWarning};
-    `,
-    [LiveChannelConnectionState.Disconnected]: css`
-      border: 1px solid ${theme.colors.warning.main};
-    `,
-    [LiveChannelConnectionState.Shutdown]: css`
-      border: 1px solid ${theme.colors.error.main};
-    `,
-    [LiveChannelConnectionState.Invalid]: css`
-      border: 1px solid red;
-    `,
+    [LiveChannelConnectionState.Pending]: css({
+      border: `1px solid ${theme.v1.palette.orange}`,
+    }),
+    [LiveChannelConnectionState.Connected]: css({
+      border: `1px solid ${theme.colors.success.main}`,
+    }),
+    [LiveChannelConnectionState.Connecting]: css({
+      border: `1px solid ${theme.v1.palette.brandWarning}`,
+    }),
+    [LiveChannelConnectionState.Disconnected]: css({
+      border: `1px solid ${theme.colors.warning.main}`,
+    }),
+    [LiveChannelConnectionState.Shutdown]: css({
+      border: `1px solid ${theme.colors.error.main}`,
+    }),
+    [LiveChannelConnectionState.Invalid]: css({
+      border: '1px solid red',
+    }),
   },
 }));

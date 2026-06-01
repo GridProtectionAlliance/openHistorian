@@ -6,11 +6,12 @@ import {
   LoadingState,
   PanelData,
 } from '@grafana/data';
-import { config } from 'app/core/config';
+import { config } from '@grafana/runtime';
 
 import { SnapshotWorker } from '../../query/state/DashboardQueryRunner/SnapshotWorker';
 import { getTimeSrv } from '../services/TimeSrv';
-import { DashboardModel, PanelModel } from '../state';
+import { DashboardModel } from '../state/DashboardModel';
+import { PanelModel } from '../state/PanelModel';
 
 import { applyPanelTimeOverrides } from './panel';
 

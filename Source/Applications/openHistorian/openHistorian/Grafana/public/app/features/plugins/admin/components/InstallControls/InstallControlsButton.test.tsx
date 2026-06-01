@@ -5,7 +5,7 @@ import { PluginSignatureStatus } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import { configureStore } from 'app/store/configureStore';
 
-import { getPluginsStateMock } from '../../__mocks__';
+import { getPluginsStateMock } from '../../mocks/mockHelpers';
 import { CatalogPlugin, PluginStatus } from '../../types';
 
 import { InstallControlsButton } from './InstallControlsButton';
@@ -36,44 +36,18 @@ const plugin: CatalogPlugin = {
   isPreinstalled: { found: false, withVersion: false },
 };
 
-function setup(opts: { angularSupportEnabled: boolean; angularDetected: boolean }) {
-  config.angularSupportEnabled = opts.angularSupportEnabled;
-  render(
-    <TestProvider>
-      <InstallControlsButton
-        plugin={{ ...plugin, angularDetected: opts.angularDetected }}
-        pluginStatus={PluginStatus.INSTALL}
-      />
-    </TestProvider>
-  );
-}
-
 describe('InstallControlsButton', () => {
-  let oldAngularSupportEnabled = config.angularSupportEnabled;
-  afterAll(() => {
-    config.angularSupportEnabled = oldAngularSupportEnabled;
+  it('should not allow install if angular is detected', () => {
+    render(
+      <TestProvider>
+        <InstallControlsButton plugin={{ ...plugin, angularDetected: true }} pluginStatus={PluginStatus.INSTALL} />
+      </TestProvider>
+    );
+    const el = screen.getByRole('button');
+    expect(el).toHaveTextContent(/install/i);
+    expect(el).toBeVisible();
+    expect(el).toBeDisabled();
   });
-
-  describe.each([{ angularSupportEnabled: true }, { angularSupportEnabled: false }])(
-    'angular support is $angularSupportEnabled',
-    ({ angularSupportEnabled }) => {
-      it.each([
-        { angularDetected: true, expectEnabled: angularSupportEnabled },
-        { angularDetected: false, expectEnabled: true },
-      ])('angular detected is $angularDetected', ({ angularDetected, expectEnabled }) => {
-        setup({ angularSupportEnabled, angularDetected });
-
-        const el = screen.getByRole('button');
-        expect(el).toHaveTextContent(/install/i);
-        expect(el).toBeVisible();
-        if (expectEnabled) {
-          expect(el).toBeEnabled();
-        } else {
-          expect(el).toBeDisabled();
-        }
-      });
-    }
-  );
 
   it("should allow to uninstall a plugin even if it's unpublished", () => {
     render(
@@ -124,16 +98,13 @@ describe('InstallControlsButton', () => {
   });
 
   describe('update button on managed instance', () => {
-    const oldFeatureTogglesManagedPluginsInstall = config.featureToggles.managedPluginsInstall;
     const oldPluginAdminExternalManageEnabled = config.pluginAdminExternalManageEnabled;
 
     beforeAll(() => {
-      config.featureToggles.managedPluginsInstall = true;
       config.pluginAdminExternalManageEnabled = true;
     });
 
     afterAll(() => {
-      config.featureToggles.managedPluginsInstall = oldFeatureTogglesManagedPluginsInstall;
       config.pluginAdminExternalManageEnabled = oldPluginAdminExternalManageEnabled;
     });
 
@@ -199,16 +170,13 @@ describe('InstallControlsButton', () => {
   });
 
   describe('uninstall button on managed instance', () => {
-    const oldFeatureTogglesManagedPluginsInstall = config.featureToggles.managedPluginsInstall;
     const oldPluginAdminExternalManageEnabled = config.pluginAdminExternalManageEnabled;
 
     beforeAll(() => {
-      config.featureToggles.managedPluginsInstall = true;
       config.pluginAdminExternalManageEnabled = true;
     });
 
     afterAll(() => {
-      config.featureToggles.managedPluginsInstall = oldFeatureTogglesManagedPluginsInstall;
       config.pluginAdminExternalManageEnabled = oldPluginAdminExternalManageEnabled;
     });
 
@@ -230,12 +198,40 @@ describe('InstallControlsButton', () => {
       expect(button).toBeDisabled();
     });
 
+    it('should be disabled when isInstalling=false but isUpdatingFromInstance=true', () => {
+      store.dispatch({ type: 'plugins/uninstall/fulfilled', payload: { id: '', changes: {} } });
+      render(
+        <TestProvider store={store}>
+          <InstallControlsButton
+            plugin={{ ...plugin, isUpdatingFromInstance: true }}
+            pluginStatus={PluginStatus.UNINSTALL}
+          />
+        </TestProvider>
+      );
+      const button = screen.getByText('Uninstall').closest('button');
+      expect(button).toBeDisabled();
+    });
+
+    it('should be disabled when isInstalling=false but isFullyInstalled=false', () => {
+      store.dispatch({ type: 'plugins/uninstall/fulfilled', payload: { id: '', changes: {} } });
+      render(
+        <TestProvider store={store}>
+          <InstallControlsButton
+            plugin={{ ...plugin, isFullyInstalled: false }}
+            pluginStatus={PluginStatus.UNINSTALL}
+          />
+        </TestProvider>
+      );
+      const button = screen.getByText('Uninstall').closest('button');
+      expect(button).toBeDisabled();
+    });
+
     it('should be enabled when isInstalling=false and isUninstallingFromInstance=false', () => {
       store.dispatch({ type: 'plugins/uninstall/fulfilled', payload: { id: '', changes: {} } });
       render(
         <TestProvider store={store}>
           <InstallControlsButton
-            plugin={{ ...plugin, isUninstallingFromInstance: false }}
+            plugin={{ ...plugin, isUninstallingFromInstance: false, isFullyInstalled: true }}
             pluginStatus={PluginStatus.UNINSTALL}
           />
         </TestProvider>

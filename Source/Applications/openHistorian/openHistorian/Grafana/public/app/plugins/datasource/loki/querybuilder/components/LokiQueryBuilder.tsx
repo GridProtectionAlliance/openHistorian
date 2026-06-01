@@ -14,8 +14,8 @@ import {
   RawQuery,
   QueryBuilderLabelFilter,
   QueryBuilderOperation,
-} from '@grafana/experimental';
-import { config } from '@grafana/runtime';
+} from '@grafana/plugin-ui';
+import { Stack } from '@grafana/ui';
 
 import { testIds } from '../../components/LokiQueryEditor';
 import { LokiDatasource } from '../../datasource';
@@ -126,14 +126,14 @@ export const LokiQueryBuilder = memo<Props>(({ datasource, query, onChange, onRu
       (Math.abs(timeRange.to.valueOf() - prevTimeRange.to.valueOf()) > TIME_SPAN_TO_TRIGGER_SAMPLES ||
         Math.abs(timeRange.from.valueOf() - prevTimeRange.from.valueOf()) > TIME_SPAN_TO_TRIGGER_SAMPLES);
     const updateBasedOnChangedQuery = !isEqual(prevQuery, query);
-    if (config.featureToggles.lokiQueryHints && (updateBasedOnChangedTimeRange || updateBasedOnChangedQuery)) {
+    if (updateBasedOnChangedTimeRange || updateBasedOnChangedQuery) {
       onGetSampleData().catch(console.error);
     }
   }, [datasource, query, timeRange, prevQuery, prevTimeRange]);
 
   const lang = { grammar: logqlGrammar, name: 'logql' };
   return (
-    <div data-testid={testIds.editor}>
+    <Stack direction="column" gap={0.5} data-testid={testIds.editor}>
       <EditorRow>
         <LabelFilters
           onGetLabelNames={(forLabel: Partial<QueryBuilderLabelFilter>) =>
@@ -201,7 +201,7 @@ export const LokiQueryBuilder = memo<Props>(({ datasource, query, onChange, onRu
           showExplain={showExplain}
         />
       )}
-    </div>
+    </Stack>
   );
 });
 

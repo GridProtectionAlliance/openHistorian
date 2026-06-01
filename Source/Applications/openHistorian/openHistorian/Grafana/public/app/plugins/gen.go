@@ -16,7 +16,7 @@ import (
 	"github.com/grafana/codejen"
 	corecodegen "github.com/grafana/grafana/pkg/codegen"
 	"github.com/grafana/grafana/pkg/plugins/codegen"
-	"github.com/grafana/grafana/pkg/plugins/pfs"
+	"github.com/grafana/grafana/pkg/plugins/codegen/pfs"
 )
 
 var skipPlugins = map[string]bool{
@@ -43,12 +43,15 @@ func main() {
 	})
 
 	pluginKindGen.Append(
-		&codegen.PluginRegistryJenny{},
 		codegen.PluginGoTypesJenny("pkg/tsdb"),
 		codegen.PluginTSTypesJenny("public/app/plugins"),
 	)
 
-	pluginKindGen.AddPostprocessors(corecodegen.SlashHeaderMapper("public/app/plugins/gen.go"), splitSchiffer())
+	pluginKindGen.AddPostprocessors(
+		corecodegen.PluginsSlashHeaderMapper("public/app/plugins/gen.go", filepath.Join("public", "app", "plugins")),
+		corecodegen.GoFormat(),
+		splitSchiffer(),
+	)
 
 	declParser := pfs.NewDeclParser(skipPlugins)
 	decls, err := declParser.Parse(os.DirFS(cwd))

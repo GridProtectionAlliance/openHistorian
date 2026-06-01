@@ -1,3 +1,5 @@
+import saveAs from 'file-saver';
+
 import {
   AbsoluteTimeRange,
   FieldType,
@@ -9,8 +11,9 @@ import {
   MutableDataFrame,
   DataFrame,
 } from '@grafana/data';
-import { getMockFrames } from 'app/plugins/datasource/loki/__mocks__/frames';
+import { getMockFrames } from 'app/plugins/datasource/loki/mocks/frames';
 
+import { createLogRow } from './components/mocks/logRow';
 import { logSeriesToLogsModel } from './logsModel';
 import {
   calculateLogsLabelStats,
@@ -24,7 +27,12 @@ import {
   logRowsToReadableJson,
   mergeLogsVolumeDataFrames,
   sortLogsResult,
+  checkLogsSampled,
+  downloadLogs,
+  DownloadFormat,
 } from './utils';
+
+jest.mock('file-saver', () => jest.fn());
 
 describe('getLoglevel()', () => {
   it('returns no log level on empty line', () => {
@@ -240,8 +248,36 @@ describe('checkLogsError()', () => {
       foo: 'boo',
     } as Labels,
   } as LogRowModel;
-  test('should return correct error if error is present', () => {
-    expect(checkLogsError(log)).toStrictEqual({ hasError: true, errorMessage: 'Error Message' });
+  test('should return the error if present', () => {
+    expect(checkLogsError(log)).toStrictEqual('Error Message');
+  });
+  test('should return undefined otherwise', () => {
+    expect(checkLogsError({ ...log, labels: {} })).toStrictEqual(undefined);
+  });
+});
+
+describe('checkLogsSampled()', () => {
+  const log = {
+    labels: {
+      __adaptive_logs_sampled__: 'true',
+      foo: 'boo',
+    } as Labels,
+  } as LogRowModel;
+  test('should return a message if is sampled', () => {
+    expect(checkLogsSampled(log)).toStrictEqual('Logs like this one have been dropped by Adaptive Logs');
+  });
+  test('should return an interpolated message if is sampled', () => {
+    expect(
+      checkLogsSampled({
+        ...log,
+        labels: {
+          __adaptive_logs_sampled__: '10',
+        },
+      })
+    ).toStrictEqual('10% of logs like this one have been dropped by Adaptive Logs');
+  });
+  test('should return undefined otherwise', () => {
+    expect(checkLogsSampled({ ...log, labels: {} })).toStrictEqual(undefined);
   });
 });
 
@@ -327,13 +363,22 @@ describe('logRowsToReadableJson', () => {
   it('should format a single row', () => {
     const result = logRowsToReadableJson([testRow]);
 
-    expect(result).toEqual([{ line: 'test entry', timestamp: '123456789', fields: { foo: 'bar' } }]);
+    expect(result).toEqual([
+      { date: '1970-01-01T00:00:00.010Z', line: 'test entry', timestamp: '123456789', fields: { foo: 'bar' } },
+    ]);
   });
 
   it('should format a df field row', () => {
     const result = logRowsToReadableJson([testRow2]);
 
-    expect(result).toEqual([{ line: 'test entry', timestamp: '123456789', fields: { foo: 'bar', foo2: 'bar2' } }]);
+    expect(result).toEqual([
+      {
+        date: '1970-01-01T00:00:00.010Z',
+        line: 'test entry',
+        timestamp: '123456789',
+        fields: { foo: 'bar', foo2: 'bar2' },
+      },
+    ]);
   });
 });
 
@@ -548,5 +593,68 @@ describe('findMatchingRow', () => {
       const targetRow = { ...row, rowId: undefined };
       expect(findMatchingRow(targetRow)).toBeTruthy();
     }
+  });
+});
+
+describe('downloadLogs', () => {
+  const logs = [
+    createLogRow({ timeEpochMs: 100, entry: 'test entry', labels: { label: 'value', otherLabel: 'other value' } }),
+  ];
+  describe('Text format', () => {
+    beforeEach(() => {
+      jest.mocked(saveAs).mockClear();
+    });
+
+    it('Downloads logs in txt format', async () => {
+      downloadLogs(DownloadFormat.Text, logs);
+
+      const blob = jest.mocked(saveAs).mock.calls[0][0];
+      const text = typeof blob === 'string' ? blob : await blob.text();
+
+      expect(text).toContain('test entry');
+    });
+
+    it('Downloads selected fields in txt format', async () => {
+      downloadLogs(DownloadFormat.Text, logs, [], ['label', 'otherLabel']);
+
+      const blob = jest.mocked(saveAs).mock.calls[0][0];
+      const text = typeof blob === 'string' ? blob : await blob.text();
+
+      expect(text).toContain('value other value');
+    });
+  });
+
+  describe('JSON format', () => {
+    beforeEach(() => {
+      jest.mocked(saveAs).mockClear();
+    });
+
+    it('Downloads logs in JSON format', async () => {
+      downloadLogs(DownloadFormat.Json, logs);
+
+      const blob = jest.mocked(saveAs).mock.calls[0][0];
+      const text = typeof blob === 'string' ? blob : await blob.text();
+
+      expect(JSON.parse(text)[0]).toEqual(
+        expect.objectContaining({
+          line: 'test entry',
+          fields: { label: 'value', otherLabel: 'other value' },
+        })
+      );
+    });
+
+    it('Downloads selected fields in JSON format', async () => {
+      downloadLogs(DownloadFormat.Json, logs, [], ['otherLabel']);
+
+      const blob = jest.mocked(saveAs).mock.calls[0][0];
+      const text = typeof blob === 'string' ? blob : await blob.text();
+
+      expect(JSON.parse(text)[0]).toEqual(
+        expect.objectContaining({
+          line: 'test entry',
+          fields: { otherLabel: 'other value' },
+        })
+      );
+    });
   });
 });

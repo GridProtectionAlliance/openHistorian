@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { DataQueryResponse, LoadingState, EventBusSrv } from '@grafana/data';
+import { DataQueryResponse, LoadingState, EventBusSrv, LogRowModel, arrayToDataFrame, DataTopic } from '@grafana/data';
+import { createLogLine } from 'app/features/logs/components/mocks/logRow';
+
+import * as logUtils from '../../logs/utils';
 
 import { LogsVolumePanelList } from './LogsVolumePanelList';
 
@@ -12,7 +15,7 @@ jest.mock('../Graph/ExploreGraph', () => {
   };
 });
 
-function renderPanel(logsVolumeData?: DataQueryResponse, onLoadLogsVolume = () => {}) {
+function renderPanel(logsVolumeData?: DataQueryResponse, onLoadLogsVolume = () => {}, logs: LogRowModel[] = []) {
   render(
     <LogsVolumePanelList
       absoluteRange={{ from: 0, to: 1 }}
@@ -22,8 +25,9 @@ function renderPanel(logsVolumeData?: DataQueryResponse, onLoadLogsVolume = () =
       onUpdateTimeRange={() => {}}
       logsVolumeData={logsVolumeData}
       onLoadLogsVolume={onLoadLogsVolume}
-      onHiddenSeriesChanged={() => null}
+      onDisplayedSeriesChanged={() => null}
       eventBus={new EventBusSrv()}
+      logs={logs}
     />
   );
 }
@@ -52,7 +56,7 @@ describe('LogsVolumePanelList', () => {
     expect(screen.getByText(message)).toBeInTheDocument();
   });
 
-  it('a custom message for timeout errors', async () => {
+  it('has a custom message for timeout errors', async () => {
     const onLoadCallback = jest.fn();
     renderPanel(
       {
@@ -62,7 +66,8 @@ describe('LogsVolumePanelList', () => {
       },
       onLoadCallback
     );
-    expect(screen.getByText('The logs volume query has timed out')).toBeInTheDocument();
+    expect(screen.getByText('Unable to show log volume')).toBeInTheDocument();
+    expect(screen.getByText(/The query is trying to access too much data/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
     expect(onLoadCallback).toHaveBeenCalled();
   });
@@ -71,5 +76,50 @@ describe('LogsVolumePanelList', () => {
     renderPanel({ state: LoadingState.Done, data: [] });
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.getByText('No logs volume available')).toBeInTheDocument();
+  });
+
+  describe('Visible range', () => {
+    it('computes the visible range when logs are passed', async () => {
+      const spy = jest.spyOn(logUtils, 'getLogsVisibleRange');
+      spy.mockClear();
+
+      renderPanel({ state: LoadingState.Streaming, data: [] });
+
+      expect(spy).not.toHaveBeenCalled();
+
+      const logs = [createLogLine({ timeEpochMs: 1 }), createLogLine({ timeEpochMs: 2 })];
+
+      renderPanel({ state: LoadingState.Streaming, data: [] }, undefined, logs);
+
+      expect(spy).toHaveBeenCalledWith(logs);
+    });
+
+    it('does not compute the visible range when an annotation frame is present', async () => {
+      const spy = jest.spyOn(logUtils, 'getLogsVisibleRange');
+      spy.mockClear();
+      const logs = [createLogLine({ timeEpochMs: 1 }), createLogLine({ timeEpochMs: 2 })];
+      const loadingFrame = arrayToDataFrame([
+        {
+          time: 0,
+          timeEnd: 1,
+          isRegion: true,
+          color: 'rgba(120, 120, 120, 0.1)',
+        },
+      ]);
+      loadingFrame.meta = {
+        dataTopic: DataTopic.Annotations,
+      };
+
+      renderPanel(
+        {
+          state: LoadingState.Streaming,
+          data: [loadingFrame],
+        },
+        undefined,
+        logs
+      );
+
+      expect(spy).not.toHaveBeenCalled();
+    });
   });
 });

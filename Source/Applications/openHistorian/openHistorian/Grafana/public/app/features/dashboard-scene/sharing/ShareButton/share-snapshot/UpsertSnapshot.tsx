@@ -2,18 +2,16 @@ import { css } from '@emotion/css';
 import { PropsWithChildren } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { Trans, t } from '@grafana/i18n';
 import { SceneObjectRef, VizPanel } from '@grafana/scenes';
-import { Alert, Button, Divider, Field, RadioButtonGroup, Stack, Text, useStyles2 } from '@grafana/ui';
-import { Input } from '@grafana/ui/src/components/Input/Input';
-import { t } from '@grafana/ui/src/utils/i18n';
-import { Trans } from 'app/core/internationalization';
+import { Alert, Button, Divider, Field, Input, RadioButtonGroup, Stack, Text, useStyles2 } from '@grafana/ui';
 
 import { getExpireOptions } from '../../ShareSnapshotTab';
 
 const DASHBOARD_SNAPSHOT_URL =
-  'https://grafana.com/docs/grafana/next/dashboards/share-dashboards-panels/#share-a-snapshot';
+  'https://grafana.com/docs/grafana/latest/dashboards/share-dashboards-panels/#share-a-snapshot';
 
-const PANEL_SNAPSHOT_URL = 'https://grafana.com/docs/grafana/next/dashboards/share-dashboards-panels/#panel-snapshot';
+const PANEL_SNAPSHOT_URL = 'https://grafana.com/docs/grafana/latest/dashboards/share-dashboards-panels/#panel-snapshot';
 
 interface Props {
   name: string;

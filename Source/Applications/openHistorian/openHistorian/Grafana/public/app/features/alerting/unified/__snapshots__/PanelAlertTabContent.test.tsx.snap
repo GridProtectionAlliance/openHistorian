@@ -14,6 +14,7 @@ exports[`PanelAlertTabContent Will render alerts belonging to panel and a button
   ],
   "condition": "C",
   "folder": {
+    "kind": "folder",
     "title": "super folder",
     "uid": "abc",
   },
@@ -51,9 +52,7 @@ exports[`PanelAlertTabContent Will render alerts belonging to panel and a button
               "type": "and",
             },
             "query": {
-              "params": [
-                "B",
-              ],
+              "params": [],
             },
             "reducer": {
               "params": [],
@@ -89,9 +88,7 @@ exports[`PanelAlertTabContent Will render alerts belonging to panel and a button
               "type": "and",
             },
             "query": {
-              "params": [
-                "C",
-              ],
+              "params": [],
             },
             "reducer": {
               "params": [],
