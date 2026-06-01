@@ -1,0 +1,3 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[5740],{65740(D,_,a){a.d(_,{GenAIExplanationDrawer:()=>i});var n=a(74848),r=a(67458),t=a(92745),l=a(8207),s=a(41654),E=a(8073);const i=({isOpen:e,onClose:d,explanation:o})=>e?(0,n.jsx)(l._,{onClose:d,size:"md",title:(0,n.jsx)(t.x6,{i18nKey:"sql-expressions.explanation-modal-title",children:"SQL Query Explanation"}),children:(0,n.jsx)(s.B,{direction:"column","data-testid":"explanation-drawer",children:(0,n.jsx)(E.Z,{noMargin:!0,children:(0,n.jsx)("div",{className:"markdown-html",dangerouslySetInnerHTML:{__html:(0,r.G)(o)}})})})}):null}}]);
+
+//# sourceMappingURL=5740.e96eb8c20b09a89e9836.js.map

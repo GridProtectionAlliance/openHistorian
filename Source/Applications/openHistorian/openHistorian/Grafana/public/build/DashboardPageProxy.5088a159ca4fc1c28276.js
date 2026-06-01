@@ -1,0 +1,3 @@
+"use strict";(self.webpackChunkgrafana=self.webpackChunkgrafana||[]).push([[9136],{20230(e,s,a){e.exports=a.p+"static/img/grab_dark.4ee8d28b.svg"},5878(e,s,a){e.exports=a.p+"static/img/grab_light.322c3334.svg"},12326(e,s,a){e.exports=a.p+"static/img/grafana_text_logo_dark.70a1e5ee.svg"},71542(e,s,a){e.exports=a.p+"static/img/grafana_text_logo_light.467e047c.svg"}}]);
+
+//# sourceMappingURL=DashboardPageProxy.5088a159ca4fc1c28276.js.map

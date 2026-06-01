@@ -372,3 +372,8 @@ cython_debug/
 /Source/Libraries/PythonAPIModule/**/Scripts
 pyvenv.cfg
 /Source/Applications/openHistorian/openHistorian/Grafana/data/plugins/gridprotectionalliance-openhistorian-datasource/img/Thumbs.db
+
+# Always include all Grafana content, even when nested folders match generic ignore rules.
+!Source/Applications/openHistorian/openHistorian/Grafana/
+!Source/Applications/openHistorian/openHistorian/Grafana/**/
+!Source/Applications/openHistorian/openHistorian/Grafana/**
