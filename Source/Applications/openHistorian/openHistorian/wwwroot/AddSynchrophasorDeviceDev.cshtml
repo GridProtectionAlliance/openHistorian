@@ -1345,12 +1345,18 @@
                 for (let i = 0; i < deviceCount; i++) {
                     const cell = self.configFrame().Cells[i];
 
+                    // For an existing device the lat/long loaded from the database via queryDeviceByID is
+                    // authoritative; do not let the (possibly stale, or parent-derived) coordinates carried in the
+                    // config frame / auto-saved JSON mapping overwrite it. Only seed the screen-level lat/long from
+                    // cell values when defining a new device (fresh analyze / config import).
                     // TODO: Update screen to accommodate lat/long at the device level
-                    if (!isEmpty(cell.Latitude))
-                        self.latitude(cell.Latitude);
+                    if (deviceID === 0) {
+                        if (!isEmpty(cell.Latitude))
+                            self.latitude(cell.Latitude);
 
-                    if (!isEmpty(cell.Longitude))
-                        self.longitude(cell.Longitude);
+                        if (!isEmpty(cell.Longitude))
+                            self.longitude(cell.Longitude);
+                    }
 
                     let cellAcronym = cell.IDLabel;
 
@@ -2633,6 +2639,10 @@
                     if (!nextVoltage)
                         continue;
 
+                    // See if this line current has already been matched
+                    if (lineCurrentExists(lines, nextCurrent))
+                        continue;
+
                     // See if this next current is for matching line based on label minus phase designations
                     if (match === nextCurrent.Label().trim().toUpperCase().replace(/[ABCRYB]/gi, "")) {
                         line[nextPhase] = {
@@ -3628,6 +3638,13 @@
                                 device.AccessID = cell.IDCode;
                                 device.Acronym = cell.IDLabel();
 
+                                // Save lat/long for child devices: prefer the cell's own coordinates when present,
+                                // otherwise fall back to the on-screen value - matches parent / direct-connected device
+                                // behavior. A zero or null coordinate is treated as "unset" by isEmpty, consistent with
+                                // the load-time logic that pushes cell coordinates onto the screen.
+                                device.Longitude = isEmpty(cell.Longitude) ? viewModel.longitude() : cell.Longitude;
+                                device.Latitude = isEmpty(cell.Latitude) ? viewModel.latitude() : cell.Latitude;
+
                                 if (isEmpty(device.Name))
                                     device.Name = device.Acronym;
 
@@ -3766,14 +3783,18 @@
                 device.ProtocolID = configFrame.ProtocolID;
                 device.FrameRate = configFrame.FrameRate;
                 device.AccessID = configFrame.IDCode;
-                device.IsConcentrator = !isEmpty(connectionString) && (configFrame.IsConcentrator || configFrame.Cells.length > 1);
 
                 if (isEmpty(device.Name))
                     device.Name = device.Acronym;
 
-                // Only update connection string if one has been defined, prevents changing any existing one to blank
-                if (connectionString.length > 0)
+                // Only update connection string and concentrator flag when a connection string has been defined.
+                // This prevents changing any existing connection string to blank and, just as importantly, prevents
+                // clearing the concentrator flag on an existing PDC when it is re-saved from an auto-loaded JSON config
+                // that does not carry a connection string (see connection string preservation for auto-JSON config I/O).
+                if (connectionString.length > 0) {
                     device.ConnectionString = connectionString;
+                    device.IsConcentrator = configFrame.IsConcentrator || configFrame.Cells.length > 1;
+                }
 
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
                 device.SkipDisableRealTimeData = skipDisableRealTimeData;
