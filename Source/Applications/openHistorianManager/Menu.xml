@@ -80,6 +80,56 @@
       <MenuDataItem Icon="" MenuText="Correctness Report" Description="Configure Correctness Report" Roles="*" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.CorrectnessReportUserControl"/>
     </SubMenuItems>
   </MenuDataItem>
+  <MenuDataItem Icon="" MenuText="_Tools" Description="Custom Configuration Tools" Roles="*" UserControlAssembly="" UserControlPath="">
+    <SubMenuItems>
+      <MenuDataItem Icon="" MenuText="Data _Extraction Tools" Description="Data Extraction Tools" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="Historian Data _Extractor" Description="Data Extractor over Gateway Exchange Protocol (GEP)" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="" ExternalProcessPath="GEPDataExtractor.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Statistics _Trend/Export Utility" Description="Trend/Export Utility for Statistics Historian" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="" ExternalProcessPath="HistorianView.exe" />
+          <MenuDataItem Icon="" MenuText="Statistics _Query Transformer" Description="Data Query Output Transformer for Statistics Historian" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" ExternalProcessPath="HistorianPlaybackUtility.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Bulk _CSV Database Operations" Description="Bulk CSV Database Operations" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" ExternalProcessPath="CSVDataManager.exe" />
+        </SubMenuItems>
+      </MenuDataItem>
+      <MenuDataItem Icon="" MenuText="_Diagnostic Tools" Description="Diagnostic Tools" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="_Log File Viewer" Description="Log File Viewer" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="" ExternalProcessPath="LogFileViewer.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_Real-time Adapter Explorer" Description="Real-time Adapter Explorer" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="" ExternalProcessPath="AdapterExplorer.exe" />
+          <MenuDataItem Icon="" MenuText="_Statistics Report Generator" Description="Report Generator for Statistics Historian" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" ExternalProcessPath="StatHistorianReportGenerator.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_openVisN Real-time Viewer" Description="openHistorian Real-time Data Visualization Tool" Roles="Administrator,Editor,Viewer" UserControlAssembly="" UserControlPath="" ExternalProcessPath="openVisN.exe" />
+        </SubMenuItems>
+      </MenuDataItem>
+      <MenuDataItem Icon="" MenuText="_Vendor Tools" Description="Vendor Tools" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="_APP PDC Importer" Description="APP PDC Importer" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" ExternalProcessPath="APPPDCImporter.exe" />
+          <MenuDataItem Icon="" MenuText="_SEL PDC Importer" Description="SEL PDC Importer" Roles="Administrator,Editor" UserControlAssembly="" UserControlPath="" ExternalProcessPath="SELPDCImporter.exe" />
+        </SubMenuItems>
+      </MenuDataItem>
+      <MenuDataItem Icon="" MenuText="_System Tools" Description="System Tools" Roles="Administrator" UserControlAssembly="" UserControlPath="">
+        <SubMenuItems>
+          <MenuDataItem Icon="" MenuText="_XML Configuration Editor" Description="XML Configuration Editor" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="ConfigurationEditor.exe" />
+          <MenuDataItem Icon="" MenuText="Configuration Text _Encrypter" Description="Encryption/Decryption of Configuration Text for Manual XML Edits" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="ConfigCrypter.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_COMTRADE CFF Post Download Updater Setup" Description="COMTRADE CFF Post Download Counter Updater Tool Setup" Roles="Administrator" UserControlAssembly="" UserControlPath="-showsetup" ExternalProcessPath="UpdateCOMTRADECounters.exe" />
+          <MenuDataItem Icon="" MenuText="_Archive Comparison Utility" Description="Historian Archive Comparison Utility" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="ArchiveComparisonUtility.exe" />
+          <MenuDataItem Icon="" MenuText="_openHistorian 1.0 Migration Utility" Description="openHistorian 1.0 Migration Utility" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="ArchiveUpgradeUtility.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_Initialize DNP3 Adapter Operations" Description="Extract DNP3 Adapter Runtime Files and Sample Config" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="DNP3ConfigGenerator.exe" />
+          <MenuDataItem Icon="" MenuText="_Dynamic Calculator Bulk State Updater" Description="Changes State of Dynamic Calculators in Bulk" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="BulkCalculationState.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="_Tag Name Expression Configuration" Description="Tag Name Expression Configuration" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="UpdateTagNames.exe" />
+          <MenuDataItem Icon="" MenuText="_No Internet Access Fix Utility" Description="No Internet Access Fix Utility" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="NoInetFixUtil.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Database Configuration _Migration Utility" Description="Database Configuration Migration Utility" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="DataMigrationUtility.exe" />
+          <MenuDataItem Icon="" MenuText="" Description="" Roles="*" UserControlAssembly="" UserControlPath="" />
+          <MenuDataItem Icon="" MenuText="Configuration _Setup Utility" Description="Configuration Setup Utility" Roles="Administrator" UserControlAssembly="" UserControlPath="" ExternalProcessPath="ConfigurationSetupUtility.exe" />
+        </SubMenuItems>
+      </MenuDataItem>
+    </SubMenuItems>
+  </MenuDataItem>
   <MenuDataItem Icon="" MenuText="_System" Description="Manage System Settings" Roles="*" UserControlAssembly="" UserControlPath="">
     <SubMenuItems>
       <MenuDataItem Icon="" MenuText="Manage _Nodes" Description="Manage Nodes" Roles="Administrator" UserControlAssembly="GSF.TimeSeries.UI.WPF.dll" UserControlPath="GSF.TimeSeries.UI.UserControls.NodeUserControl" />
