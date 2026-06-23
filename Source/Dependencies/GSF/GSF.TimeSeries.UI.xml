@@ -632,6 +632,61 @@
             <returns>String value.</returns>
             <remarks>This method has not been implemented.</remarks>
         </member>
+        <member name="T:GSF.TimeSeries.UI.Converters.MenuItemIconConverter">
+            <summary>
+            Represents an <see cref="T:System.Windows.Data.IMultiValueConverter"/> that produces the image to display in the icon
+            region of a menu item from an icon reference and/or an external process path.
+            </summary>
+            <remarks>
+            The converter expects two bound values: the first is the explicit icon reference (i.e., the menu item's
+            <c>Icon</c> value) and the second is the external process path (i.e., the menu item's
+            <c>ExternalProcessPath</c> value). When the icon reference is defined, the referenced image is loaded and
+            displayed. When no icon is defined but an external process path is set, the embedded application icon for
+            the external process is extracted and used instead. The converter returns a new <see cref="T:System.Windows.Controls.Image"/> instance
+            on each evaluation so that the result can be safely assigned to the <see cref="P:System.Windows.Controls.MenuItem.Icon"/> property from
+            within a shared <see cref="T:System.Windows.Style"/> setter (a single <see cref="T:System.Windows.FrameworkElement"/> instance cannot be the
+            logical child of multiple menu items).
+            </remarks>
+        </member>
+        <member name="F:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.DefaultIconSize">
+            <summary>
+            Default width and height, in device-independent pixels, of a generated menu item icon.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.Convert(System.Object[],System.Type,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Returns an <see cref="T:System.Windows.Controls.Image"/> element representing the icon for a menu item.
+            </summary>
+            <param name="values">
+            The bound values: <c>values[0]</c> is the explicit icon reference and <c>values[1]</c> is the external
+            process path.
+            </param>
+            <param name="targetType">The type of the binding target property.</param>
+            <param name="parameter">Optional icon size override; when parsable as a <see cref="T:System.Double"/>, overrides <see cref="F:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.DefaultIconSize"/>.</param>
+            <param name="culture">The culture to use in the converter.</param>
+            <returns>An <see cref="T:System.Windows.Controls.Image"/> when an icon could be resolved; otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.ConvertBack(System.Object,System.Type[],System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            Not supported; this converter only supports one-way conversion.
+            </summary>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.LoadImageSource(System.String)">
+            <summary>
+            Loads an <see cref="T:System.Windows.Media.ImageSource"/> from an icon reference that may be a WPF pack/resource URI or a file path.
+            </summary>
+            <remarks>
+            Example to load an embedded image from the GSF.TimeSeries.UI assembly:
+            <code>
+            &lt;MenuDataItem Icon="/GSF.TimeSeries.UI;component/images/Configure.png" MenuText="Measurements" ... /&gt;
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GSF.TimeSeries.UI.Converters.MenuItemIconConverter.ExtractAssociatedIcon(System.String)">
+            <summary>
+            Extracts the embedded application icon associated with an external process executable.
+            </summary>
+        </member>
         <member name="T:GSF.TimeSeries.UI.Converters.DictionaryToKeyValuePairConverter">
             <summary>
             Represents an <see cref="T:System.Windows.Data.IValueConverter"/> class, which takes <see cref="T:System.Collections.Generic.Dictionary`2"/> collection and returns <see cref="T:System.Collections.Generic.KeyValuePair`2"/>    
