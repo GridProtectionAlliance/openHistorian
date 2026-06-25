@@ -38,6 +38,7 @@ namespace GSF.Snap.Services.Writer
         : SettingsBase<SimplifiedArchiveInitializerSettings>
     {
         private ArchiveDirectoryMethod m_directoryMethod;
+        private ArchiveDirectoryFillMethod m_fillMethod;
         private string m_prefix;
         private string m_pendingExtension;
         private string m_finalExtension;
@@ -57,6 +58,7 @@ namespace GSF.Snap.Services.Writer
         private void Initialize()
         {
             m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+            m_fillMethod = ArchiveDirectoryFillMethod.Sequential;
             m_prefix = string.Empty;
             m_pendingExtension = ".~d2i";
             m_finalExtension = ".d2i";
@@ -84,6 +86,20 @@ namespace GSF.Snap.Services.Writer
         }
 
         /// <summary>
+        /// Gets or sets the method used to select a write path when more than one is configured. Defaults to
+        /// <see cref="ArchiveDirectoryFillMethod.Sequential"/>.
+        /// </summary>
+        public ArchiveDirectoryFillMethod FillMethod
+        {
+            get => m_fillMethod;
+            set
+            {
+                TestForEditable();
+                m_fillMethod = value;
+            }
+        }
+
+        /// <summary>
         /// Gets/Sets the file prefix. Can be String.Empty for no prefix.
         /// </summary>
         public string Prefix
@@ -92,13 +108,16 @@ namespace GSF.Snap.Services.Writer
             set
             {
                 TestForEditable();
+                
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     m_prefix = string.Empty;
                     return;
                 }
+                
                 if (value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-                    throw new ArgumentException("filename has invalid characters.", "value");
+                    throw new ArgumentException("filename has invalid characters.", nameof(value));
+                
                 m_prefix = value;
             }
         }
@@ -149,9 +168,7 @@ namespace GSF.Snap.Services.Writer
             set
             {
                 TestForEditable();
-                if (value is null)
-                    throw new ArgumentNullException("value");
-                m_encodingMethod = value;
+                m_encodingMethod = value ?? throw new ArgumentNullException(nameof(value));
             }
         }
 
@@ -168,18 +185,13 @@ namespace GSF.Snap.Services.Writer
             set
             {
                 TestForEditable();
+
                 if (value < 100 * 1024L * 1024L)
-                {
                     m_desiredRemainingSpace = 100 * 1024L * 1024L;
-                }
                 else if (value > 1024 * 1024L * 1024L * 1024L)
-                {
                     m_desiredRemainingSpace = 1024 * 1024L * 1024L * 1024L;
-                }
                 else
-                {
                     m_desiredRemainingSpace = value;
-                }
             }
         }
 
@@ -212,8 +224,9 @@ namespace GSF.Snap.Services.Writer
 
         public override void Save(Stream stream)
         {
-            stream.Write((byte)1);
+            stream.Write((byte)2);
             stream.Write((int)m_directoryMethod);
+            stream.Write((int)m_fillMethod);
             stream.Write(m_prefix);
             stream.Write(m_pendingExtension);
             stream.Write(m_finalExtension);
@@ -238,21 +251,30 @@ namespace GSF.Snap.Services.Writer
             switch (version)
             {
                 case 1:
+                case 2:
                     m_directoryMethod = (ArchiveDirectoryMethod)stream.ReadInt32();
+
+                    // Fill method was introduced in version 2; version 1 streams default to Sequential
+                    m_fillMethod = version >= 2 ? (ArchiveDirectoryFillMethod)stream.ReadInt32() : ArchiveDirectoryFillMethod.Sequential;
+
                     m_prefix = stream.ReadString();
                     m_pendingExtension = stream.ReadString();
                     m_finalExtension = stream.ReadString();
                     m_desiredRemainingSpace = stream.ReadInt64();
                     m_encodingMethod = new EncodingDefinition(stream);
+                    
                     int cnt = stream.ReadInt32();
                     m_writePath.Clear();
+                    
                     while (cnt > 0)
                     {
                         cnt--;
                         m_writePath.Add(stream.ReadString());
                     }
+                    
                     cnt = stream.ReadInt32();
                     m_flags.Clear();
+                    
                     while (cnt > 0)
                     {
                         cnt--;
@@ -270,6 +292,5 @@ namespace GSF.Snap.Services.Writer
             if (WritePath.Count == 0)
                 throw new Exception("Missing write paths.");
         }
-
     }
 }

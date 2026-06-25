@@ -138,6 +138,11 @@ namespace openHistorian.Adapters
         public const ArchiveDirectoryMethod DefaultDirectoryNamingMode = ArchiveDirectoryMethod.YearThenMonth;
 
         /// <summary>
+        /// Defines the default value for <see cref="DirectoryFillMethod"/>.
+        /// </summary>
+        public const ArchiveDirectoryFillMethod DefaultDirectoryFillMethod = ArchiveDirectoryFillMethod.Sequential;
+
+        /// <summary>
         /// Defines the default value for <see cref="ArchiveCurtailmentInterval"/>.
         /// </summary>
         public const int DefaultArchiveCurtailmentInterval = Time.SecondsPerDay;
@@ -251,7 +256,7 @@ namespace openHistorian.Adapters
                 }
                 else
                 {
-                    List<string> archivePaths = new();
+                    List<string> archivePaths = [];
 
                     foreach (string archivePath in value.Split(';'))
                     {
@@ -286,6 +291,19 @@ namespace openHistorian.Adapters
         public ArchiveDirectoryMethod DirectoryNamingMode { get; set; }
 
         /// <summary>
+        /// Gets or sets the method used to select a write directory when multiple archive directories are configured.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="ArchiveDirectoryFillMethod.Sequential"/> (default) fills each archive directory in order, only
+        /// advancing to the next when the current drive lacks space - this matches the historical behavior.
+        /// <see cref="ArchiveDirectoryFillMethod.RoundRobin"/> distributes new files across the configured directories.
+        /// </remarks>
+        [ConnectionStringParameter]
+        [Description("Define how a write directory is selected when multiple archive directories are configured: 'Sequential' fills each directory in order until full (default), 'RoundRobin' distributes new files across directories.")]
+        [DefaultValue(DefaultDirectoryFillMethod)]
+        public ArchiveDirectoryFillMethod DirectoryFillMethod { get; set; }
+
+        /// <summary>
         /// Gets or sets the default interval, in seconds, over which the archive curtailment will operate. Set to zero to disable.
         /// </summary>
         [ConnectionStringParameter]
@@ -310,7 +328,7 @@ namespace openHistorian.Adapters
                 }
                 else
                 {
-                    List<string> attachedPaths = new();
+                    List<string> attachedPaths = [];
 
                     foreach (string archivePath in value.Split(';'))
                     {
@@ -742,6 +760,11 @@ namespace openHistorian.Adapters
             else
                 DirectoryNamingMode = DefaultDirectoryNamingMode;
 
+            if (settings.TryGetValue(nameof(DirectoryFillMethod), out setting) && Enum.TryParse(setting, true, out ArchiveDirectoryFillMethod directoryFillMethod))
+                DirectoryFillMethod = directoryFillMethod;
+            else
+                DirectoryFillMethod = DefaultDirectoryFillMethod;
+
             // Handle advanced settings - there are hidden but available from manual entry into connection string
             if (!settings.TryGetValue("StagingCount", out setting) || !int.TryParse(setting, out int stagingCount))
                 stagingCount = 3;
@@ -770,6 +793,7 @@ namespace openHistorian.Adapters
             m_archiveInfo.TargetFileSize = (long)(targetFileSize * SI.Giga);
             m_archiveInfo.DesiredRemainingSpace = (long)(desiredRemainingSpace * SI.Giga);
             m_archiveInfo.DirectoryMethod = DirectoryNamingMode;
+            m_archiveInfo.FillMethod = DirectoryFillMethod;
             m_archiveInfo.StagingCount = stagingCount;
             m_archiveInfo.DiskFlushInterval = diskFlushInterval;
             m_archiveInfo.CacheFlushInterval = cacheFlushInterval;
@@ -876,6 +900,41 @@ namespace openHistorian.Adapters
                 RemoveFilesOlderThanMaxArchiveDays();
         }
 
+        // Builds the set of normalized write directories (absolute, trimmed, with a trailing separator) used to scope
+        // archive-reduction operations so that only files written by this instance are affected. Attached/import folders
+        // live outside these directories and are therefore left untouched by all reduction paths: disk-pressure removal,
+        // downsampling and maximum-archive-days deletion.
+        private string[] GetNormalizedArchiveDirectories()
+        {
+            string[] archiveDirectories = (m_archiveDirectories ?? [WorkingDirectory]).ToArray();
+
+            for (int i = 0; i < archiveDirectories.Length; i++)
+            {
+                string normalizedDirectory = Path.GetFullPath(archiveDirectories[i]).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                // Add trailing separator to ensure only subdirectory, not prefix match which might be a file
+                if (!normalizedDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    normalizedDirectory += Path.DirectorySeparatorChar;
+
+                archiveDirectories[i] = normalizedDirectory;
+            }
+
+            return archiveDirectories;
+        }
+
+        // Determines whether the specified archive file resides within one of the supplied (normalized) write
+        // directories. Used to scope reduction operations to written files and skip attached/non-write folders.
+        private static bool FilePathTargetsArchiveDirectories(string fileName, string[] normalizedArchiveDirectories)
+        {
+            // Normalize file path: absolute, trimmed
+            string filePath = Path.GetFullPath(fileName);
+
+            // Case-insensitive compare on Windows, case-sensitive on Posix environments
+            StringComparison comparison = Common.IsPosixEnvironment ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+
+            return normalizedArchiveDirectories.Any(directory => filePath.StartsWith(directory, comparison));
+        }
+
         private void RemoveOldestFilesBeforeFull()
         {
             // Set target space to be three times the target file size plus minimum disk space before considered full,
@@ -884,19 +943,7 @@ namespace openHistorian.Adapters
             // accommodate high volume data archiving in very low disk space environments.
             long neededSpace = m_archiveInfo.DesiredRemainingSpace + 3 * m_archiveInfo.TargetFileSize;
 
-            string[] archiveDirectories = m_archiveDirectories ?? [WorkingDirectory];
-
-            // Normalize archive directories: absolute, trimmed, with trailing separator
-            for (int i = 0; i < archiveDirectories.Length; i++)
-            {
-                string normalizedDirectory = Path.GetFullPath(archiveDirectories[i]).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                
-                // Add trailing separator to ensure only subdirectory, not prefix match which might be a file
-                if (!normalizedDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                    normalizedDirectory += Path.DirectorySeparatorChar;
-
-                archiveDirectories[i] = normalizedDirectory;
-            }
+            string[] archiveDirectories = GetNormalizedArchiveDirectories();
 
             try
             {
@@ -931,7 +978,7 @@ namespace openHistorian.Adapters
                 // out of range timestamps are not configured to be filtered, and you don't want to accidentally delete
                 // a file with otherwise in-range data.
                 ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles()
-                    .Where(filePathTargetsArchiveDirectories)
+                    .Where(file => FilePathTargetsArchiveDirectories(file.FileName, archiveDirectories))
                     .OrderBy(file => file.EndTime)
                     .TakeWhile(item =>
                     {
@@ -948,19 +995,6 @@ namespace openHistorian.Adapters
             {
                 OnProcessException(MessageLevel.Error, new InvalidOperationException($"Failed while attempting to delete oldest archive files in order to free disk space: {ex.Message}", ex));
             }
-
-            return;
-
-            bool filePathTargetsArchiveDirectories(ArchiveDetails file)
-            {
-                // Normalize file path: absolute, trimmed
-                string filePath = Path.GetFullPath(file.FileName);
-
-                // Case-insensitive compare on Windows, case-sensitive on Posix environments
-                StringComparison comparison = Common.IsPosixEnvironment ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-
-                return archiveDirectories.Any(directory => filePath.StartsWith(directory, comparison));
-            }
         }
 
         private void DownsampleArchiveFiles()
@@ -972,11 +1006,17 @@ namespace openHistorian.Adapters
             {
                 OnStatusMessage(MessageLevel.Info, "Scanning archive files for downsampling...");
 
-                List<ArchiveDetails> attachedFiles = database.GetAllAttachedFiles();
+                // Scope downsampling to files within the write directories so attached/non-write folders are never
+                // rewritten at a lower resolution.
+                string[] normalizedArchiveDirectories = GetNormalizedArchiveDirectories();
+
+                List<ArchiveDetails> attachedFiles = database.GetAllAttachedFiles()
+                    .Where(file => FilePathTargetsArchiveDirectories(file.FileName, normalizedArchiveDirectories))
+                    .ToList();
 
                 // Start with oldest files first, this way they can be excluded from further downsampling if they are already targeted
                 int[] startDays = m_downsamplingIntervals.Keys.OrderByDescending(value => value).ToArray();
-                HashSet<ArchiveDetails> targetedArchives = new();
+                HashSet<ArchiveDetails> targetedArchives = [];
 
                 int downsamplingStage = m_archiveInfo.StagingCount + startDays.Length;
 
@@ -1041,10 +1081,10 @@ namespace openHistorian.Adapters
                         try
                         {
                             // Remove higher resolution file after successful downsampling
-                            database.DeleteFiles(new List<Guid>(new[] { file.Id }));
+                            database.DeleteFiles([file.Id]);
 
                             // Attach downsampled resolution file to active historian instance
-                            database.AttachFilesOrPaths(new [] { downsampledFile });
+                            database.AttachFilesOrPaths([downsampledFile]);
 
                             OnStatusMessage(MessageLevel.Info, $"Downsampled archive file \"{FilePath.GetFileName(file.FileName)}\" to {samplesPerSecond} samples per second.");
                         }
@@ -1067,10 +1107,14 @@ namespace openHistorian.Adapters
             {
                 DateTime startTime = file.StartTime;
                 DateTime endTime = file.EndTime;
-                TimeSpan interval = new((long)(TimeSpan.TicksPerSecond * samplesPerSecond));
+
+                // Interval is the time spacing between retained samples, i.e., the reciprocal of the target sample
+                // rate (samplesPerSecond is validated > 0 by the DownsamplingIntervals parser, so this cannot divide
+                // by zero).
+                TimeSpan interval = new((long)(TimeSpan.TicksPerSecond / samplesPerSecond));
 
                 using ArchiveList<HistorianKey, HistorianValue> archiveList = new();
-                archiveList.LoadFiles(new[] { file.FileName });
+                archiveList.LoadFiles([file.FileName]);
 
                 using SequentialReaderStream<HistorianKey, HistorianValue> reader = new(archiveList, SortedTreeEngineReaderOptions.Default, TimestampSeekFilter.CreateFromIntervalData<HistorianKey>(startTime, endTime, interval, new TimeSpan(TimeSpan.TicksPerMillisecond)));
 
@@ -1098,11 +1142,16 @@ namespace openHistorian.Adapters
 
                 ClientDatabaseBase<HistorianKey, HistorianValue> database = GetClientDatabase();
 
+                // Scope deletion to files within the write directories so attached/non-write folders are never
+                // deleted by the maximum-archive-days retention window.
+                string[] normalizedArchiveDirectories = GetNormalizedArchiveDirectories();
+
                 // Get list of files that have both a start time and an end time that are greater than the maximum
                 // archive days. We check both start and end times since devices with an inaccurate GPS clock can
                 // provide bad time when out of range timestamps are not configured to be filtered and you don't
                 // want to accidentally delete a file with otherwise in-range data.
                 ArchiveDetails[] filesToDelete = database.GetAllAttachedFiles().Where(file =>
+                    FilePathTargetsArchiveDirectories(file.FileName, normalizedArchiveDirectories) &&
                     (DateTime.UtcNow - file.StartTime).TotalDays > MaximumArchiveDays &&
                     (DateTime.UtcNow - file.EndTime).TotalDays > MaximumArchiveDays).ToArray();
 
@@ -1301,8 +1350,8 @@ namespace openHistorian.Adapters
             {
                 ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
 
-                string[] archivedirectories = m_archiveDirectories ?? Array.Empty<string>();
-                string[] attachedPaths = m_attachedPaths ?? Array.Empty<string>();
+                string[] archivedirectories = m_archiveDirectories ?? [];
+                string[] attachedPaths = m_attachedPaths ?? [];
 
                 List<string> files = archivedirectories
                     .Concat(attachedPaths)
@@ -1344,7 +1393,7 @@ namespace openHistorian.Adapters
             fileWatcher.Created += (_, args) => ThreadPool.QueueUserWorkItem(state =>
             {
                 ClientDatabaseBase<HistorianKey, HistorianValue> clientDatabase = GetClientDatabase();
-                string[] filePtr = { (string)state };
+                string[] filePtr = [(string)state];
                 clientDatabase.AttachFilesOrPaths(filePtr);
             },
             args.FullPath);
@@ -1474,7 +1523,7 @@ namespace openHistorian.Adapters
                 // Load the defined local system historians
                 IEnumerable<DataRow> historians = connection.RetrieveData($"SELECT AdapterName FROM RuntimeHistorian WHERE NodeID = {nodeIDQueryString} AND TypeName = 'openHistorian.Adapters.LocalOutputAdapter'").AsEnumerable();
 
-                List<string> validHistorians = new();
+                List<string> validHistorians = [];
 
                 // Apply settings optimizations to local historians
                 foreach (DataRow row in historians)
@@ -1491,7 +1540,7 @@ namespace openHistorian.Adapters
                 validHistorians.Sort();
 
                 // Create a list to track categories to remove
-                HashSet<string> categoriesToRemove = new();
+                HashSet<string> categoriesToRemove = [];
 
                 // Search for unused settings categories
                 foreach (PropertyInformation info in configFile.Settings.ElementInformation.Properties)
@@ -1650,13 +1699,13 @@ namespace openHistorian.Adapters
             if (count == 0)
             {
                 // Add default device group classes
-                List<string> classOptions = new()
-                {
+                List<string> classOptions =
+                [
                     "Region",
                     "Substation",
                     "Generation",
                     "Other"
-                };
+                ];
 
                 foreach (string classOption in classOptions)
                 {

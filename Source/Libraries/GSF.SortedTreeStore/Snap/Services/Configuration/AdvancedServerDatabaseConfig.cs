@@ -66,6 +66,7 @@ namespace GSF.Snap.Services.Configuration
             DesiredRemainingSpace =  5L * SI2.Giga;
             StagingCount = 3;
             DirectoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+            FillMethod = ArchiveDirectoryFillMethod.Sequential;
             DiskFlushInterval = 10000;
             CacheFlushInterval = 100;
         }
@@ -75,6 +76,12 @@ namespace GSF.Snap.Services.Configuration
         /// top directory only.
         /// </summary>
         public ArchiveDirectoryMethod DirectoryMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets how a write path is selected from the final write paths when more than one is configured.
+        /// Defaults to <see cref="ArchiveDirectoryFillMethod.Sequential"/>.
+        /// </summary>
+        public ArchiveDirectoryFillMethod FillMethod { get; set; }
 
         /// <summary>
         /// The name associated with the database.
@@ -126,7 +133,7 @@ namespace GSF.Snap.Services.Configuration
         public bool ImportAttachedPathsAtStartup { get; set; }
 
         /// <summary>
-        /// Gets all of the paths that are known by this historian.
+        /// Gets all paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
         public List<string> ImportPaths { get; }
@@ -160,7 +167,7 @@ namespace GSF.Snap.Services.Configuration
         public int DiskFlushInterval { get; set; }
 
         /// <summary>
-        /// The number of milliseconds before data is taken from it's cache and put in the
+        /// The number of milliseconds before data is taken from its cache and put in the
         /// memory file.
         /// </summary>
         /// <remarks>
@@ -238,10 +245,12 @@ namespace GSF.Snap.Services.Configuration
                 }
                 else
                 {
-                    // Final staging file
+                    // Final staging file - this is the only stage that writes across the configured final paths, so the
+                    // fill method (sequential vs round-robin) applies here
                     rollover.ArchiveSettings.ConfigureOnDisk(finalPaths, DesiredRemainingSpace,
                         DirectoryMethod, ArchiveEncodingMethod, DatabaseName.ToNonNullNorEmptyString("stage" + stage).RemoveInvalidFileNameCharacters(),
                         finalFilePendingExtension, finalFileFinalExtension, FileFlags.GetStage(stage));
+                    rollover.ArchiveSettings.FillMethod = FillMethod;
                 }
 
                 rollover.LogPath = m_mainPath;

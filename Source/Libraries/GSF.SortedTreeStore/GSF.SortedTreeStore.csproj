@@ -204,6 +204,7 @@
     <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
     <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />
     <Compile Include="Snap\Services\ArchiveDetails.cs" />
+    <Compile Include="Snap\Services\ArchiveDirectoryFillMethod.cs" />
     <Compile Include="Snap\Services\ArchiveDirectoryMethod.cs" />
     <Compile Include="Snap\Services\ArchiveListEditor.cs" />
     <Compile Include="Snap\Services\ArchiveListSettings.cs" />

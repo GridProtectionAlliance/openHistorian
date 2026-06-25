@@ -25,6 +25,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using GSF.Immutable;
 using GSF.IO;
 using GSF.Snap.Storage;
 using GSF.Snap.Types;
@@ -41,6 +43,7 @@ namespace GSF.Snap.Services.Writer
     {
         private SimplifiedArchiveInitializerSettings m_settings;
         private readonly ReaderWriterLockEasy m_lock;
+        private int m_writePathSeed;
 
         /// <summary>
         /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/>
@@ -74,7 +77,7 @@ namespace GSF.Snap.Services.Writer
 
         /// <summary>
         /// Creates a new <see cref="SortedTreeTable{TKey,TValue}"/> based on the settings passed to this class.
-        /// Once created, it is up to he caller to make sure that this class is properly disposed of.
+        /// Once created, it is up to the caller to make sure that this class is properly disposed of.
         /// </summary>
         /// <param name="startKey">the first key in the archive file</param>
         /// <param name="endKey">the last key in the archive file</param>
@@ -100,7 +103,7 @@ namespace GSF.Snap.Services.Writer
         private string CreateArchiveName(string path)
         {
             path = GetPath(path, DateTime.Now);
-            return Path.Combine(path, m_settings.Prefix.ToLower() + "-" + Guid.NewGuid() + "-" + DateTime.UtcNow.Ticks + m_settings.PendingExtension);
+            return Path.Combine(path, $"{m_settings.Prefix.ToLower()}-{Guid.NewGuid()}-{DateTime.UtcNow.Ticks}{m_settings.PendingExtension}");
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace GSF.Snap.Services.Writer
                 return CreateArchiveName(path);
 
             path = GetPath(path, startDate);
-            return Path.Combine(path, m_settings.Prefix.ToLower() + "-" + startDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "_to_" + endDate.ToString("yyyy-MM-dd HH.mm.ss.fff") + "-" + DateTime.UtcNow.Ticks + m_settings.PendingExtension);
+            return Path.Combine(path, $"{m_settings.Prefix.ToLower()}-{startDate:yyyy-MM-dd HH.mm.ss.fff}_to_{endDate:yyyy-MM-dd HH.mm.ss.fff}-{DateTime.UtcNow.Ticks}{m_settings.PendingExtension}");
         }
 
         private string GetPath(string rootPath, DateTime time)
@@ -135,25 +138,45 @@ namespace GSF.Snap.Services.Writer
                     rootPath = Path.Combine(rootPath, time.Year.ToString() + time.Month.ToString("00"));
                     break;
                 case ArchiveDirectoryMethod.YearThenMonth:
-                    rootPath = Path.Combine(rootPath, time.Year.ToString() + '\\' + time.Month.ToString("00"));
+                    rootPath = Path.Combine(rootPath, $"{time.Year}\\{time.Month:00}");
                     break;
             }
+
             if (!Directory.Exists(rootPath))
                 Directory.CreateDirectory(rootPath);
+            
             return rootPath;
         }
 
+        // Selects a write path with enough free space using the configured fill method. Sequential fill always starts
+        // at the first path (filling each in order); round-robin rotates the starting candidate via a per-instance
+        // interlocked seed so new files are distributed across the configured write paths.
         private string GetPathWithEnoughSpace(long estimatedSize)
         {
+            ImmutableList<string> paths = m_settings.WritePath;
+            int count = paths.Count;
+
+            int start = m_settings.FillMethod == ArchiveDirectoryFillMethod.RoundRobin ? 
+                ((Interlocked.Increment(ref m_writePathSeed) - 1) % count + count) % count : 0;
+
+            // No size estimate: return the selected path without a free-space check
             if (estimatedSize < 0)
-                return m_settings.WritePath.First();
+                return paths[start];
+
             long remainingSpace = m_settings.DesiredRemainingSpace;
-            foreach (string path in m_settings.WritePath)
+
+            // Scan all candidate paths once, beginning at the selected position and wrapping around, returning the
+            // first whose drive has enough free space to store the estimated file while leaving the desired remaining space
+            for (int offset = 0; offset < count; offset++)
             {
+                string path = paths[(start + offset) % count];
+
                 FilePath.GetAvailableFreeSpace(path, out long freeSpace, out _);
+
                 if (freeSpace - estimatedSize > remainingSpace)
                     return path;
             }
+
             throw new Exception("Out of free space");
         }
 

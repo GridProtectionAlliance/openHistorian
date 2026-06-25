@@ -70,6 +70,15 @@ namespace openHistorian.Net
         }
 
         /// <summary>
+        /// Specify how a write path is selected from the final archive directories when more than one is configured.
+        /// </summary>
+        public ArchiveDirectoryFillMethod FillMethod
+        {
+            get => m_config.FillMethod;
+            set => m_config.FillMethod = value;
+        }
+
+        /// <summary>
         /// Gets or sets the desired size of the final stage archive files.
         /// </summary>
         /// <remarks>Must be between 100MB and 1TB</remarks>
@@ -126,7 +135,7 @@ namespace openHistorian.Net
         }
 
         /// <summary>
-        /// The number of milliseconds before data is taken from it's cache and put in the
+        /// The number of milliseconds before data is taken from its cache and put in the
         /// memory file.
         /// </summary>
         /// <remarks>
@@ -181,7 +190,7 @@ namespace openHistorian.Net
         }
 
         /// <summary>
-        /// Gets all of the paths that are known by this historian.
+        /// Gets all the paths that are known by this historian.
         /// A path can be a file name or a folder.
         /// </summary>
         public List<string> ImportPaths => m_config.ImportPaths;
