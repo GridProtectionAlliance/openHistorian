@@ -146,6 +146,7 @@
     <Compile Include="Snap\Filters\TimestampPointIDSeekFilter.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilterDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
+    <Compile Include="Snap\Services\ArchiveDirectoryFillMethod.cs" />
     <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />
     <Compile Include="Snap\Services\ArchiveDetails.cs" />
     <Compile Include="Snap\Services\ArchiveDirectoryMethod.cs" />
