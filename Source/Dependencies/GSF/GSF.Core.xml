@@ -52099,9 +52099,19 @@
             169 kV.
             </summary>
         </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV220">
+            <summary>
+            220 kV.
+            </summary>
+        </member>
         <member name="F:GSF.Units.EE.VoltageLevel.kV230">
             <summary>
             230 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV240">
+            <summary>
+            240 kV.
             </summary>
         </member>
         <member name="F:GSF.Units.EE.VoltageLevel.kV345">
@@ -52112,6 +52122,11 @@
         <member name="F:GSF.Units.EE.VoltageLevel.kV500">
             <summary>
             500 kV.
+            </summary>
+        </member>
+        <member name="F:GSF.Units.EE.VoltageLevel.kV525">
+            <summary>
+            525 kV.
             </summary>
         </member>
         <member name="F:GSF.Units.EE.VoltageLevel.kV765">
