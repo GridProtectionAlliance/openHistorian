@@ -338,7 +338,7 @@
             Gets or sets primary keys of input measurements the <see cref="T:PIAdapters.PIOutputAdapter"/> expects.
             </summary>
         </member>
-        <member name="P:PIAdapters.PIOutputAdapter.InputMeasurementKeyTypes">
+        <member name="P:PIAdapters.PIOutputAdapter.InputMeasurementKeysWithTypes">
             <summary>
             Gets or sets input measurement <see cref="T:GSF.Units.EE.SignalType"/>'s for each of the <see cref="P:GSF.TimeSeries.Adapters.ActionAdapterBase.InputMeasurementKeys"/>, if any.
             </summary>
