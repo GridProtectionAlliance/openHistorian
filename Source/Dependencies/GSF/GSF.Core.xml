@@ -19948,6 +19948,33 @@
             </para>
             </remarks>
         </member>
+        <member name="T:GSF.Diagnostics.KillOnReleaseJob">
+            <summary>
+            Represents a job that kills all assigned processes when the job is disposed.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.KillOnReleaseJob.#ctor">
+            <summary>
+            Creates a new job handle and sets JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
+            </summary>
+        </member>
+        <member name="P:GSF.Diagnostics.KillOnReleaseJob.IsInvalid">
+            <summary>
+            Gets a flag that indicates whether the job handle is invalid.
+            </summary>
+        </member>
+        <member name="M:GSF.Diagnostics.KillOnReleaseJob.AssignProcess(System.Diagnostics.Process)">
+            <summary>
+            Assigns a process to the job that will be killed when the job is disposed.
+            </summary>
+            <param name="process"></param>
+        </member>
+        <member name="M:GSF.Diagnostics.KillOnReleaseJob.ReleaseHandle">
+            <summary>
+            Releases the job handle, killing all assigned processes.
+            </summary>
+            <returns>True if the job handle was successfully released.</returns>
+        </member>
         <member name="T:GSF.Diagnostics.NamespaceDoc">
             <summary>
             Contains classes used to simplify and standardize performance monitoring for applications.
@@ -25653,6 +25680,26 @@
             Win32 STARTUPINFO structure.
             </summary>
         </member>
+        <member name="T:GSF.Interop.WindowsApi.JobObjectInfoType">
+            <summary>
+            JOBOBJECTINFOCLASS enumeration.
+            </summary>
+        </member>
+        <member name="T:GSF.Interop.WindowsApi.IO_COUNTERS">
+            <summary>
+            Win32 IO_COUNTERS structure.
+            </summary>
+        </member>
+        <member name="T:GSF.Interop.WindowsApi.JOBOBJECT_BASIC_LIMIT_INFORMATION">
+            <summary>
+            Win32 JOBOBJECT_BASIC_LIMIT_INFORMATION structure.
+            </summary>
+        </member>
+        <member name="T:GSF.Interop.WindowsApi.JOBOBJECT_EXTENDED_LIMIT_INFORMATION">
+            <summary>
+            Win32 JOBOBJECT_EXTENDED_LIMIT_INFORMATION structure.
+            </summary>
+        </member>
         <member name="T:GSF.Interop.WindowsApi.SERVICE_DESCRIPTION">
             <summary>
             Win32 SERVICE_DESCRIPTION structure.
@@ -25978,6 +26025,21 @@
         <member name="M:GSF.Interop.WindowsApi.GetCurrentProcess">
             <summary>
             Win32 GetCurrentProcess function.
+            </summary>
+        </member>
+        <member name="M:GSF.Interop.WindowsApi.CreateJobObject(System.IntPtr,System.String)">
+            <summary>
+            Win32 CreateJobObject function.
+            </summary>
+        </member>
+        <member name="M:GSF.Interop.WindowsApi.SetInformationJobObject(System.IntPtr,GSF.Interop.WindowsApi.JobObjectInfoType,System.IntPtr,System.UInt32)">
+            <summary>
+            Win32 SetInformationJobObject function.
+            </summary>
+        </member>
+        <member name="M:GSF.Interop.WindowsApi.AssignProcessToJobObject(System.IntPtr,System.IntPtr)">
+            <summary>
+            Win32 AssignProcessToJobObject function.
             </summary>
         </member>
         <member name="M:GSF.Interop.WindowsApi.CloseHandle(System.IntPtr)">
