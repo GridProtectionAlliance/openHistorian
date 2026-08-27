@@ -3605,6 +3605,11 @@
                 return $.Deferred().resolve().promise();
             }
 
+            // Determine if concentrator children are detached, i.e., modeled as standalone devices that are
+            // linked to the parent through a "parentID" connection string value instead of the ParentID field
+            const parentConnectionMap = new Dictionary((configFrame.ConnectionString + "").parseKeyValuePairs());
+            const detachChildren = parentConnectionMap.containsKey("detachedChildren") && String(parentConnectionMap.get("detachedChildren")).toLowerCase() === "true";
+
             if (configFrame.IsConcentrator || cellCount > 1) {
                 let deviceSaveChain = $.Deferred().resolve();
 
@@ -3631,7 +3636,8 @@
                             }
                             else {
                                 // Set device properties
-                                device.ParentID = cell.ParentID == null ? id : cell.ParentID;
+                                const parentID = cell.ParentID == null ? id : cell.ParentID;
+                                device.ParentID = detachChildren ? null : parentID;
                                 device.HistorianID = viewModel.historianID();
                                 device.ProtocolID = configFrame.ProtocolID;
                                 device.FrameRate = configFrame.FrameRate;
@@ -3647,6 +3653,20 @@
 
                                 if (isEmpty(device.Name))
                                     device.Name = device.Acronym;
+
+                                if (detachChildren) {
+                                    // Detached children are modeled as standalone devices - the parent linkage is
+                                    // carried in the connection string as a proxy for the ParentID field, along
+                                    // with the station name used for label based cell mapping
+                                    const childConnectionMap = new Dictionary();
+                                    childConnectionMap.set("parentID", parentID.toString());
+                                    childConnectionMap.set("stationName", device.Name);
+                                    device.ConnectionString = childConnectionMap.joinKeyValuePairs();
+                                }
+                                else if (device.ConnectionString && device.ConnectionString.indexOf("parentID=") >= 0) {
+                                    // Clear stale detached child linkage, e.g., after a re-attach
+                                    device.ConnectionString = "";
+                                }
 
                                 device.Enabled = true;
 
@@ -3793,7 +3813,11 @@
                 // that does not carry a connection string (see connection string preservation for auto-JSON config I/O).
                 if (connectionString.length > 0) {
                     device.ConnectionString = connectionString;
-                    device.IsConcentrator = configFrame.IsConcentrator || configFrame.Cells.length > 1;
+
+                    // Do not flag a detached child device, i.e., a child modeled as a standalone device whose
+                    // connection string carries a "parentID" linkage value, as a concentrator
+                    if (!connectionStringMap.containsKey("parentID"))
+                        device.IsConcentrator = configFrame.IsConcentrator || configFrame.Cells.length > 1;
                 }
 
                 device.AutoStartDataParsingSequence = autoStartDataParsingSequence;
@@ -3840,7 +3864,20 @@
                                 enableUIButtons("Save complete.");
 
                                 return phasorHub.markConfigurationAsSynchronized(device.Acronym).then(function () {
-                                    const connectionID = device.ParentID ? device.ParentID : device.ID;
+                                    let connectionID = device.ParentID ? device.ParentID : device.ID;
+
+                                    // A detached child, i.e., a child modeled as a standalone device, defines its
+                                    // parent connection through a "parentID" connection string value
+                                    if (!device.ParentID && device.ConnectionString) {
+                                        const deviceConnectionMap = new Dictionary((device.ConnectionString + "").parseKeyValuePairs());
+
+                                        if (deviceConnectionMap.containsKey("parentID")) {
+                                            const parsedParentID = parseInt(deviceConnectionMap.get("parentID"), 10);
+
+                                            if (!isNaN(parsedParentID) && parsedParentID > 0)
+                                                connectionID = parsedParentID;
+                                        }
+                                    }
 
                                     return serviceHub.sendCommand("initialize " + connectionID).done(function () {
                                         window.location = "GraphMeasurements.cshtml?showMenu=@showMenu";
