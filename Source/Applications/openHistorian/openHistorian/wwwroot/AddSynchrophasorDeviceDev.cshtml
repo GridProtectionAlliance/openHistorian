@@ -4032,95 +4032,6 @@
             });
         }
 
-        function saveAliasedVoltageMagnitudes(cell, calcSignalType) {
-            return initializeDynamicCalculation(cell).then(function () {
-                function addDynamicCalculatorAdapter(inputMeasurement, outputMeasurement) {
-                    const connectionString = new Dictionary();
-                    const variableList = new Dictionary();
-                    const equation = "value";
-
-                    variableList.set("value", inputMeasurement.SignalID);
-
-                    connectionString.set("variableList", variableList.joinKeyValuePairs());
-                    connectionString.set("expressionText", equation);
-                    connectionString.set("framesPerSecond", viewModel.configFrame().FrameRate);
-                    connectionString.set("lagTime", "@DefaultCalculationLagTime");
-                    connectionString.set("leadTime", "@DefaultCalculationLeadTime");
-                    connectionString.set("outputMeasurements", outputMeasurement.SignalID);
-                    connectionString.set("useLatestValues", "false");
-
-                    return phasorHub.newCustomActionAdapter().then(function (adapter) {
-                        adapter.NodeID = nodeID;
-                        adapter.AdapterName = getCleanAcronym(outputMeasurement.PointTag) + "-CALC";
-                        adapter.AssemblyName = "DynamicCalculator.dll";
-                        adapter.TypeName = "DynamicCalculator.DynamicCalculator";
-                        adapter.ConnectionString = connectionString.joinKeyValuePairs();
-                        adapter.LoadOrder = 100;
-                        adapter.Enabled = true;
-
-                        return phasorHub.addNewOrUpdateCustomActionAdapter(adapter).then(function () {
-                            return serviceHub.sendCommand("initialize " + adapter.AdapterName);
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Save failed for new custom action adapter: " + error, null, true);
-                        });
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Failed to create new custom action adapter record: " + error, null, true);
-                    });
-                }
-
-                const promises = [];
-                let count = 0;
-
-                for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
-                    const phasorDefinition = cell.PhasorDefinitions[i];
-
-                    if (phasorDefinition.PhasorType.toLowerCase() === "current") {
-                        const current = phasorDefinition;
-                        const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
-
-                        if (voltage && current.Label().toLowerCase() !== voltage.Label().toLowerCase() && voltage.hasOwnProperty("vphmMeasurement")) {
-                            count++;
-                            const index = count;
-                            const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), "AV", calcSignalType.Suffix, index.toString());
-                            const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), "AV", calcSignalType.Suffix, index.toString());
-
-                            // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
-                            promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
-                                const voltageLabel = voltage.Label().replaceAll(" ", "_").toUpperCase();
-                                const currentLabel = current.Label().replaceAll(" ", "_").toUpperCase();
-                                measurement.DeviceID = cell.ID;
-                                measurement.HistorianID = viewModel.historianID();
-                                measurement.PointTag = getCleanPointTag(String.format("{0}-{1}_{2}:CALC-AV{3}", cell.IDLabel(), voltageLabel, currentLabel, index));
-                                measurement.Description = String.format("{0} {1}-{2} Calculated Value: Aliased Voltage {3}", cell.IDLabel(), voltage.Label(), current.Label(), index);
-                                measurement.SignalReference = signalReference;
-                                measurement.SignalTypeID = calcSignalType.ID;
-                                measurement.Internal = true;
-                                measurement.Enabled = true;
-
-                                return phasorHub.addNewOrUpdateMeasurement(measurement).then(function () {
-                                    return phasorHub.queryMeasurement(signalReference).then(function (updatedMeasurement) {
-                                        return addDynamicCalculatorAdapter(voltage.vphmMeasurement, updatedMeasurement);
-                                    })
-                                    .fail(function (error) {
-                                        showErrorMessage("Failed to lookup measurement " + signalReference + ": " + error, null, true);
-                                    });
-                                })
-                                .fail(function (error) {
-                                    showErrorMessage("Save failed for new measurement " + signalReference + ": " + error, null, true);
-                                });
-                            })
-                            .fail(function (error) {
-                                showErrorMessage("Failed to lookup or create measurement " + signalReference + ": " + error, null, true);
-                            }));
-                        }
-                    }
-                }
-
-                return $(promises).whenAll();
-            });
-        }
 
         function saveCustomActionAdapter(tagTemplate) {
             return phasorHub.newCustomActionAdapter().then(function (adapter) {
@@ -4166,10 +4077,7 @@
 
             // Resolve measurements for any associated voltage that lives on another device before
             // running calculations so that voltage / current calculations can span devices
-            return resolveSourceDeviceVoltageMeasurements(cell).then(function () {
-                return saveAliasedVoltageMagnitudes(cell, calcSignalType);
-            })
-            .then(function() {
+            return resolveSourceDeviceVoltageMeasurements(cell).then(function() {
                 return phasorHub.loadTemplate(templateType).then(function (tagTemplates) {
                     return phasorHub.validateCalculatorConfigurations(viewModel.historianID(), "@SystemName").then(function () {
                         return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
@@ -4252,7 +4160,7 @@
                 });
             })
             .fail(function (error) {
-                showErrorMessage("Failed to save aliased voltage calculations: " + error, null, true);
+                showErrorMessage("Failed to resolve associated voltage measurements: " + error, null, true);
             });
         }
 
