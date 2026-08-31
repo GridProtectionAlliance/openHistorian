@@ -1500,6 +1500,13 @@
             Gets or sets boolean value indicating if connection is to concentrator.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.DetachChildren">
+            <summary>
+            Gets or sets boolean value indicating if concentrator children should be detached, i.e., modeled
+            as standalone devices with a null ParentID that reference the parent concentrator through a
+            "parentID" connection string value.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.ViewModels.InputWizardDevices.PdcID">
             <summary>
             Gets or sets ID of the concentrator device.

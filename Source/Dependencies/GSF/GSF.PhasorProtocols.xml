@@ -2590,6 +2590,137 @@
             Gets reference to the <see cref="T:GSF.PhasorProtocols.IConfigurationFrame"/> associated with the <see cref="T:GSF.PhasorProtocols.IDataFrame"/> being parsed.
             </summary>
         </member>
+        <member name="T:GSF.PhasorProtocols.DetachedDeviceLink">
+            <summary>
+            Defines helper functions for managing connection string based parent / child device linkage used
+            by concentrator style device connections whose child devices have been "detached" from the data
+            model, i.e., child device records with a null <c>ParentID</c> so that the children appear as
+            standalone devices while stream parsing still maps data to them through the parent connection.
+            </summary>
+            <remarks>
+            A detached child device carries <c>parentID=&lt;parent Device.ID&gt;</c> (and typically
+            <c>stationName=&lt;Device.Name&gt;</c>) in its connection string as a proxy for the database
+            <c>ParentID</c> field. The parent concentrator device carries <c>detachedChildren=true</c> along
+            with <c>databaseID=&lt;its own Device.ID&gt;</c> so the runtime can match children to the parent
+            without requiring database access, e.g., when operating from cached configuration.
+            </remarks>
+        </member>
+        <member name="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey">
+            <summary>
+            Connection string key, applied to a detached child device, whose value is the database ID of
+            its parent concentrator device. Acts as a proxy for the database <c>ParentID</c> field.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.DetachedDeviceLink.StationNameKey">
+            <summary>
+            Connection string key, applied to a detached child device, whose value is the station name,
+            i.e., <c>Device.Name</c>, of the child device. Used to preserve label based cell mapping since
+            detached children are not exposed through the runtime input stream devices table.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.DetachedDeviceLink.DetachedChildrenKey">
+            <summary>
+            Connection string key, applied to a parent concentrator device, that flags the connection as
+            having detached, i.e., standalone modeled, child devices.
+            </summary>
+        </member>
+        <member name="F:GSF.PhasorProtocols.DetachedDeviceLink.DatabaseIDKey">
+            <summary>
+            Connection string key, applied to a parent concentrator device, whose value is the database ID
+            of the parent device itself. Allows the runtime to match detached children, whose
+            <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> values are database IDs, without requiring database access.
+            </summary>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.GetParentIdentifier(System.String)">
+            <summary>
+            Gets the raw parent identifier, i.e., the <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> value, defined in the
+            specified connection string, if any.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <returns>Defined parent identifier; otherwise, <c>null</c> when key is not defined.</returns>
+            <remarks>
+            Value is normally the numeric database ID of the parent device, but a device acronym is
+            accepted as a manual configuration fallback.
+            </remarks>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.TryParseParentID(System.String,System.Int32@)">
+            <summary>
+            Attempts to parse the numeric parent device database ID defined in the specified connection string.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <param name="parentID">Parsed parent device database ID, when defined.</param>
+            <returns><c>true</c> if a numeric <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> value was defined; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.GetEffectiveParentID(System.Nullable{System.Int32},System.String)">
+            <summary>
+            Gets the effective parent device database ID for a device, i.e., the defined database
+            <paramref name="parentID"/> field value, when not <c>null</c>, falling back on any numeric
+            <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> value defined in the device <paramref name="connectionString"/>.
+            </summary>
+            <param name="parentID">Database <c>ParentID</c> field value for the device.</param>
+            <param name="connectionString">Connection string for the device.</param>
+            <returns>Effective parent device database ID; otherwise, <c>null</c> when device has no parent.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.IsDetachedChild(System.String)">
+            <summary>
+            Gets flag that determines if the specified connection string identifies a detached child
+            device, i.e., connection string defines a <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> value.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <returns><c>true</c> if connection string identifies a detached child device; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.GetStationName(System.String)">
+            <summary>
+            Gets the station name, i.e., the <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.StationNameKey"/> value, defined in the specified
+            connection string, if any.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <returns>Defined station name; otherwise, <c>null</c> when key is not defined.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.HasDetachedChildren(System.String)">
+            <summary>
+            Gets flag that determines if the specified connection string identifies a parent concentrator
+            device with detached, i.e., standalone modeled, child devices.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <returns><c>true</c> if connection string defines <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.DetachedChildrenKey"/> as <c>true</c>; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.GetDatabaseID(System.String)">
+            <summary>
+            Gets the device database ID, i.e., the <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.DatabaseIDKey"/> value, defined in the
+            specified connection string, if any.
+            </summary>
+            <param name="connectionString">Connection string to check.</param>
+            <returns>Defined device database ID; otherwise, zero when key is not defined.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.BuildChildConnectionString(System.Int32,System.String)">
+            <summary>
+            Builds a connection string for a detached child device that links the child to its parent
+            concentrator device.
+            </summary>
+            <param name="parentID">Database ID of the parent concentrator device.</param>
+            <param name="stationName">Station name, i.e., <c>Device.Name</c>, of the child device.</param>
+            <returns>Connection string for a detached child device.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.ClearChildLink(System.String)">
+            <summary>
+            Removes any detached child linkage keys, i.e., <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.ParentIDKey"/> and
+            <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.StationNameKey"/>, from the specified connection string.
+            </summary>
+            <param name="connectionString">Connection string to update.</param>
+            <returns>Updated connection string.</returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.DetachedDeviceLink.SetDetachedChildren(System.String,System.Boolean,System.Int32)">
+            <summary>
+            Adds or removes the detached children flag, i.e., <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.DetachedChildrenKey"/> along with
+            its companion <see cref="F:GSF.PhasorProtocols.DetachedDeviceLink.DatabaseIDKey"/> stamp, on the specified parent concentrator device
+            connection string.
+            </summary>
+            <param name="connectionString">Connection string to update.</param>
+            <param name="enabled">Flag that determines if parent has detached child devices.</param>
+            <param name="databaseID">Database ID of the parent concentrator device itself.</param>
+            <returns>Updated connection string.</returns>
+        </member>
         <member name="T:GSF.PhasorProtocols.DigitalDefinitionBase">
             <summary>
             Represents the common implementation of the protocol independent definition of a <see cref="T:GSF.PhasorProtocols.IDigitalValue"/>.

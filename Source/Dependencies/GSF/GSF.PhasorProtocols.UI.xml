@@ -239,6 +239,20 @@
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> ParentID.
             </summary>
         </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.EffectiveParentID">
+            <summary>
+            Gets the effective parent device ID for this <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>, i.e., the defined
+            <see cref="P:GSF.PhasorProtocols.UI.DataModels.Device.ParentID"/>, when not <c>null</c>, falling back on any parent device ID defined in
+            the <see cref="P:GSF.PhasorProtocols.UI.DataModels.Device.ConnectionString"/> for a detached child device.
+            </summary>
+        </member>
+        <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.IsDetachedChild">
+            <summary>
+            Gets flag that determines if this <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> is a detached child of a concentrator,
+            i.e., a child device modeled as a standalone device whose parent linkage is defined in the
+            <see cref="P:GSF.PhasorProtocols.UI.DataModels.Device.ConnectionString"/> instead of the <see cref="P:GSF.PhasorProtocols.UI.DataModels.Device.ParentID"/> field.
+            </summary>
+        </member>
         <member name="P:GSF.PhasorProtocols.UI.DataModels.Device.UniqueID">
             <summary>
             Gets or sets <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> UniqueID.
@@ -558,6 +572,16 @@
             <param name="database"></param>
             <param name="whereClause"></param>
             <returns></returns>
+        </member>
+        <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.GetChildDevices(GSF.Data.AdoDataConnection,System.Int32)">
+            <summary>
+            Retrieves child <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> records for the specified parent device, including detached
+            children, i.e., children modeled as standalone devices that reference the parent through a
+            "parentID" connection string value instead of the ParentID field.
+            </summary>
+            <param name="database"><see cref="T:GSF.Data.AdoDataConnection"/> to connection to database.</param>
+            <param name="parentID">ID of the parent <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/>.</param>
+            <returns>Collection of child <see cref="T:GSF.PhasorProtocols.UI.DataModels.Device"/> records; empty collection when parent has no children.</returns>
         </member>
         <member name="M:GSF.PhasorProtocols.UI.DataModels.Device.NotifyService(GSF.PhasorProtocols.UI.DataModels.Device,System.Nullable{System.Int32})">
             <summary>

@@ -1590,6 +1590,15 @@
             <param name="maxLength">Maximum number of available characters for display.</param>
             <returns>A short one-line summary of the current status of this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.</returns>
         </member>
+        <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.Start">
+            <summary>
+            Attempts to start this <see cref="T:PhasorProtocolAdapters.PhasorMeasurementMapper"/>.
+            </summary>
+            <remarks>
+            Start requests are ignored when this adapter represents a detached child device placeholder
+            since stream data for the device is provided by its parent concentrator connection.
+            </remarks>
+        </member>
         <member name="M:PhasorProtocolAdapters.PhasorMeasurementMapper.AttemptConnection">
             <summary>
             Attempts to connect to data input source.
