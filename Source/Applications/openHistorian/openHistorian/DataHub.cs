@@ -283,7 +283,33 @@ namespace openHistorian
 
         public IEnumerable<Device> QueryChildDevices(int deviceID)
         {
-            return DataContext.Table<Device>().QueryRecordsWhere("ParentID = {0}", deviceID);
+            // Child devices are linked by ParentID or, for detached children modeled as standalone
+            // devices, by a "parentID" connection string value referencing the parent device - the
+            // LIKE based filter can over match, e.g., "parentID=5" matches "parentID=52", so parsed
+            // values are verified
+            return DataContext.Table<Device>()
+                .QueryRecordsWhere("ParentID = {0} OR (ParentID IS NULL AND ConnectionString LIKE {1})", deviceID, $"%parentID={deviceID}%")
+                .Where(device => device.ParentID == deviceID || TryParseDetachedParentID(device.ConnectionString, out int parentID) && parentID == deviceID);
+        }
+
+        // Attempts to parse the parent device ID defined in a detached child device connection string,
+        // i.e., the "parentID" value that acts as a proxy for the ParentID field when children of a
+        // concentrator are modeled as standalone devices
+        private static bool TryParseDetachedParentID(string connectionString, out int parentID)
+        {
+            parentID = 0;
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+                return false;
+
+            try
+            {
+                return connectionString.ParseKeyValuePairs().TryGetValue("parentID", out string value) && int.TryParse(value, out parentID);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         [AuthorizeHubRole("Administrator, Editor")]
@@ -301,7 +327,13 @@ namespace openHistorian
                 log.Publish(MessageLevel.Warning, "Error Message", "Failed to delete cached device config", null, ex);
             }
 
-            TableOperations<Device> deviceTable = DataContext.Table<Device>();            
+            TableOperations<Device> deviceTable = DataContext.Table<Device>();
+
+            // Delete detached children, i.e., children modeled as standalone devices that are linked
+            // through a "parentID" connection string value, along with attached children
+            foreach (Device childDevice in QueryChildDevices(id))
+                deviceTable.DeleteRecord(childDevice.ID);
+
             deviceTable.DeleteRecordWhere("ParentID = {0}", id);
             deviceTable.DeleteRecord(id);
         }
