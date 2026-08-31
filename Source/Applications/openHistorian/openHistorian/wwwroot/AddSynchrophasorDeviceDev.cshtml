@@ -240,6 +240,38 @@
             font-size: smaller;
         }
 
+        /* Note: select2 resolves its container width from the inline style of the source select
+           element, so the associated voltage width is defined inline, not here */
+        select.associated-voltage {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        button.source-device {
+            padding: 3px 7px;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+
+        div.source-device-list {
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+        }
+
+        div.source-device-list table {
+            margin-bottom: 0;
+        }
+
+        tr.source-device-row {
+            cursor: pointer;
+        }
+
+        tr.source-device-row.selected {
+            background-color: #337ab7 !important;
+            color: white;
+        }
+
         tr.separator-top {
             visibility: hidden;
             border-bottom-width: 4px;
@@ -793,9 +825,16 @@
         }
 
         function guessAssociatedVoltage(current) {
-            const voltages = current.DeviceVoltages();
             const phasorLabel = current.Label().toUpperCase();
             let phase = current.Phase();
+
+            // Neutral currents are never auto-associated with a voltage - a neutral current phasor
+            // stands on its own and is intentionally excluded from mapped voltage / current
+            // calculations, e.g., power calculations. A user can still pick a voltage manually.
+            if (phase === "N")
+                return -1;
+
+            const voltages = current.CandidateVoltages();
 
             if (phase === "+")
                 phase = "1";
@@ -824,7 +863,6 @@
             let posCount = 0, posID = -1;
             let negCount = 0, negID = -1;
             let zCount = 0, zID = -1;
-            let nCount = 0, nID = -1;
             let otherCount = 0;
 
             for (let i = 0; i < voltages.length; i++) {
@@ -856,8 +894,8 @@
                         zID = voltageID;
                         break;
                     case "N":
-                        nCount++;
-                        nID = voltageID;
+                        // Neutral voltages are recognized so they are not counted as an unknown
+                        // phase, but they are never auto-associated with a current
                         break;
                     default:
                         otherCount++;
@@ -891,10 +929,6 @@
                         if (zCount === 1)
                             return zID;
                         break;
-                    case "N":
-                        if (nCount === 1)
-                            return nID;
-                        break;
                 }
             }
 
@@ -921,14 +955,95 @@
             return result;
         }
 
-        function associatedVoltageLabel(voltage) {
-            if (isEmpty(voltage.Label()) || voltage.Label() === voltage.OriginalLabel)
-                return voltage.Label();
+        // Voltage option shown for a current with no associated voltage. This is defined as a real
+        // option, as opposed to a Knockout "optionsCaption", so that an explicit "None" selection
+        // is restored as "None" when the screen is reloaded instead of as a blank selection.
+        const noAssociatedVoltage = {
+            ID: -1,
+            Label: function () { return "None"; },
+            OriginalLabel: "None",
+            Phase: function () { return ""; },
+            Enabled: function () { return false; }
+        };
 
-            return voltage.Label() + "~" + voltage.OriginalLabel;
+        // Cached placeholder options for associated voltages that could not be resolved to a phasor
+        // on this device or on a selected source device, e.g., a mapping made outside this screen
+        var unresolvedVoltageOptions = {};
+
+        function unresolvedVoltageOption(voltageID) {
+            if (!unresolvedVoltageOptions.hasOwnProperty(voltageID)) {
+                const label = "Unresolved Phasor " + String(voltageID);
+
+                unresolvedVoltageOptions[voltageID] = {
+                    ID: voltageID,
+                    Label: function () { return label; },
+                    OriginalLabel: label,
+                    Phase: function () { return ""; },
+                    Enabled: function () { return false; },
+                    IsUnresolved: true
+                };
+            }
+
+            return unresolvedVoltageOptions[voltageID];
+        }
+
+        function findVoltage(voltages, voltageID) {
+            if (voltages == null)
+                return null;
+
+            for (let i = 0; i < voltages.length; i++) {
+                if (voltages[i].ID === voltageID)
+                    return voltages[i];
+            }
+
+            return null;
+        }
+
+        function voltageExists(voltages, voltageID) {
+            return findVoltage(voltages, voltageID) != null;
+        }
+
+        // Restricts voltages to those matching the specified phase, when any match, otherwise all
+        // available voltages are returned so a phasor with an odd phase can still be mapped
+        function filterVoltagesByPhase(voltages, phase) {
+            const matched = [];
+
+            for (let i = 0; i < voltages.length; i++) {
+                if (voltages[i].Phase() === phase)
+                    matched.push(voltages[i]);
+            }
+
+            return matched.length > 0 ? matched : voltages;
+        }
+
+        function associatedVoltageLabel(voltage, showPhase) {
+            let label = voltage.Label();
+
+            // Voltages from another device are prefixed with that device acronym so it is always
+            // clear where the selected phasor comes from
+            if (voltage.IsForeign)
+                label = voltage.DeviceAcronym + ":" + label;
+
+            // When a drop-down is not filtered to a single phase, the phase is appended to the
+            // visible label, e.g., "BUS1 (VA)", so the selected phase is never ambiguous - this
+            // matters most when several phasors on a device share the same label
+            if (showPhase) {
+                const phase = notNull(voltage.Phase()).trim().toUpperCase();
+
+                if (!isEmpty(phase))
+                    label = label + " (V" + phase + ")";
+            }
+
+            if (isEmpty(voltage.Label()) || voltage.Label() === voltage.OriginalLabel)
+                return label;
+
+            return label + "~" + voltage.OriginalLabel;
         }
 
         function formatAssociatedVoltageLabel(state) {
+            if (state == null || isEmpty(state.text))
+                return state == null ? "" : state.text;
+
             const parts = state.text.split("~");
             const label = parts[0];
             const orgLabel = parts.length > 1 ? parts[1] : undefined;
@@ -961,6 +1076,106 @@
                 method: "GET",
                 contentType: "application/json; charset=utf-8"
             });
+        }
+
+        // Voltage phasors loaded from other "source" devices, cached by device ID since several
+        // current phasors commonly reference the same source device
+        var sourceDeviceVoltages = {};
+
+        function createSourceDeviceVoltage(deviceID, deviceAcronym, phasor) {
+            const label = notNull(phasor.Label).replaceAll(" ", "_").toUpperCase();
+
+            const voltage = {
+                ID: phasor.ID,
+                Label: ko.observable(label),
+                OriginalLabel: label,
+                Phase: ko.observable(notNull(phasor.Phase).trim().toUpperCase()),
+                NominalVoltage: ko.observable(Math.abs(phasor.BaseKV)),
+                SourceIndex: phasor.SourceIndex,
+                PhasorType: "Voltage",
+                DeviceID: deviceID,
+                DeviceAcronym: deviceAcronym,
+                IsForeign: true,
+                Enabled: function () { return true; }
+            };
+
+            // Mirror the shape of a local voltage phasor definition, i.e., its "Voltage" property,
+            // so downstream save and calculation code can treat both voltage sources the same
+            voltage.Voltage = voltage;
+
+            return voltage;
+        }
+
+        function loadSourceDeviceVoltages(deviceID, deviceAcronym) {
+            if (sourceDeviceVoltages.hasOwnProperty(deviceID))
+                return sourceDeviceVoltages[deviceID];
+
+            const request = phasorHub.queryPhasorsForDevice(deviceID).then(function (phasors) {
+                const voltages = [];
+
+                for (let i = 0; i < phasors.length; i++) {
+                    const phasor = phasors[i];
+
+                    if (String(notNull(phasor.Type)).toUpperCase() !== "V")
+                        continue;
+
+                    voltages.push(createSourceDeviceVoltage(deviceID, deviceAcronym, phasor));
+                }
+
+                return voltages;
+            })
+            .fail(function (error) {
+                delete sourceDeviceVoltages[deviceID];
+                showErrorMessage("Failed to load voltage phasors for source device \"" + deviceAcronym + "\": " + error, null, true);
+            });
+
+            sourceDeviceVoltages[deviceID] = request;
+
+            return request;
+        }
+
+        // Voltage phasor measurements for other "source" devices, cached by device ID and keyed by
+        // phasor source index - these are needed to apply calculations to a voltage on another device
+        var sourceDeviceMeasurements = {};
+
+        function loadSourceDeviceMeasurements(deviceID) {
+            if (sourceDeviceMeasurements.hasOwnProperty(deviceID))
+                return sourceDeviceMeasurements[deviceID];
+
+            const request = phasorHub.queryDeviceMeasurements(deviceID).then(function (measurements) {
+                const phasorMeasurements = {};
+                const vphmSignalType = getPhasorSignalType("VPHM");
+                const vphaSignalType = getPhasorSignalType("VPHA");
+
+                if (vphmSignalType == null || vphaSignalType == null)
+                    return phasorMeasurements;
+
+                for (let i = 0; i < measurements.length; i++) {
+                    const measurement = measurements[i];
+                    const sourceIndex = measurement.PhasorSourceIndex;
+
+                    if (sourceIndex == null || sourceIndex === 0)
+                        continue;
+
+                    if (!phasorMeasurements.hasOwnProperty(sourceIndex))
+                        phasorMeasurements[sourceIndex] = {};
+
+                    if (measurement.SignalTypeID === vphmSignalType.ID)
+                        phasorMeasurements[sourceIndex].vphmMeasurement = measurement;
+                    else if (measurement.SignalTypeID === vphaSignalType.ID)
+                        phasorMeasurements[sourceIndex].vphaMeasurement = measurement;
+                }
+
+                return phasorMeasurements;
+            })
+            .fail(function (error) {
+                delete sourceDeviceMeasurements[deviceID];
+                showErrorMessage("Failed to load measurements for source device " + String(deviceID) + ": " + error, null, true);
+            });
+
+            sourceDeviceMeasurements[deviceID] = request;
+
+            return request;
         }
 
         function DeviceViewModel() {
@@ -1412,12 +1627,18 @@
                         cell.PhasorDefinitions.forEach(function (phasorDefinition) {
                             const isVoltage = phasorDefinition.PhasorType.toLowerCase() === "voltage";
 
+                            const isForeignSource = !isVoltage && phasorDefinition.Current.IsForeignSource();
+
                             phasorDefinitions.push({
                                 ID: phasorDefinition.ID,
                                 Label: phasorDefinition.Label(),
                                 PhasorType: phasorDefinition.PhasorType,
                                 Phase: phasorDefinition.Phase(),
                                 DestinationPhasorID: isVoltage ? phasorDefinition.DestinationPhasorID : phasorDefinition.Current.AssociatedVoltage(),
+                                // Device that owns the associated voltage phasor, only defined when the
+                                // associated voltage was selected from a device other than this one
+                                DestinationDeviceID: isForeignSource ? phasorDefinition.Current.SourceDeviceID() : null,
+                                DestinationDeviceAcronym: isForeignSource ? phasorDefinition.Current.SourceDeviceAcronym() : null,
                                 NominalVoltage: isVoltage ? phasorDefinition.Voltage.NominalVoltage() : phasorDefinition.Current.AssociatedNominalVoltage(),
                                 SourceIndex: phasorDefinition.SourceIndex,
                                 TaggedForDelete: phasorDefinition.TaggedForDelete()
@@ -1688,6 +1909,9 @@
                 current._phase = ko.observable("");
                 current._enabled = ko.observable(!self.forwardOnly() && phasorDefinition.NominalVoltage >= 0);
                 current._taggedForDelete = ko.observable(Boolean(phasorDefinition.TaggedForDelete));
+                current._sourceDeviceID = ko.observable(0);
+                current._sourceDeviceAcronym = ko.observable("");
+                current._sourceDeviceVoltages = ko.observable(null); // Null until source device phasors are loaded
 
                 if (current._taggedForDelete())
                     current._enabled(false);
@@ -1700,7 +1924,7 @@
                         return current._associatedVoltage();
                     },
                     write: function (value) {
-                        if (value === null) // Undefined DB value
+                        if (value === null || value === undefined) // Undefined DB value or unselected KO option
                             value = -1;
 
                         current._associatedVoltage(value);
@@ -1708,69 +1932,227 @@
                     owner: current
                 });
 
-                current.Phase = ko.pureComputed({
-                    read: current._phase,
-                    write: function (value) {
-                        current._phase(value);
+                // Set when the associated voltage is selected from a device other than the one that
+                // owns this current phasor - the database allows any voltage phasor to be mapped to
+                // any current phasor, including one that belongs to another device
+                current.SourceDeviceID = ko.pureComputed({
+                    read: current._sourceDeviceID,
+                    owner: current
+                });
 
-                        // Validate any pre-defined association
-                        const associatedVoltage = current.AssociatedVoltage();
+                current.SourceDeviceAcronym = ko.pureComputed({
+                    read: current._sourceDeviceAcronym,
+                    owner: current
+                });
 
-                        if (associatedVoltage > 0) {
-                            const voltages = current.DeviceVoltages();
-                            let found = false;
+                current.SourceDeviceVoltages = ko.pureComputed({
+                    read: current._sourceDeviceVoltages,
+                    owner: current
+                });
 
-                            for (let j = 0; j < voltages.length; j++) {
-                                const voltage = voltages[j];
+                current.IsForeignSource = ko.pureComputed({
+                    read: function () {
+                        return current._sourceDeviceID() > 0;
+                    },
+                    owner: current
+                });
 
-                                if (voltage.ID === associatedVoltage && voltage.Phase() === current.Phase() && voltage.Enabled()) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            if (!found)
-                                current.AssociatedVoltage(-1);
+                // Voltages that can be selected for this current, either from its own device or,
+                // when a source device has been selected, from that device
+                current.CandidateVoltages = ko.pureComputed({
+                    read: function () {
+                        if (current.IsForeignSource()) {
+                            const sourceVoltages = current.SourceDeviceVoltages();
+                            return sourceVoltages == null ? [] : filterVoltagesByPhase(sourceVoltages, current.Phase());
                         }
 
-                        // Guess associated voltage
-                        if (current.AssociatedVoltage() === -1 && !skipGuessing)
-                            current.AssociatedVoltage(guessAssociatedVoltage(current));
+                        const allVoltages = self.voltages();
+                        const deviceVoltages = [];
+
+                        for (let i = 0; i < allVoltages.length; i++) {
+                            const voltage = allVoltages[i];
+
+                            if (voltage.Device === current.Device && voltage.Enabled())
+                                deviceVoltages.push(voltage);
+                        }
+
+                        return filterVoltagesByPhase(deviceVoltages, current.Phase());
+                    },
+                    owner: current
+                });
+
+                // True when every selectable voltage matches the phase of this current - when this
+                // is false the phase is appended to each visible label so the selection is never
+                // ambiguous, e.g., when picking a voltage for a neutral current
+                current.CandidateVoltagesMatchPhase = ko.pureComputed({
+                    read: function () {
+                        const candidateVoltages = current.CandidateVoltages();
+
+                        for (let i = 0; i < candidateVoltages.length; i++) {
+                            if (candidateVoltages[i].Phase() !== current.Phase())
+                                return false;
+                        }
+
+                        return true;
                     },
                     owner: current
                 });
 
                 current.DeviceVoltages = ko.pureComputed({
                     read: function () {
-                        const allVoltages = self.voltages();
-                        const deviceVoltages = [];
+                        const options = [ noAssociatedVoltage ];
+                        const candidateVoltages = current.CandidateVoltages();
 
-                        // Match by phase first
-                        for (let i = 0; i < allVoltages.length; i++) {
-                            const voltage = allVoltages[i];
+                        for (let i = 0; i < candidateVoltages.length; i++)
+                            options.push(candidateVoltages[i]);
 
-                            if (voltage.Device === current.Device && voltage.Phase() === current.Phase() && voltage.Enabled())
-                                deviceVoltages.push(voltage);
+                        // Keep any association that could not be resolved visible so that it is not
+                        // silently dropped, e.g., a mapping made outside of this screen. Source device
+                        // phasors load asynchronously, so nothing is marked unresolved while waiting.
+                        const associatedVoltage = current.AssociatedVoltage();
+                        const loadingSourceVoltages = current.IsForeignSource() && current.SourceDeviceVoltages() == null;
+
+                        if (associatedVoltage > 0 && !loadingSourceVoltages && !voltageExists(candidateVoltages, associatedVoltage))
+                            options.push(unresolvedVoltageOption(associatedVoltage));
+
+                        return options;
+                    },
+                    owner: current
+                });
+
+                current.associatedVoltageOptionLabel = function (voltage) {
+                    return associatedVoltageLabel(voltage, !current.CandidateVoltagesMatchPhase());
+                };
+
+                // Drops any association that is no longer selectable, then guesses a new one when
+                // needed. An association to a phasor that is not on this device is left intact so
+                // that mappings to other devices, and mappings made outside this screen, survive.
+                current.validateAssociatedVoltage = function (allowGuessing) {
+                    if (allowGuessing === undefined)
+                        allowGuessing = !skipGuessing;
+
+                    const associatedVoltage = current.AssociatedVoltage();
+
+                    if (associatedVoltage !== -1) {
+                        if (current.IsForeignSource()) {
+                            const sourceVoltages = current.SourceDeviceVoltages();
+
+                            // Source device phasors load asynchronously - wait for them before validating
+                            if (sourceVoltages != null && !voltageExists(sourceVoltages, associatedVoltage))
+                                current.AssociatedVoltage(-1);
                         }
-
-                        if (deviceVoltages.length === 0) {
-                            // If no phases match, select all for device second
-                            for (let i = 0; i < allVoltages.length; i++) {
-                                const voltage = allVoltages[i];
-
-                                if (voltage.Device === current.Device && voltage.Enabled())
-                                    deviceVoltages.push(voltage);
-                            }
+                        else if (!voltageExists(current.CandidateVoltages(), associatedVoltage)) {
+                            // Only clear the association when the voltage belongs to this device, i.e.,
+                            // it was disabled, deleted or re-phased, or when it is an unsaved phasor
+                            if (associatedVoltage < 0 || lookupAssociatedVoltage(current.Device, associatedVoltage) != null)
+                                current.AssociatedVoltage(-1);
                         }
+                    }
 
-                        return deviceVoltages;
+                    // Guess associated voltage
+                    if (allowGuessing && current.AssociatedVoltage() === -1)
+                        current.AssociatedVoltage(guessAssociatedVoltage(current));
+                };
+
+                // Selects the device that the associated voltage is picked from - a device ID of zero,
+                // or the ID of the device that owns this current, selects local voltages
+                current.setSourceDevice = function (deviceID, deviceAcronym, keepAssociation) {
+                    if (deviceID === current.Device.ID)
+                        deviceID = 0;
+
+                    if (!(deviceID > 0)) {
+                        current._sourceDeviceID(0);
+                        current._sourceDeviceAcronym("");
+                        current._sourceDeviceVoltages(null);
+
+                        if (!keepAssociation)
+                            current.AssociatedVoltage(-1);
+
+                        current.validateAssociatedVoltage();
+
+                        return $.Deferred().resolve().promise();
+                    }
+
+                    current._sourceDeviceID(deviceID);
+                    current._sourceDeviceAcronym(deviceAcronym);
+                    current._sourceDeviceVoltages(null);
+
+                    if (!keepAssociation)
+                        current.AssociatedVoltage(-1);
+
+                    return loadSourceDeviceVoltages(deviceID, deviceAcronym).done(function (voltages) {
+                        // Ignore a late arriving response for a source device that is no longer selected
+                        if (current._sourceDeviceID() !== deviceID)
+                            return;
+
+                        current._sourceDeviceVoltages(voltages);
+
+                        // Never guess a voltage on another device - picking a source device is an
+                        // explicit action, so the voltage selection is left to the user as well
+                        current.validateAssociatedVoltage(false);
+                    });
+                };
+
+                // Restores a source device association, e.g., from a saved or imported JSON configuration
+                current.restoreSourceDevice = function (deviceID, deviceAcronym) {
+                    if (!self.phasorHubIsConnected())
+                        return $.Deferred().resolve().promise();
+
+                    // Acronym based lookup is preferred so an association survives a device ID change
+                    const queryDevice = isEmpty(deviceAcronym) ?
+                        phasorHub.queryDeviceByID(deviceID) :
+                        phasorHub.queryDevice(deviceAcronym);
+
+                    return queryDevice.then(function (device) {
+                        if (device && device.ID > 0)
+                            return current.setSourceDevice(device.ID, device.Acronym, true);
+
+                        showErrorMessage(String.format("Failed to find source device \"{0}\" for associated voltage of current \"{1}\" - association will be left unresolved.",
+                            isEmpty(deviceAcronym) ? String(deviceID) : deviceAcronym, current.Label()));
+
+                        return $.Deferred().resolve().promise();
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to query source device for associated voltage: " + error);
+                    });
+                };
+
+                // Resolves the source device for an associated voltage that is not on this device by
+                // looking the destination phasor up by ID, i.e., Phasor.DestinationPhasorID matched to
+                // Phasor.ID, then following its Phasor.DeviceID to the Device record. This handles
+                // mappings loaded straight from the database, including any made outside this screen,
+                // where no source device is carried alongside the destination phasor ID. Depends on the
+                // "QueryPhasorByID" phasor hub operation - where that operation is not available the
+                // mapping is left intact and simply shown as unresolved.
+                current.resolveSourceDeviceFromPhasor = function (voltageID) {
+                    if (!self.phasorHubIsConnected() || typeof phasorHub.queryPhasorByID !== "function")
+                        return $.Deferred().resolve().promise();
+
+                    return phasorHub.queryPhasorByID(voltageID).then(function (phasor) {
+                        if (phasor == null || !(phasor.DeviceID > 0) || String(notNull(phasor.Type)).toUpperCase() !== "V")
+                            return $.Deferred().resolve().promise();
+
+                        return current.restoreSourceDevice(phasor.DeviceID, "");
+                    })
+                    .fail(function (error) {
+                        showErrorMessage("Failed to query associated voltage phasor " + String(voltageID) + ": " + error);
+                    });
+                };
+
+                current.Phase = ko.pureComputed({
+                    read: current._phase,
+                    write: function (value) {
+                        current._phase(value);
+                        current.validateAssociatedVoltage();
                     },
                     owner: current
                 });
 
                 current.AssociatedNominalVoltage = ko.pureComputed({
                     read: function () {
-                        const voltage = lookupAssociatedVoltage(current.Device, current.AssociatedVoltage());
+                        const voltage = current.IsForeignSource() ?
+                            findVoltage(current.SourceDeviceVoltages(), current.AssociatedVoltage()) :
+                            lookupAssociatedVoltage(current.Device, current.AssociatedVoltage());
 
                         let nominalVoltage = 0;
 
@@ -1841,6 +2223,17 @@
 
                 // Guess phase, which will subsequently guess any unassociated voltage
                 current.Phase(skipGuessing ? phasorDefinition.Phase : guessPhase(phasorDefinition, phasorLabel));
+
+                // Restore any associated voltage that is sourced from another device. A serialized JSON
+                // configuration carries the source device alongside the destination phasor ID, otherwise
+                // the source device is resolved from the destination phasor ID itself, which also picks
+                // up mappings made outside of this screen.
+                if (current.AssociatedVoltage() > 0) {
+                    if (phasorDefinition.DestinationDeviceID > 0 || !isEmpty(phasorDefinition.DestinationDeviceAcronym))
+                        current.restoreSourceDevice(phasorDefinition.DestinationDeviceID, phasorDefinition.DestinationDeviceAcronym);
+                    else if (lookupAssociatedVoltage(cell, current.AssociatedVoltage()) == null)
+                        current.resolveSourceDeviceFromPhasor(current.AssociatedVoltage());
+                }
 
                 phasorDefinition.Current = current;
                 phasorDefinition.Label = current.Label;
@@ -2003,6 +2396,89 @@
             }
 
             return null;
+        }
+
+        // Resolves the voltage phasor associated with a current phasor definition. The result is
+        // either a voltage phasor definition belonging to the specified device or, when the
+        // associated voltage was selected from another device, a source device voltage. Both expose
+        // the same "Label", "Phase", "Enabled" and "Voltage" members plus, once resolved, the
+        // "vphmMeasurement" and "vphaMeasurement" measurements needed by calculations. A null result
+        // means the current has no mapped voltage, e.g., a neutral current, so no voltage / current
+        // calculations, like power calculations, can be applied to it.
+        function resolveAssociatedVoltage(cell, phasorDefinition) {
+            const current = phasorDefinition.Current;
+
+            if (current == null)
+                return null;
+
+            const voltageID = current.AssociatedVoltage();
+
+            // An associated voltage of -1 is an explicit "None" selection and zero is an undefined value
+            if (voltageID == null || voltageID === -1 || voltageID === 0)
+                return null;
+
+            if (current.IsForeignSource())
+                return findVoltage(current.SourceDeviceVoltages(), voltageID);
+
+            return lookupAssociatedVoltage(cell, voltageID);
+        }
+
+        // Loads the measurements for any associated voltage that lives on another device so that
+        // calculations, e.g., power calculations, can be applied across devices
+        function resolveSourceDeviceVoltageMeasurements(cell) {
+            const promises = [];
+
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() === "voltage")
+                    continue;
+
+                const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
+
+                if (voltage == null || !voltage.IsForeign || voltage.hasOwnProperty("vphmMeasurement"))
+                    continue;
+
+                const sourceVoltage = voltage;
+
+                promises.push(loadSourceDeviceMeasurements(sourceVoltage.DeviceID).done(function (phasorMeasurements) {
+                    const measurements = phasorMeasurements[sourceVoltage.SourceIndex];
+
+                    if (measurements === undefined || measurements.vphmMeasurement === undefined || measurements.vphaMeasurement === undefined) {
+                        showErrorMessage(String.format("Failed to find magnitude and angle measurements for associated voltage \"{0}\" on source device \"{1}\" - calculations that depend on this voltage will be skipped.",
+                            sourceVoltage.Label(), sourceVoltage.DeviceAcronym));
+
+                        return;
+                    }
+
+                    sourceVoltage.vphmMeasurement = measurements.vphmMeasurement;
+                    sourceVoltage.vphaMeasurement = measurements.vphaMeasurement;
+                }));
+            }
+
+            return $(promises).whenAll();
+        }
+
+        // Determines the phasor record ID that a current phasor maps to. A voltage on the device
+        // being saved is looked up through the voltage ID map, since newly added phasor records get
+        // new IDs, whereas a voltage on another device is referenced by its database ID directly.
+        function resolveDestinationPhasorID(cell, current, voltageIDMap) {
+            const associatedVoltage = current.Current.AssociatedVoltage();
+
+            if (associatedVoltage == null || associatedVoltage === -1 || associatedVoltage === 0)
+                return null;
+
+            if (current.Current.IsForeignSource())
+                return associatedVoltage > 0 ? associatedVoltage : null;
+
+            const destinationPhasorID = voltageIDMap[associatedVoltage];
+
+            if (destinationPhasorID !== undefined && destinationPhasorID !== null)
+                return destinationPhasorID;
+
+            // A positive ID that matches no voltage on this device is an external reference that this
+            // screen could not resolve - pass it through so the mapping is not silently dropped
+            return associatedVoltage > 0 && lookupAssociatedVoltage(cell, associatedVoltage) == null ? associatedVoltage : null;
         }
 
         function savePhasorMeasurement(cell, signalType, phasorDefinition, index) {
@@ -2204,18 +2680,13 @@
                                 const current = currents[i];
 
                                 currentPromises.push(phasorHub.newPhasorWithTimestamps(current.UpdatedOn, current.CreatedOn).then(function (phasor) {
-                                    const associatedVoltage = current.Current.AssociatedVoltage();
-
                                     phasor.DeviceID = cell.ID;
                                     phasor.Label = current.Label();
                                     phasor.Type = "I";
                                     phasor.Phase = current.Phase();
                                     phasor.BaseKV = current.Current.AssociatedNominalVoltage();
-                                    phasor.DestinationPhasorID = voltageIDMap[associatedVoltage];
+                                    phasor.DestinationPhasorID = resolveDestinationPhasorID(cell, current, voltageIDMap);
                                     phasor.SourceIndex = current.SourceIndex;
-
-                                    if (phasor.DestinationPhasorID === undefined)
-                                        phasor.DestinationPhasorID = null;
 
                                     return phasorHub.addNewPhasor(phasor).then(function () {
                                         return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
@@ -2261,11 +2732,12 @@
                 else {
                     // Handle update phasors operation
                     const voltageIDMap = [];
+                    const voltagePromises = [];
 
                     for (let i = 0; i < voltages.length; i++) {
                         const voltage = voltages[i];
 
-                        saveDevicePromises.push(phasorHub.queryPhasorForDevice(cell.ID, voltage.SourceIndex).then(function (phasor) {
+                        voltagePromises.push(phasorHub.queryPhasorForDevice(cell.ID, voltage.SourceIndex).then(function (phasor) {
                             phasor.DeviceID = cell.ID;
                             phasor.Label = voltage.Label();
                             phasor.Type = "V";
@@ -2304,55 +2776,62 @@
                         }));
                     }
 
-                    for (let i = 0; i < currents.length; i++) {
-                        const current = currents[i];
+                    // As with drop and add, all voltage phasor operations complete before current
+                    // phasor operations begin so that voltageIDMap is fully populated with the
+                    // phasor IDs needed for destination phasor IDs - otherwise an association can
+                    // be dropped depending on the order in which the queries happen to complete
+                    saveDevicePromises.push($(voltagePromises).whenAll().then(function () {
+                        const currentPromises = [];
 
-                        saveDevicePromises.push(phasorHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
-                            phasor.DeviceID = cell.ID;
-                            phasor.Label = current.Label();
-                            phasor.Type = "I";
-                            phasor.Phase = current.Phase();
-                            phasor.BaseKV = current.Current.AssociatedNominalVoltage();
-                            phasor.DestinationPhasorID = voltageIDMap[current.Current.AssociatedVoltage()];
-                            phasor.SourceIndex = current.SourceIndex;
+                        for (let i = 0; i < currents.length; i++) {
+                            const current = currents[i];
 
-                            if (!current.Enabled()) {
-                                if (phasor.BaseKV === 0)
-                                    phasor.BaseKV = -1;
-                                else
-                                    phasor.BaseKV = Math.abs(phasor.BaseKV) * -1;
-                            }
+                            currentPromises.push(phasorHub.queryPhasorForDevice(cell.ID, current.SourceIndex).then(function (phasor) {
+                                phasor.DeviceID = cell.ID;
+                                phasor.Label = current.Label();
+                                phasor.Type = "I";
+                                phasor.Phase = current.Phase();
+                                phasor.BaseKV = current.Current.AssociatedNominalVoltage();
+                                phasor.DestinationPhasorID = resolveDestinationPhasorID(cell, current, voltageIDMap);
+                                phasor.SourceIndex = current.SourceIndex;
 
-                            if (phasor.DestinationPhasorID === undefined)
-                                phasor.DestinationPhasorID = null;
+                                if (!current.Enabled()) {
+                                    if (phasor.BaseKV === 0)
+                                        phasor.BaseKV = -1;
+                                    else
+                                        phasor.BaseKV = Math.abs(phasor.BaseKV) * -1;
+                                }
 
-                            return phasorHub.updatePhasor(phasor).then(function () {
-                                return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
-                                    return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
-                                })
-                                .then(function () {
-                                    const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
+                                return phasorHub.updatePhasor(phasor).then(function () {
+                                    return savePhasorMeasurement(cell, iphmSignalType, current, phasor.SourceIndex).then(function () {
+                                        return savePhasorMeasurement(cell, iphaSignalType, current, phasor.SourceIndex);
+                                    })
+                                    .then(function () {
+                                        const iphmSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphmSignalType.Suffix, phasor.SourceIndex);
 
-                                    return phasorHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
-                                        current.iphmMeasurement = measurement;
+                                        return phasorHub.queryMeasurement(iphmSignalReference).done(function (measurement) {
+                                            current.iphmMeasurement = measurement;
+                                        });
+                                    })
+                                    .then(function () {
+                                        const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
+
+                                        return phasorHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
+                                            current.iphaMeasurement = measurement;
+                                        });
                                     });
                                 })
-                                .then(function () {
-                                    const iphaSignalReference = String.format("{0}-{1}{2}", cell.IDLabel(), iphaSignalType.Suffix, phasor.SourceIndex);
-
-                                    return phasorHub.queryMeasurement(iphaSignalReference).done(function (measurement) {
-                                        current.iphaMeasurement = measurement;
-                                    });
+                                .fail(function (error) {
+                                    showErrorMessage("Failed to save current phasor: " + error, null, true);
                                 });
                             })
                             .fail(function (error) {
-                                showErrorMessage("Failed to save current phasor: " + error, null, true);
-                            });
-                        })
-                        .fail(function (error) {
-                            showErrorMessage("Failed to query current phasor: " + error, null, true);
-                        }));
-                    }
+                                showErrorMessage("Failed to query current phasor: " + error, null, true);
+                            }));
+                        }
+
+                        return $(currentPromises).whenAll();
+                    }));
                 }
 
                 return $(saveDevicePromises).whenAll();
@@ -2528,10 +3007,14 @@
             for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
                 const phasorDefinition = cell.PhasorDefinitions[i];
 
-                // Power calculations can be applied to currents with an associated voltage
-                if (phasorDefinition.PhasorType.toLowerCase() === "current" && phasorDefinition.Phase().toUpperCase() === phase && phasorDefinition.Current.AssociatedVoltage() > 0) {
+                // Power calculations are only applied to currents that have a mapped voltage - a
+                // current with no associated voltage, e.g., a neutral current, is simply archived as
+                // a phasor with no calculations applied to it. Note that a newly analyzed
+                // configuration uses negative placeholder phasor IDs, so the existence of an
+                // association cannot be tested as a positive ID.
+                if (phasorDefinition.PhasorType.toLowerCase() === "current" && phasorDefinition.Phase().toUpperCase() === phase) {
                     const current = phasorDefinition;
-                    const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+                    const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
 
                     if (voltage) {
                         if (voltage.hasOwnProperty("vphaMeasurement") && voltage.hasOwnProperty("vphmMeasurement") && current.hasOwnProperty("iphaMeasurement") && current.hasOwnProperty("iphmMeasurement")) {
@@ -2540,6 +3023,7 @@
                             const vphmID = voltage.vphmMeasurement.SignalID;
                             const iphaID = current.iphaMeasurement.SignalID;
                             const iphmID = current.iphmMeasurement.SignalID;
+                            const calculationEnabled = current.Enabled() && voltage.Enabled();
 
                             // Query for existing power calculation, this will create a new record if not found
                             promises.push(phasorHub.queryPowerCalculationForDescriptionOrInputs(circuitDescription, vphaID, vphmID, iphaID, iphmID).then(function (powerCalculation) {
@@ -2547,7 +3031,7 @@
                                 powerCalculation.VoltageMagSignalID = vphmID;
                                 powerCalculation.CurrentAngleSignalID = iphaID;
                                 powerCalculation.CurrentMagSignalID = iphmID;
-                                powerCalculation.Enabled = true;
+                                powerCalculation.Enabled = calculationEnabled;
 
                                 // For all phase power calculations, do not apply any voltage adjustment strategy
                                 powerCalculation.CircuitDescription = circuitDescription + "; AdjustmentStrategy = None";
@@ -2598,7 +3082,7 @@
                     continue;
 
                 const current = phasorDefinition;
-                const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+                const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
 
                 // No matching voltage means no power calculation, so can skip this as a match potential
                 if (!voltage)
@@ -2633,7 +3117,7 @@
                         continue;
 
                     const nextCurrent = nextPhasorDefinition;
-                    const nextVoltage = lookupAssociatedVoltage(cell, nextPhasorDefinition.Current.AssociatedVoltage());
+                    const nextVoltage = resolveAssociatedVoltage(cell, nextPhasorDefinition);
 
                     // No matching voltage means no power calculation, so can skip this as a match potential
                     if (!nextVoltage)
@@ -2823,16 +3307,170 @@
         }
 
         var dynamicCalculation = {
-            initialized: false,
+            globalValuesRequest: null,
+            deviceVariableRequests: new Dictionary(),
             deviceVariables: new Dictionary(),
+            devicePhasorPairs: new Dictionary(),
             FAVG: "",
             FNOM: 60
         };
 
-        function initializeDynamicCalculation() {
-            if (dynamicCalculation.initialized)
-                return $.Deferred().resolve().promise();
+        // Maps a phasor phase designation to the name used by its dynamic calculation variables
+        const phaseVariableNames = {
+            "A": "A", "B": "B", "C": "C", "N": "N", "+": "POS", "-": "NEG", "0": "Z"
+        };
 
+        // Maps a dynamic calculation phasor variable name back to its phasor type and phase name
+        const phasorVariableTypes = (function () {
+            const variableTypes = {};
+
+            for (let phase in phaseVariableNames) {
+                if (!phaseVariableNames.hasOwnProperty(phase))
+                    continue;
+
+                const phaseName = phaseVariableNames[phase];
+
+                variableTypes["V" + phaseName + "M"] = { type: "V", phase: phaseName };
+                variableTypes["V" + phaseName + "A"] = { type: "V", phase: phaseName };
+                variableTypes["V" + phaseName + "NOM"] = { type: "V", phase: phaseName };
+                variableTypes["I" + phaseName + "M"] = { type: "I", phase: phaseName };
+                variableTypes["I" + phaseName + "A"] = { type: "I", phase: phaseName };
+            }
+
+            return variableTypes;
+        })();
+
+        function phaseVariableName(phasorDefinition) {
+            const phase = notNull(phasorDefinition.Phase()).trim().toUpperCase();
+            return phaseVariableNames.hasOwnProperty(phase) ? phaseVariableNames[phase] : null;
+        }
+
+        // Builds the index aligned voltage / current "slots" that back the per-phase dynamic
+        // calculation variable arrays, e.g., VAM and IAM. Voltages keep their natural order, then
+        // each current is placed at the index of its associated voltage so that any calculation
+        // consuming both a voltage and a current always sees a mapped pair. A current with no
+        // associated voltage, e.g., a neutral current, and a voltage with no associated current
+        // simply leave the opposing entry of their slot empty - this is what keeps unequal voltage
+        // and current counts from disturbing the pairs that are mapped. Each slot also records
+        // whether the voltage and current it holds are actually mapped to each other so that only
+        // real pairs participate in calculations that mix voltage and current inputs.
+        function buildPhasorSlots(cell) {
+            const phaseSlots = {};
+            const unplacedCurrents = [];
+
+            function getSlots(phaseName) {
+                if (!phaseSlots.hasOwnProperty(phaseName))
+                    phaseSlots[phaseName] = [];
+
+                return phaseSlots[phaseName];
+            }
+
+            function findOpenSlot(slots, requireEmptyVoltage) {
+                for (let i = 0; i < slots.length; i++) {
+                    if (slots[i].current === null && (!requireEmptyVoltage || slots[i].voltage === null))
+                        return slots[i];
+                }
+
+                return null;
+            }
+
+            // Seed slots with device voltages, holding their natural phasor definition order
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() !== "voltage" || !phasorDefinition.Enabled())
+                    continue;
+
+                const phaseName = phaseVariableName(phasorDefinition);
+
+                if (phaseName === null)
+                    continue;
+
+                getSlots(phaseName).push({ voltage: phasorDefinition, current: null, mapped: false });
+            }
+
+            // Place each current in the slot of its associated voltage
+            for (let i = 0; i < cell.PhasorDefinitions.length; i++) {
+                const phasorDefinition = cell.PhasorDefinitions[i];
+
+                if (phasorDefinition.PhasorType.toLowerCase() === "voltage" || !phasorDefinition.Enabled())
+                    continue;
+
+                const phaseName = phaseVariableName(phasorDefinition);
+
+                if (phaseName === null)
+                    continue;
+
+                const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
+
+                // Only a voltage of the same phase can share an array index with the current
+                if (voltage == null || phaseVariableName(voltage) !== phaseName) {
+                    unplacedCurrents.push({ phaseName: phaseName, current: phasorDefinition, voltage: null });
+                    continue;
+                }
+
+                const slots = getSlots(phaseName);
+                let matchedSlot = null;
+
+                for (let j = 0; j < slots.length; j++) {
+                    if (slots[j].voltage === voltage && slots[j].current === null) {
+                        matchedSlot = slots[j];
+                        break;
+                    }
+                }
+
+                if (matchedSlot === null) {
+                    // Associated voltage belongs to another device, so it needs a slot of its own
+                    unplacedCurrents.push({ phaseName: phaseName, current: phasorDefinition, voltage: voltage.IsForeign ? voltage : null });
+                    continue;
+                }
+
+                matchedSlot.current = phasorDefinition;
+                matchedSlot.mapped = true;
+            }
+
+            // Place the remaining currents, i.e., those associated with a voltage on another device
+            // and those with no mapped voltage at all, in the first available slot so that current
+            // only calculations spanning phases, e.g., neutral current ratio, stay index aligned
+            for (let i = 0; i < unplacedCurrents.length; i++) {
+                const unplacedCurrent = unplacedCurrents[i];
+                const slots = getSlots(unplacedCurrent.phaseName);
+                const openSlot = findOpenSlot(slots, unplacedCurrent.voltage != null);
+
+                if (openSlot === null) {
+                    slots.push({ voltage: unplacedCurrent.voltage, current: unplacedCurrent.current, mapped: unplacedCurrent.voltage != null });
+                }
+                else {
+                    openSlot.current = unplacedCurrent.current;
+
+                    if (unplacedCurrent.voltage != null) {
+                        openSlot.voltage = unplacedCurrent.voltage;
+                        openSlot.mapped = true;
+                    }
+                }
+            }
+
+            return phaseSlots;
+        }
+
+        function initializeGlobalCalculationValues() {
+            if (dynamicCalculation.globalValuesRequest != null)
+                return dynamicCalculation.globalValuesRequest;
+
+            dynamicCalculation.globalValuesRequest = phasorHub.queryMeasurement(freqDeviceName + "-FQ").then(function (measurement) {
+                if (measurement && measurement.SignalID)
+                    dynamicCalculation.FAVG = measurement.SignalID;
+
+                dynamicCalculation.FNOM = @NominalFrequency;
+            })
+            .fail(function (error) {
+                showErrorMessage("Failed to find average system frequency with SignalReference = '" + freqDeviceName + "-FQ': " + error);
+            });
+
+            return dynamicCalculation.globalValuesRequest;
+        }
+
+        function initializeDeviceVariables(cell) {
             // Input variables - expanded per device:
             //   VNOM: Nominal Voltage = viewModel.configFrame().phasorDefinitions[voltage].Voltage.NominalVoltage()
             //    VAM: Voltage A-Phase Magnitude also VBM, VCM, VNM for B, C & N phases and VPOSM, VNEGM, VZM for +, -, 0 sequence
@@ -2846,166 +3484,116 @@
             //   ALOG: Analog value array
             //   DIGI: Digital value array
 
+            const label = cell.IDLabel();
+
+            // Variables are built once per device, at the point that device is saved, so that the
+            // phasor measurements created during the save operation are available. Note that devices
+            // are saved one at a time, so building variables for all devices up front would leave
+            // every device but the first with no measurements and hence no calculations. Rebuilding
+            // is avoided since it would drop calculation outputs tracked for aggregate calculations.
+            if (dynamicCalculation.deviceVariableRequests.containsKey(label))
+                return dynamicCalculation.deviceVariableRequests.get(label);
+
             const promises = [];
-            const configFrame = viewModel.configFrame();
-            const cells = configFrame.Cells;
-            const cellCount = cells.length;
 
-            for (let i = 0; i < cellCount; i++) {
-                const cell = cells[i];
-                const label = cell.IDLabel();
-                const vars = {
-                      VAM: [],   VBM: [],   VCM: [],   VNM: [],   VPOSM: [],   VNEGM: [],   VZM: [],
-                      VAA: [],   VBA: [],   VCA: [],   VNA: [],   VPOSA: [],   VNEGA: [],   VZA: [],
-                    VANOM: [], VBNOM: [], VCNOM: [], VNNOM: [], VPOSNOM: [], VNEGNOM: [], VZNOM: [],
-                      IAM: [],   IBM: [],   ICM: [],   INM: [],   IPOSM: [],   INEGM: [],   IZM: [],
-                      IAA: [],   IBA: [],   ICA: [],   INA: [],   IPOSA: [],   INEGA: [],   IZA: [],
-                     FREQ: "", FLAGS: "",
-                     ALOG: [],  DIGI: []
-                };
+            const vars = {
+                  VAM: [],   VBM: [],   VCM: [],   VNM: [],   VPOSM: [],   VNEGM: [],   VZM: [],
+                  VAA: [],   VBA: [],   VCA: [],   VNA: [],   VPOSA: [],   VNEGA: [],   VZA: [],
+                VANOM: [], VBNOM: [], VCNOM: [], VNNOM: [], VPOSNOM: [], VNEGNOM: [], VZNOM: [],
+                  IAM: [],   IBM: [],   ICM: [],   INM: [],   IPOSM: [],   INEGM: [],   IZM: [],
+                  IAA: [],   IBA: [],   ICA: [],   INA: [],   IPOSA: [],   INEGA: [],   IZA: [],
+                 FREQ: "", FLAGS: "",
+                 ALOG: [],  DIGI: []
+            };
 
-                dynamicCalculation.deviceVariables.set(label, vars);
+            // Flags, per phase, marking the array indexes that hold a mapped voltage / current pair
+            const phasorPairs = {};
 
-                for (let j = 0; j < cell.PhasorDefinitions.length; j++) {
-                    const phasorDefinition = cell.PhasorDefinitions[j];
-                    const phase = phasorDefinition.Phase().toUpperCase();
+            dynamicCalculation.deviceVariables.set(label, vars);
+            dynamicCalculation.devicePhasorPairs.set(label, phasorPairs);
 
-                    if (!phasorDefinition.Enabled())
-                        continue;
+            const phaseSlots = buildPhasorSlots(cell);
 
-                    if (phasorDefinition.PhasorType.toLowerCase() === "voltage") {
-                        const nominalVoltage = phasorDefinition.Voltage.NominalVoltage() * 1000; // Convert from kV
-                        const nominalVoltage3 = nominalVoltage / 1.7320508075688772;
+            for (let phaseName in phaseSlots) {
+                if (!phaseSlots.hasOwnProperty(phaseName))
+                    continue;
 
-                        if (!phasorDefinition.hasOwnProperty("vphmMeasurement") || !phasorDefinition.hasOwnProperty("vphaMeasurement"))
-                            continue;
+                const slots = phaseSlots[phaseName];
+                const mappedPairs = [];
 
-                        switch (phase) {
-                            case "A":
-                                vars.VAM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VAA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VANOM.push(nominalVoltage3);
-                                break;
-                            case "B":
-                                vars.VBM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VBA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VBNOM.push(nominalVoltage3);
-                                break;
-                            case "C":
-                                vars.VCM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VCA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VCNOM.push(nominalVoltage3);
-                                break;
-                            case "N": // Neutral
-                                vars.VNM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VNA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VNNOM.push(nominalVoltage);
-                                break;
-                            case "+": // Positive Sequence
-                                vars.VPOSM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VPOSA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VPOSNOM.push(nominalVoltage);
-                                break;
-                            case "-": // Negative Sequence
-                                vars.VNEGM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VNEGA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VNEGNOM.push(nominalVoltage);
-                                break;
-                            case "0": // Zero Sequence
-                                vars.VZM.push(phasorDefinition.vphmMeasurement.SignalID);
-                                vars.VZA.push(phasorDefinition.vphaMeasurement.SignalID);
-                                vars.VZNOM.push(nominalVoltage);
-                                break;
-                            default:
-                                continue;
-                        }
-                    } else {
-                        if (!phasorDefinition.hasOwnProperty("iphmMeasurement") || !phasorDefinition.hasOwnProperty("iphaMeasurement"))
-                            continue;
+                // Nominal voltage is entered line-to-line, so an A, B or C phase magnitude is
+                // compared against the equivalent line-to-neutral value
+                const nominalDivisor = phaseName === "A" || phaseName === "B" || phaseName === "C" ? 1.7320508075688772 : 1.0;
 
-                        switch (phase) {
-                            case "A":
-                                vars.IAM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.IAA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "B":
-                                vars.IBM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.IBA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "C":
-                                vars.ICM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.ICA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "N": // Neutral
-                                vars.INM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.INA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "+": // Positive Sequence
-                                vars.IPOSM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.IPOSA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "-": // Negative Sequence
-                                vars.INEGM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.INEGA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            case "0": // Zero Sequence
-                                vars.IZM.push(phasorDefinition.iphmMeasurement.SignalID);
-                                vars.IZA.push(phasorDefinition.iphaMeasurement.SignalID);
-                                break;
-                            default:
-                                continue;
-                        }
-                    }
+                for (let i = 0; i < slots.length; i++) {
+                    const slot = slots[i];
+                    const voltage = slot.voltage;
+                    const current = slot.current;
+
+                    // Phasors that have no measurements, e.g., an empty slot, leave a hole in the
+                    // variable arrays - calculations skip any index with a missing input instead of
+                    // skipping the entire calculation, this being common when voltage and current
+                    // counts do not match, e.g., an unpaired neutral current
+                    const voltageAvailable = voltage != null && voltage.hasOwnProperty("vphmMeasurement") && voltage.hasOwnProperty("vphaMeasurement");
+                    const currentAvailable = current != null && current.hasOwnProperty("iphmMeasurement") && current.hasOwnProperty("iphaMeasurement");
+
+                    vars["V" + phaseName + "M"].push(voltageAvailable ? voltage.vphmMeasurement.SignalID : null);
+                    vars["V" + phaseName + "A"].push(voltageAvailable ? voltage.vphaMeasurement.SignalID : null);
+                    vars["V" + phaseName + "NOM"].push(voltageAvailable ? voltage.Voltage.NominalVoltage() * 1000 / nominalDivisor : null); // Convert from kV
+                    vars["I" + phaseName + "M"].push(currentAvailable ? current.iphmMeasurement.SignalID : null);
+                    vars["I" + phaseName + "A"].push(currentAvailable ? current.iphaMeasurement.SignalID : null);
+
+                    mappedPairs.push(slot.mapped && voltageAvailable && currentAvailable);
                 }
 
-                promises.push(phasorHub.queryMeasurement(label + "-FQ").then(function (measurement) {
-                    vars.FREQ = measurement.SignalID;
-                    return phasorHub.queryMeasurement(label + "-SF");
-                })
-                .then(function (measurement) {
-                    vars.FLAGS = measurement.SignalID;
-                })
-                .fail(function (error) {
-                    showErrorMessage("Failed to find device '" + label + "' frequency or flags measurement: " + error);
-                }));
-
-                // Add analogs array
-                for (let j = 0; j < cell.AnalogDefinitions.length; j++) {
-                    const index = j + 1;
-
-                    promises.push(phasorHub.queryMeasurement(String.format("{0}-AV{1}", label, index)).then(function (measurement) {
-                        vars.ALOG.push(measurement.SignalID);
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Failed to find device '" + label + "' analog value " + String(index) + " measurement: " + error);
-                    }));
-                }
-
-                // Add digitals array
-                for (let j = 0; j < cell.DigitalDefinitions.length; j++) {
-                    const index = j + 1;
-
-                    promises.push(phasorHub.queryMeasurement(String.format("{0}-DV{1}", label, index)).then(function (measurement) {
-                        vars.DIGI.push(measurement.SignalID);
-                    })
-                    .fail(function (error) {
-                        showErrorMessage("Failed to find device '" + label + "' digital value " + String(index) + " measurement: " + error);
-                    }));
-                }
+                phasorPairs[phaseName] = mappedPairs;
             }
 
-            return $(promises).whenAll().then(function () {
-                return phasorHub.queryMeasurement(freqDeviceName + "-FQ");
+            promises.push(phasorHub.queryMeasurement(label + "-FQ").then(function (measurement) {
+                vars.FREQ = measurement.SignalID;
+                return phasorHub.queryMeasurement(label + "-SF");
             })
             .then(function (measurement) {
-                if (measurement && measurement.SignalID)
-                    dynamicCalculation.FAVG = measurement.SignalID;
-
-                dynamicCalculation.FNOM = @NominalFrequency;
-                dynamicCalculation.initialized = true;
+                vars.FLAGS = measurement.SignalID;
             })
             .fail(function (error) {
-                showErrorMessage("Failed to find average system frequency with SignalReference = '" + freqDeviceName + "-FQ': " + error);
+                showErrorMessage("Failed to find device '" + label + "' frequency or flags measurement: " + error);
+            }));
+
+            // Add analogs array
+            for (let j = 0; j < cell.AnalogDefinitions.length; j++) {
+                const index = j + 1;
+
+                promises.push(phasorHub.queryMeasurement(String.format("{0}-AV{1}", label, index)).then(function (measurement) {
+                    vars.ALOG.push(measurement.SignalID);
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to find device '" + label + "' analog value " + String(index) + " measurement: " + error);
+                }));
+            }
+
+            // Add digitals array
+            for (let j = 0; j < cell.DigitalDefinitions.length; j++) {
+                const index = j + 1;
+
+                promises.push(phasorHub.queryMeasurement(String.format("{0}-DV{1}", label, index)).then(function (measurement) {
+                    vars.DIGI.push(measurement.SignalID);
+                })
+                .fail(function (error) {
+                    showErrorMessage("Failed to find device '" + label + "' digital value " + String(index) + " measurement: " + error);
+                }));
+            }
+
+            const request = $(promises).whenAll();
+
+            dynamicCalculation.deviceVariableRequests.set(label, request);
+
+            return request;
+        }
+
+        function initializeDynamicCalculation(cell) {
+            return initializeGlobalCalculationValues().then(function () {
+                return initializeDeviceVariables(cell);
             });
         }
 
@@ -3032,13 +3620,18 @@
                 attempt = 1;
 
             if (attempt > 4) {
-                return $.Deferred().reject("Failed to create \"" + tagTemplate.TagName + "\" aggregate tag template: input \"" + property + "\" source array could not be resolved after waiting 12 seconds.").promise();
+                return $.Deferred().reject("Failed to create \"" + tagTemplate.TagName + "\" aggregate tag template: an input source array could not be resolved after waiting 12 seconds.").promise();
             }
 
-            return initializeDynamicCalculation().then(function () {
+            return initializeDynamicCalculation(cell).then(function () {
                 var vars = dynamicCalculation.deviceVariables.get(cell.IDLabel());
+                var phasorPairs = notNull(dynamicCalculation.devicePhasorPairs.get(cell.IDLabel()), {});
                 var inputSet = {};
                 let arrayInputs = 0;
+
+                // Phases referenced by the voltage and current inputs of this tag template
+                const voltageInputPhases = {};
+                const currentInputPhases = {};
 
                 for (let i = 0; i < tagTemplate.Inputs.length; i++) {
                     let inputName = tagTemplate.Inputs[i].toUpperCase();
@@ -3104,6 +3697,17 @@
                         varName = inputName = inputName.substring(0, inputName.length - 2);
                     }
 
+                    // Track which phasor types and phases this calculation consumes so that mixed
+                    // voltage / current calculations can be restricted to mapped pairs
+                    const variableType = phasorVariableTypes[varName];
+
+                    if (variableType !== undefined) {
+                        if (variableType.type === "V")
+                            voltageInputPhases[variableType.phase] = true;
+                        else
+                            currentInputPhases[variableType.phase] = true;
+                    }
+
                     inputSet[inputName] = vars[varName];
                 }
 
@@ -3118,6 +3722,20 @@
                 var singletonCalculation = false;
                 var aggregateCalculation = arrayInputs > 0;
 
+                // Counts the entries of an array based input that actually reference a signal - the
+                // phasor variable arrays are index aligned across phases and voltage / current pairs,
+                // so an index with no phasor for a given variable is left as a null placeholder
+                function definedInputCount(input) {
+                    let count = 0;
+
+                    for (let i = 0; i < input.length; i++) {
+                        if (input[i] !== null && input[i] !== undefined)
+                            count++;
+                    }
+
+                    return count;
+                }
+
                 if (aggregateCalculation) {
                     // Aggregate calculations operate over a single set of input arrays
                     maxInputLength = 1;
@@ -3130,14 +3748,12 @@
                                 return $.Deferred().reject("Error in \"" + tagTemplate.TagName + "\" [" + String(templateIndex) + "] tag template: input \"" + property + "\" source is not an array. When array inputs are used, arrays must be the only input types specified.").promise();
 
                             // Inputs can be outputs of other calculations, so will wait for a moment for these to get created if needed
-                            if (Object.keys(inputSet[property]).length === 0)
+                            if (definedInputCount(inputSet[property]) === 0)
                                 return delayedPromise(dbOpWaitTime).then(function () { return saveDynamicCalculation(cell, tagTemplate, templateIndex, subType, calcSignalType, ++attempt); });
                         }
                     }
                 }
                 else {
-                    // TODO: Handle case where there may be an odd number of positive sequence values to phase values - may need to match by line??
-
                     // Get max channel count
                     for (let property in inputSet) {
                         if (inputSet.hasOwnProperty(property)) {
@@ -3152,22 +3768,7 @@
                         }
                     }
 
-                    // Validate inputs
-                    if (maxInputLength > 0) {
-                        for (let property in inputSet) {
-                            if (inputSet.hasOwnProperty(property)) {
-                                // Ignore non-array elements
-                                if (!Array.isArray(inputSet[property]))
-                                    continue;
-
-                                // All array-based inputs, e.g., phasors, must have consistent lengths
-                                if (maxInputLength !== inputSet[property].length) {
-                                    inputsAvailable = false;
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
+                    if (maxInputLength === 0) {
                         // Check for singleton calculation inputs
                         inputsAvailable = inputSet.hasOwnProperty("FREQ") || inputSet.hasOwnProperty("FAVG") || inputSet.hasOwnProperty("FNOM") || inputSet.hasOwnProperty("FLAGS");
 
@@ -3176,6 +3777,47 @@
                             singletonCalculation = true;
                         }
                     }
+                }
+
+                // A calculation that mixes voltage and current inputs is only valid at indexes where
+                // the voltage and the current are actually mapped to each other. This keeps currents
+                // that have no associated voltage, e.g., a neutral current, and voltages that have no
+                // associated current, out of voltage / current calculations while leaving the
+                // remaining mapped pairs to calculate normally.
+                const requirePairedPhases = [];
+
+                if (!aggregateCalculation && Object.keys(voltageInputPhases).length > 0) {
+                    for (let phaseName in currentInputPhases) {
+                        if (currentInputPhases.hasOwnProperty(phaseName))
+                            requirePairedPhases.push(phaseName);
+                    }
+                }
+
+                // Array based inputs are index aligned but can have holes, e.g., where voltage and
+                // current counts do not match, so availability is evaluated one index at a time -
+                // an index with a missing input is skipped instead of skipping the whole calculation
+                function inputsAvailableAtIndex(index) {
+                    for (let property in inputSet) {
+                        if (!inputSet.hasOwnProperty(property))
+                            continue;
+
+                        const input = inputSet[property];
+
+                        if (!Array.isArray(input))
+                            continue;
+
+                        if (index >= input.length || input[index] === null || input[index] === undefined)
+                            return false;
+                    }
+
+                    for (let i = 0; i < requirePairedPhases.length; i++) {
+                        const mappedPairs = phasorPairs[requirePairedPhases[i]];
+
+                        if (mappedPairs === undefined || !mappedPairs[index])
+                            return false;
+                    }
+
+                    return true;
                 }
 
                 function addDynamicCalculatorAdapter(index, measurement) {
@@ -3199,7 +3841,13 @@
 
                                 for (let inputProperty in input) {
                                     if (input.hasOwnProperty(inputProperty)) {
-                                        signalIDs.push(input[inputProperty] + "");
+                                        const signalID = input[inputProperty];
+
+                                        // Skip index aligned placeholders, e.g., a phase with no phasor
+                                        if (signalID === null || signalID === undefined)
+                                            continue;
+
+                                        signalIDs.push(signalID + "");
                                     }
                                 }
 
@@ -3327,17 +3975,25 @@
 
                 const promises = [];
 
+                // Track all dynamic calculation output SignalIDs by tag name so they can be used as
+                // inputs to aggregate calculations - this is defined even when no outputs get created
+                // so that a dependent aggregate calculation resolves an empty array instead of failing
+                if (!singletonCalculation && !aggregateCalculation)
+                    vars[tagTemplate.TagName] = [];
+
                 if (inputsAvailable) {
                     for (let i = 0; i < maxInputLength; i++) {
                         const index = i;
 
+                        // Only calculate channels where every input is defined - a channel with a
+                        // missing input, e.g., a current with no mapped voltage, is skipped without
+                        // disturbing the channels that do have all of their inputs
+                        if (!singletonCalculation && !aggregateCalculation && !inputsAvailableAtIndex(index))
+                            continue;
+
                         if (subType === "Calc") {
                             const orgSignalReference = String.format("{0}-{1}-{2}{3}", cell.OriginalAcronym(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
                             const signalReference = String.format("{0}-{1}-{2}{3}", cell.IDLabel(), tagTemplate.TagName, calcSignalType.Suffix, singletonCalculation ? "" : String(index));
-
-                            // Track all dynamic calculation output SignalIDs by tag name so they can be used as inputs to aggregate calculations
-                            if (!singletonCalculation && !aggregateCalculation)
-                                vars[tagTemplate.TagName] = [];
 
                             // Query existing measurement record for specified signal reference - function will create a new blank measurement record if one does not exist
                             promises.push(phasorHub.queryMeasurement(orgSignalReference).then(function (measurement) {
@@ -3377,7 +4033,7 @@
         }
 
         function saveAliasedVoltageMagnitudes(cell, calcSignalType) {
-            return initializeDynamicCalculation().then(function () {
+            return initializeDynamicCalculation(cell).then(function () {
                 function addDynamicCalculatorAdapter(inputMeasurement, outputMeasurement) {
                     const connectionString = new Dictionary();
                     const variableList = new Dictionary();
@@ -3422,7 +4078,7 @@
 
                     if (phasorDefinition.PhasorType.toLowerCase() === "current") {
                         const current = phasorDefinition;
-                        const voltage = lookupAssociatedVoltage(cell, phasorDefinition.Current.AssociatedVoltage());
+                        const voltage = resolveAssociatedVoltage(cell, phasorDefinition);
 
                         if (voltage && current.Label().toLowerCase() !== voltage.Label().toLowerCase() && voltage.hasOwnProperty("vphmMeasurement")) {
                             count++;
@@ -3508,7 +4164,12 @@
                 return $.Deferred().resolve().promise();
             }
 
-            return saveAliasedVoltageMagnitudes(cell, calcSignalType).then(function() {
+            // Resolve measurements for any associated voltage that lives on another device before
+            // running calculations so that voltage / current calculations can span devices
+            return resolveSourceDeviceVoltageMeasurements(cell).then(function () {
+                return saveAliasedVoltageMagnitudes(cell, calcSignalType);
+            })
+            .then(function() {
                 return phasorHub.loadTemplate(templateType).then(function (tagTemplates) {
                     return phasorHub.validateCalculatorConfigurations(viewModel.historianID(), "@SystemName").then(function () {
                         return serviceHub.sendCommand("initialize PHASOR!AVERAGEFREQ").then(function () {
@@ -4049,6 +4710,114 @@
             $("#loadConfigurationFileName").val("");
         }
 
+        // Current phasor that the source device dialog is currently editing, plus the device that
+        // has been highlighted in its search results
+        var sourceDeviceTarget = null;
+        var selectedSourceDevice = null;
+
+        function showSourceDeviceDialog(current) {
+            if (!hubIsConnected || !current.Enabled())
+                return;
+
+            sourceDeviceTarget = current;
+            selectedSourceDevice = null;
+
+            $("#sourceDeviceTargetLabel").html("Select the device that supplies the associated voltage for current <strong>" +
+                $("<div />").text(current.Label()).html() + "</strong>. Voltage phasors from the selected device will be " +
+                "available in the associated voltage list.");
+
+            $("#sourceDeviceSelection").html(current.IsForeignSource() ?
+                "Current source device: " + $("<div />").text(current.SourceDeviceAcronym()).html() :
+                "Current source device: this device");
+
+            $("#inputSourceDeviceSearch").val(current.IsForeignSource() ? current.SourceDeviceAcronym() : "");
+            $("#applySourceDevice").disable();
+            $("#sourceDeviceDialog").show();
+
+            searchSourceDevices();
+
+            setTimeout(function () {
+                $("#inputSourceDeviceSearch").focus().select();
+            }, 200);
+        }
+
+        function searchSourceDevices() {
+            const filterText = notNull($("#inputSourceDeviceSearch").val()).trim();
+            const sourceDeviceList = $("#sourceDeviceList");
+
+            sourceDeviceList.empty();
+            sourceDeviceList.append($("<tr><td>Searching...</td></tr>"));
+
+            phasorHub.queryEnabledDevices(nodeID, 50, filterText).done(function (devices) {
+                sourceDeviceList.empty();
+
+                if (devices.length === 0) {
+                    sourceDeviceList.append($("<tr><td>No matching devices found.</td></tr>"));
+                    return;
+                }
+
+                for (let i = 0; i < devices.length; i++) {
+                    const device = devices[i];
+
+                    // Selecting the device that owns the current phasor is the same as using this
+                    // device, which the dialog offers through its own button
+                    if (sourceDeviceTarget != null && device.ID === sourceDeviceTarget.Device.ID)
+                        continue;
+
+                    const row = $("<tr class='source-device-row'><td><strong>" + $("<div />").text(device.Acronym).html() +
+                        "</strong><span class='sub-text'>&nbsp;&nbsp;" + $("<div />").text(notNull(device.Name)).html() + "</span></td></tr>");
+
+                    row.on("click", function () {
+                        selectedSourceDevice = device;
+                        sourceDeviceList.find("tr").removeClass("selected");
+                        row.addClass("selected");
+                        $("#sourceDeviceSelection").html("Selected source device: " + $("<div />").text(device.Acronym).html());
+                        $("#applySourceDevice").enable();
+                    });
+
+                    row.on("dblclick", function () {
+                        selectedSourceDevice = device;
+                        applySourceDeviceSelection();
+                    });
+
+                    sourceDeviceList.append(row);
+                }
+            })
+            .fail(function (error) {
+                sourceDeviceList.empty();
+                showErrorMessage("Failed to query devices: " + error, null, true);
+            });
+        }
+
+        function applySourceDeviceSelection() {
+            if (sourceDeviceTarget == null || selectedSourceDevice == null)
+                return;
+
+            const current = sourceDeviceTarget;
+            const device = selectedSourceDevice;
+
+            $("#sourceDeviceDialog").hide();
+
+            current.setSourceDevice(device.ID, device.Acronym, false).done(function () {
+                viewModel.isDirty(true);
+            });
+        }
+
+        function clearSourceDeviceSelection() {
+            if (sourceDeviceTarget == null)
+                return;
+
+            const current = sourceDeviceTarget;
+
+            $("#sourceDeviceDialog").hide();
+
+            if (!current.IsForeignSource())
+                return;
+
+            current.setSourceDevice(0, "", false);
+            viewModel.isDirty(true);
+        }
+
         function requestDeviceConfiguration() {
             if (!hubIsConnected)
                 return;
@@ -4223,6 +4992,31 @@
                 show: false,
                 backdrop: "static",
                 keyboard: false
+            });
+
+            $("#sourceDeviceDialog").modal({
+                show: false,
+                backdrop: "static",
+                keyboard: false
+            });
+
+            var sourceDeviceSearchTimer = null;
+
+            $("#inputSourceDeviceSearch").on("input", function () {
+                if (sourceDeviceSearchTimer != null)
+                    clearTimeout(sourceDeviceSearchTimer);
+
+                sourceDeviceSearchTimer = setTimeout(searchSourceDevices, 350);
+            });
+
+            $("#inputSourceDeviceSearch").keyup(function (event) {
+                if (event.keyCode !== 13)
+                    return;
+
+                if (sourceDeviceSearchTimer != null)
+                    clearTimeout(sourceDeviceSearchTimer);
+
+                searchSourceDevices();
             });
 
             $("#inputTcpHostName").focus(function() {
@@ -4855,9 +5649,12 @@
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                         </div>
                     </td>
-                    <td class="text-left">
+                    <td class="text-left" style="white-space: nowrap">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
-                        <select class="form-control" style="width: 85%" data-bind="options: DeviceVoltages, optionsCaption: 'None', value: AssociatedVoltage, optionsText: associatedVoltageLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
+                        <select class="form-control associated-voltage" style="width: 78%" data-bind="options: DeviceVoltages, value: AssociatedVoltage, optionsText: associatedVoltageOptionLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
+                        <button type="button" class="btn btn-default source-device" data-bind="click: showSourceDeviceDialog, enable: Enabled, css: { 'btn-info': IsForeignSource() }, attr: { title: IsForeignSource() ? 'Associated voltage is supplied by device ' + SourceDeviceAcronym() + ' - click to change source device...' : 'Select associated voltage from another device...' }">
+                            <span class="glyphicon glyphicon-transfer"></span>
+                        </button>
                     </td>
                 </tr>
                 </tbody>
@@ -5063,6 +5860,35 @@
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" onclick="applyDeviceNameParameters()">Save</button>
                 <button type="button" class="btn btn-default" onclick="$('#deviceNameBuilderDialog').hide()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+@* Associated Voltage Source Device Selection *@
+<div id="sourceDeviceDialog" class="modal" role="dialog">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="$('#sourceDeviceDialog').hide()">&times;</button>
+                <h4 class="modal-title">Select Associated Voltage Source Device</h4>
+            </div>
+            <div class="modal-body">
+                <p id="sourceDeviceTargetLabel"></p>
+                <div class="form-group">
+                    <label for="inputSourceDeviceSearch">Search:</label>
+                    <input type="text" class="form-control" id="inputSourceDeviceSearch" maxlength="200" placeholder="Enter device acronym or name...">
+                </div>
+                <div class="source-device-list">
+                    <table class="table table-condensed table-hover">
+                        <tbody id="sourceDeviceList"></tbody>
+                    </table>
+                </div>
+                <span class="sub-text" id="sourceDeviceSelection">&nbsp;</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="applySourceDevice" onclick="applySourceDeviceSelection()">Select</button>
+                <button type="button" class="btn btn-default" onclick="clearSourceDeviceSelection()">Use This Device</button>
+                <button type="button" class="btn btn-default" onclick="$('#sourceDeviceDialog').hide()">Cancel</button>
             </div>
         </div>
     </div>
