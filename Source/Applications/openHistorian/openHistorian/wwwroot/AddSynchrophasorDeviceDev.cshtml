@@ -241,10 +241,16 @@
         }
 
         /* Note: select2 resolves its container width from the inline style of the source select
-           element, so the associated voltage width is defined inline, not here */
-        select.associated-voltage {
+           element, so the associated voltage width is defined inline, not here. The bootstrap theme
+           sets the generated container to display: block, which pushes the source device button onto
+           the next line, so it is restored to inline-block for this cell. */
+        td.associated-voltage .select2-container {
             display: inline-block;
             vertical-align: middle;
+            /* Always leave room for the source device button so the two never wrap onto separate
+               lines, and so the cell can still shrink instead of overflowing the responsive table.
+               This overrides the inline width select2 copies from the source select element. */
+            width: calc(100% - 40px) !important;
         }
 
         button.source-device {
@@ -1016,6 +1022,13 @@
             return matched.length > 0 ? matched : voltages;
         }
 
+        // Builds the visible text for an associated voltage option. The first "~" delimited part is
+        // the label itself, every part after it is an annotation that formatAssociatedVoltageLabel
+        // renders in a smaller font as "(annotation)". Annotations are the original phasor label,
+        // when the phasor has been renamed on screen, and the phase, when the drop-down is not
+        // filtered to a single phase. Both are added the same way and rendered the same way, and a
+        // value that simply repeats the label or another annotation is dropped - a renamed C phase
+        // voltage whose original label was "VC" would otherwise show "(VC)" twice.
         function associatedVoltageLabel(voltage, showPhase) {
             let label = voltage.Label();
 
@@ -1024,20 +1037,33 @@
             if (voltage.IsForeign)
                 label = voltage.DeviceAcronym + ":" + label;
 
-            // When a drop-down is not filtered to a single phase, the phase is appended to the
-            // visible label, e.g., "BUS1 (VA)", so the selected phase is never ambiguous - this
-            // matters most when several phasors on a device share the same label
+            const parts = [label];
+
+            function annotate(value) {
+                value = notNull(value).trim();
+
+                if (isEmpty(value) || parts.indexOf(value) > -1)
+                    return;
+
+                parts.push(value);
+            }
+
+            // Original phasor label, shown when the label has been changed on screen. This compares
+            // the label itself, not the prefixed one, so a source device prefix does not make an
+            // unchanged label look renamed.
+            if (!isEmpty(voltage.Label()) && voltage.Label() !== voltage.OriginalLabel)
+                annotate(voltage.OriginalLabel);
+
+            // Phase, shown when the drop-down offers more than one phase so the selected phase is
+            // never ambiguous - this matters most when several phasors share the same label
             if (showPhase) {
                 const phase = notNull(voltage.Phase()).trim().toUpperCase();
 
                 if (!isEmpty(phase))
-                    label = label + " (V" + phase + ")";
+                    annotate("V" + phase);
             }
 
-            if (isEmpty(voltage.Label()) || voltage.Label() === voltage.OriginalLabel)
-                return label;
-
-            return label + "~" + voltage.OriginalLabel;
+            return parts.join("~");
         }
 
         function formatAssociatedVoltageLabel(state) {
@@ -1045,16 +1071,13 @@
                 return state == null ? "" : state.text;
 
             const parts = state.text.split("~");
-            const label = parts[0];
-            const orgLabel = parts.length > 1 ? parts[1] : undefined;
+            let markup = parts[0];
 
-            if (isEmpty(orgLabel) || label === orgLabel) {
-                const $state = $("<span>" + state.text + "</span>");
-                return $state;
-            }
+            // Every part after the label is an annotation rendered in a smaller font
+            for (let i = 1; i < parts.length; i++)
+                markup += " <span class='sub-text'>(" + parts[i] + ")</span>";
 
-            const $state = $("<span>" + label + " <span class='sub-text'>(" + orgLabel + ")</span></span>");
-            return $state;
+            return $("<span>" + markup + "</span>");
         }
 
         function saveDeviceConfiguration(acronym, configuration) {
@@ -5557,9 +5580,9 @@
                             <span class="glyphicon glyphicon-remove form-control-feedback" style="z-index: 5" data-bind="visible: !fieldIsValid(Phase, true)"></span>
                         </div>
                     </td>
-                    <td class="text-left" style="white-space: nowrap">
+                    <td class="text-left associated-voltage">
                         <span class="org-label" data-bind="visible: OriginalLabel != Label()">&nbsp;</span>
-                        <select class="form-control associated-voltage" style="width: 78%" data-bind="options: DeviceVoltages, value: AssociatedVoltage, optionsText: associatedVoltageOptionLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
+                        <select class="form-control" style="width: 78%" data-bind="options: DeviceVoltages, value: AssociatedVoltage, optionsText: associatedVoltageOptionLabel, optionsValue: 'ID', valueAllowUnset: true, enable: Enabled, select2: { templateSelection: formatAssociatedVoltageLabel, templateResult: formatAssociatedVoltageLabel, minimumResultsForSearch: -1, theme: 'bootstrap' }"></select>
                         <button type="button" class="btn btn-default source-device" data-bind="click: showSourceDeviceDialog, enable: Enabled, css: { 'btn-info': IsForeignSource() }, attr: { title: IsForeignSource() ? 'Associated voltage is supplied by device ' + SourceDeviceAcronym() + ' - click to change source device...' : 'Select associated voltage from another device...' }">
                             <span class="glyphicon glyphicon-transfer"></span>
                         </button>
