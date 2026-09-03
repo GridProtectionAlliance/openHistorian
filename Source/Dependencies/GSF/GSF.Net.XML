@@ -8556,6 +8556,11 @@
             Trivial File Transport Protocol (TFTP)
             </summary>
         </member>
+        <member name="F:GSF.Net.VirtualFtpClient.FtpType.SFtp">
+            <summary>
+            Secure File Transport Protocol (SFTP)
+            </summary>
+        </member>
         <member name="T:GSF.Net.VirtualFtpClient.TransferDirection">
             <summary>
             FTP file transfer direction enumeration.
@@ -8731,6 +8736,21 @@
         <member name="P:GSF.Net.VirtualFtpClient.FtpClient.TFtpDirectoryFile">
             <summary>
             Gets or sets the directory file, e.g., DIR.TXT, associated with TFTP connections.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.SFtpKeyFile">
+            <summary>
+            Gets or sets the file from which to load the SSH private key for authentication.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.SFtpPassPhrase">
+            <summary>
+            Gets or sets the pass phrase used to decrypt the key file.
+            </summary>
+        </member>
+        <member name="P:GSF.Net.VirtualFtpClient.FtpClient.SFtpCertificateFile">
+            <summary>
+            Gets or sets the file with the certificate that certifies the private key.
             </summary>
         </member>
         <member name="P:GSF.Net.VirtualFtpClient.FtpClient.IsConnected">
