@@ -21,48 +21,85 @@
 //
 //******************************************************************************************************
 
+using System;
 using GSF.IO.FileStructure;
 
-namespace GSF.Snap.Storage
+namespace GSF.Snap.Storage;
+
+/// <summary>
+/// Acquires a read transaction on the current archive partition. This will allow all user created
+/// transactions to have snapshot isolation of the entire data set.
+/// </summary>
+public class SortedTreeTableSnapshotInfo<TKey, TValue>
+    where TKey : SnapTypeBase<TKey>, new()
+    where TValue : SnapTypeBase<TValue>, new()
 {
-    /// <summary>
-    /// Aquires a read transaction on the current archive partition. This will allow all user created
-    /// transactions to have snapshot isolation of the entire data set.
-    /// </summary>
-    public class SortedTreeTableSnapshotInfo<TKey, TValue>
-        where TKey : SnapTypeBase<TKey>, new()
-        where TValue : SnapTypeBase<TValue>, new()
+    #region [ Members ]
+
+    private readonly TransactionalFileStructure m_fileStructure;
+    private readonly Lazy<ulong[]> m_pointIDs;
+    private readonly Lazy<ArchiveTimeBucketBloomIndex> m_bloom;
+    private readonly ReadSnapshot m_currentTransaction;
+    private readonly SubFileName m_fileName;
+
+    #endregion
+
+    #region [ Constructors ]
+
+    internal SortedTreeTableSnapshotInfo(TransactionalFileStructure fileStructure, SubFileName fileName)
     {
-        #region [ Members ]
+        m_fileName = fileName;
+        m_fileStructure = fileStructure;
+        m_currentTransaction = m_fileStructure.Snapshot;
 
-        private readonly TransactionalFileStructure m_fileStructure;
-        private readonly ReadSnapshot m_currentTransaction;
-        private readonly SubFileName m_fileName;
-
-        #endregion
-
-        #region [ Constructors ]
-
-        internal SortedTreeTableSnapshotInfo(TransactionalFileStructure fileStructure, SubFileName fileName)
+        m_pointIDs = new Lazy<ulong[]>(() =>
         {
-            m_fileName = fileName;
-            m_fileStructure = fileStructure;
-            m_currentTransaction = m_fileStructure.Snapshot;
-        }
+            Guid keyType = new TKey().GenericTypeGuid;
+            Guid valueType = new TValue().GenericTypeGuid;
+            
+            return m_fileName == SubFileName.Create(SortedTreeFile.PrimaryArchiveType, keyType, valueType) ? 
+                ArchivePointIDIndex.Load(m_fileStructure.FileName, m_currentTransaction.Header.ArchiveId, m_currentTransaction.Header.SnapshotSequenceNumber, keyType, valueType) : 
+                null;
+        });
 
-        #endregion
-
-        #region [ Methods ]
-
-        /// <summary>
-        /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
-        /// </summary>
-        /// <returns></returns>
-        public SortedTreeTableReadSnapshot<TKey, TValue> CreateReadSnapshot()
+        m_bloom = new Lazy<ArchiveTimeBucketBloomIndex>(() =>
         {
-            return new SortedTreeTableReadSnapshot<TKey, TValue>(m_currentTransaction, m_fileName);
-        }
+            Guid keyType = new TKey().GenericTypeGuid;
+            Guid valueType = new TValue().GenericTypeGuid;
 
-        #endregion
+            return m_fileName == SubFileName.Create(SortedTreeFile.PrimaryArchiveType, keyType, valueType) ? 
+                ArchiveTimeBucketBloomIndex.Load(m_fileStructure.FileName, m_currentTransaction.Header.ArchiveId, m_currentTransaction.Header.SnapshotSequenceNumber, keyType, valueType) : 
+                null;
+        });
     }
+
+    #endregion
+
+    #region [ Properties ]
+
+    internal bool HasTimeBucketBloomIndex => m_bloom.Value is not null;
+
+    #endregion
+
+    #region [ Methods ]
+
+    /// <summary>
+    /// Opens an instance of the archive file to allow for concurrent reading of a snapshot.
+    /// </summary>
+    public SortedTreeTableReadSnapshot<TKey, TValue> CreateReadSnapshot()
+    {
+        return new SortedTreeTableReadSnapshot<TKey, TValue>(m_currentTransaction, m_fileName);
+    }
+
+    internal bool MayContainPointID(ulong id, ulong lower, ulong upper)
+    {
+        return m_bloom.Value is null || m_bloom.Value.MayContain(id, lower, upper);
+    }
+
+    internal bool MayContainPointID(ulong id)
+    {
+        return m_pointIDs.Value is null || Array.BinarySearch(m_pointIDs.Value, id) >= 0;
+    }
+
+    #endregion
 }

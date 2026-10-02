@@ -33,21 +33,17 @@ namespace GSF.IO.FileStructure
     /// Assists in the writing of a simplified file. This file can only be appended to 
     /// and it must be sequentially written.
     /// </summary>
-    public class SimplifiedFileWriter
-        : IDisposable
+    public class SimplifiedFileWriter : IDisposable
     {
         private static readonly LogPublisher Log = Logger.CreatePublisher(typeof(SimplifiedFileWriter), MessageClass.Component);
 
         private bool m_disposed;
-
         private readonly FileHeaderBlock m_fileHeaderBlock;
-
         private SimplifiedSubFileStream m_subFileStream;
-
-        public FileStream m_stream;
-
         private readonly string m_pendingFileName;
         private readonly string m_completeFileName;
+
+        public FileStream m_stream;
 
         /// <summary>
         /// Creates a simplified file writer.
@@ -65,21 +61,25 @@ namespace GSF.IO.FileStructure
             m_stream = new FileStream(pendingFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None);
         }
 
-#if DEBUG
+    #if DEBUG
         ~SimplifiedFileWriter()
         {
             Log.Publish(MessageLevel.Info, "Finalizer Called", GetType().FullName);
         }
-#endif
+    #endif
 
         public Guid ArchiveId => m_fileHeaderBlock.ArchiveId;
+
+        internal uint SnapshotSequenceNumber => m_fileHeaderBlock.SnapshotSequenceNumber;
 
         private void CloseCurrentFile()
         {
             if (m_subFileStream is null)
                 return;
+
             if (!m_subFileStream.IsDisposed)
                 throw new Exception("The previous file must be disposed before completing this action");
+            
             m_subFileStream = null;
         }
 
@@ -91,10 +91,13 @@ namespace GSF.IO.FileStructure
         {
             if (m_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
+            
             CloseCurrentFile();
 
             SubFileHeader subFile = m_fileHeaderBlock.CreateNewFile(fileName);
+            
             subFile.DirectBlock = m_fileHeaderBlock.LastAllocatedBlock + 1;
+            
             m_subFileStream = new SimplifiedSubFileStream(m_stream, subFile, m_fileHeaderBlock);
             return m_subFileStream;
         }
@@ -106,15 +109,22 @@ namespace GSF.IO.FileStructure
         {
             if (m_disposed)
                 return;
+
             CloseCurrentFile();
+            
             m_stream.Position = 0;
             m_stream.Write(m_fileHeaderBlock.GetBytes());
             m_stream.Flush(true);
+            
             WinApi.FlushFileBuffers(m_stream.SafeFileHandle);
+            
             m_stream.Dispose();
             m_stream = null;
+            
             File.Move(m_pendingFileName, m_completeFileName);
+            
             m_disposed = true;
+            
             Dispose();
         }
 
@@ -133,31 +143,28 @@ namespace GSF.IO.FileStructure
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!m_disposed)
+            if (m_disposed)
+                return;
+            
+            try
             {
-                try
+                // This will be done regardless of whether the object is finalized or disposed.
+                if (!disposing)
+                    return;
+                
+                if (m_subFileStream is not null)
                 {
-                    // This will be done regardless of whether the object is finalized or disposed.
+                    m_subFileStream.Dispose();
+                    m_subFileStream = null;
+                }
 
-                    if (disposing)
-                    {
-                        if (m_subFileStream != null)
-                        {
-                            m_subFileStream.Dispose();
-                            m_subFileStream = null;
-                        }
-                        if (m_stream != null)
-                        {
-                            m_stream.Dispose();
-                        }
-                        File.Delete(m_pendingFileName);
-                        // This will be done only when the object is disposed by calling Dispose().
-                    }
-                }
-                finally
-                {
-                    m_disposed = true;  // Prevent duplicate dispose.
-                }
+                m_stream?.Dispose();
+
+                File.Delete(m_pendingFileName);
+            }
+            finally
+            {
+                m_disposed = true;  // Prevent duplicate dispose.
             }
         }
     }

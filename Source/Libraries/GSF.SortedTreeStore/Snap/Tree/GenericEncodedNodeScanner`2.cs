@@ -26,140 +26,142 @@ using GSF.IO;
 using GSF.Snap.Encoding;
 using GSF.Snap.Filters;
 
-namespace GSF.Snap.Tree
+namespace GSF.Snap.Tree;
+
+/// <summary>
+/// Base class for reading from a node that is encoded and must be read sequentially through the node.
+/// </summary>
+public unsafe class GenericEncodedNodeScanner<TKey, TValue>
+    : SortedTreeScannerBase<TKey, TValue>
+    where TKey : SnapTypeBase<TKey>, new()
+    where TValue : SnapTypeBase<TValue>, new()
 {
+    private readonly PairEncodingBase<TKey, TValue> m_encoding;
+    private readonly TKey m_prevKey;
+    private readonly TValue m_prevValue;
+    private int m_nextOffset;
+    private readonly TKey m_tmpKey;
+    private readonly TValue m_tmpValue;
+
     /// <summary>
-    /// Base class for reading from a node that is encoded and must be read sequentially through the node.
+    /// Creates a new class
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    public unsafe class GenericEncodedNodeScanner<TKey, TValue>
-            : SortedTreeScannerBase<TKey, TValue>
-        where TKey : SnapTypeBase<TKey>, new()
-        where TValue : SnapTypeBase<TValue>, new()
+    public GenericEncodedNodeScanner(PairEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
+        : base(level, blockSize, stream, lookupKey)
     {
-        private readonly PairEncodingBase<TKey, TValue> m_encoding;
-        private readonly TKey m_prevKey;
-        private readonly TValue m_prevValue;
-        private int m_nextOffset;
-        private readonly TKey m_tmpKey;
-        private readonly TValue m_tmpValue;
+        m_encoding = encoding;
+        m_nextOffset = 0;
+        m_prevKey = new TKey();
+        m_prevValue = new TValue();
+        m_prevKey.Clear();
+        m_prevValue.Clear();
+        m_tmpKey = new TKey();
+        m_tmpValue = new TValue();
+    }
 
-        /// <summary>
-        /// Creates a new class
-        /// </summary>
-        /// <param name="level"></param>
-        /// <param name="blockSize"></param>
-        /// <param name="stream"></param>
-        /// <param name="lookupKey"></param>
-        public GenericEncodedNodeScanner(PairEncodingBase<TKey, TValue> encoding, byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
-            : base(level, blockSize, stream, lookupKey)
-        {
-            m_encoding = encoding;
-            m_nextOffset = 0;
-            m_prevKey = new TKey();
-            m_prevValue = new TValue();
-            m_prevKey.Clear();
-            m_prevValue.Clear();
-            m_tmpKey = new TKey();
-            m_tmpValue = new TValue();
-        }
+    protected override void InternalPeek(TKey key, TValue value)
+    {
+        byte* stream = Pointer + m_nextOffset;
+        m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
+    }
 
-        protected override void InternalPeek(TKey key, TValue value)
-        {
-            byte* stream = Pointer + m_nextOffset;
-            m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
-        }
+    protected override void InternalRead(TKey key, TValue value)
+    {
+        byte* stream = Pointer + m_nextOffset;
+        int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
+        
+        key.CopyTo(m_prevKey);
+        value.CopyTo(m_prevValue);
+        
+        m_nextOffset += length;
+        IndexOfNextKeyValue++;
+    }
 
-        protected override void InternalRead(TKey key, TValue value)
-        {
-            byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
-            key.CopyTo(m_prevKey);
-            value.CopyTo(m_prevValue);
-            m_nextOffset += length;
-            IndexOfNextKeyValue++;
-        }
+    protected override bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter)
+    {
+    TryAgain:
+        byte* stream = Pointer + m_nextOffset;
+        int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
+        
+        key.CopyTo(m_prevKey);
+        value.CopyTo(m_prevValue);
+        
+        m_nextOffset += length;
+        IndexOfNextKeyValue++;
 
-        protected override bool InternalRead(TKey key, TValue value, MatchFilterBase<TKey, TValue> filter)
-        {
-        TryAgain:
-            byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
-            key.CopyTo(m_prevKey);
-            value.CopyTo(m_prevValue);
-            m_nextOffset += length;
-            IndexOfNextKeyValue++;
-
-            if (filter.Contains(key, value))
-                return true;
-            if (IndexOfNextKeyValue >= RecordCount)
-                return false;
-
-            goto TryAgain;
-        }
-
-        protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds)
-        {
-            byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
-
-            if (key.IsLessThan(upperBounds))
-            {
-                key.CopyTo(m_prevKey);
-                value.CopyTo(m_prevValue);
-                m_nextOffset += length;
-                IndexOfNextKeyValue++;
-                return true;
-            }
+        if (filter.Contains(key, value))
+            return true;
+        
+        if (IndexOfNextKeyValue >= RecordCount)
             return false;
-        }
 
-        protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
-        {
-        TryAgain:
+        goto TryAgain;
+    }
 
-            byte* stream = Pointer + m_nextOffset;
-            int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
+    protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds)
+    {
+        byte* stream = Pointer + m_nextOffset;
+        int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
 
-            if (key.IsLessThan(upperBounds))
-            {
-                key.CopyTo(m_prevKey);
-                value.CopyTo(m_prevValue);
-                m_nextOffset += length;
-                IndexOfNextKeyValue++;
-
-                if (filter.Contains(key, value))
-                    return true;
-                if (IndexOfNextKeyValue >= RecordCount)
-                    return false;
-                goto TryAgain;
-            }
+        if (!key.IsLessThan(upperBounds))
             return false;
-        }
+        
+        key.CopyTo(m_prevKey);
+        value.CopyTo(m_prevValue);
+            
+        m_nextOffset += length;
+        IndexOfNextKeyValue++;
+            
+        return true;
+    }
 
-        /// <summary>
-        /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
-        /// </summary>
-        /// <param name="key">the key to advance to</param>
-        protected override void FindKey(TKey key)
-        {
-            OnNoadReload();
-            while (IndexOfNextKeyValue < RecordCount && InternalReadWhile(m_tmpKey, m_tmpValue, key))
-            {
-            }
-        }
+    protected override bool InternalReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
+    {
+    TryAgain:
 
-        /// <summary>
-        /// Occurs when a node's data is reset.
-        /// Derived classes can override this 
-        /// method if fields need to be reset when a node is loaded.
-        /// </summary>
-        protected override void OnNoadReload()
+        byte* stream = Pointer + m_nextOffset;
+        int length = m_encoding.Decode(stream, m_prevKey, m_prevValue, key, value, out _);
+
+        if (!key.IsLessThan(upperBounds))
+            return false;
+        
+        key.CopyTo(m_prevKey);
+        value.CopyTo(m_prevValue);
+        
+        m_nextOffset += length;
+        IndexOfNextKeyValue++;
+
+        if (filter.Contains(key, value))
+            return true;
+        
+        if (IndexOfNextKeyValue >= RecordCount)
+            return false;
+        
+        goto TryAgain;
+    }
+
+    /// <summary>
+    /// Using <see cref="SortedTreeScannerBase{TKey,TValue}.Pointer"/> advance to the search location of the provided <see cref="key"/>
+    /// </summary>
+    /// <param name="key">the key to advance to</param>
+    protected override void FindKey(TKey key)
+    {
+        OnNodeReload();
+
+        while (IndexOfNextKeyValue < RecordCount && InternalReadWhile(m_tmpKey, m_tmpValue, key))
         {
-            m_nextOffset = 0;
-            m_prevKey.Clear();
-            m_prevValue.Clear();
         }
+    }
+
+    /// <summary>
+    /// Occurs when a node's data is reset.
+    /// Derived classes can override this 
+    /// method if fields need to be reset when a node is loaded.
+    /// </summary>
+    protected override void OnNodeReload()
+    {
+        m_nextOffset = 0;
+        m_prevKey.Clear();
+        m_prevValue.Clear();
     }
 }
