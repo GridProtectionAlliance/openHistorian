@@ -370,6 +370,7 @@ namespace openHistorian
             DataContext.Table<Device>().AddNewOrUpdateRecord(device);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void RemoveDeviceCalculations(int deviceID)
         {
             Device device = QueryDeviceByID(deviceID);
@@ -382,6 +383,7 @@ namespace openHistorian
             DataContext.Connection.ExecuteNonQuery("DELETE FROM Measurement WHERE DeviceID = {0} AND SignalTypeID = {1}", device.ID, CalcSignalTypeID);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void RemoveAllDeviceCalculations()
         {
             DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator'");
