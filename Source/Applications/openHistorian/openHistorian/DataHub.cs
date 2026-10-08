@@ -370,6 +370,7 @@ namespace openHistorian
             DataContext.Table<Device>().AddNewOrUpdateRecord(device);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void RemoveDeviceCalculations(int deviceID)
         {
             Device device = QueryDeviceByID(deviceID);
@@ -377,15 +378,17 @@ namespace openHistorian
             if (device is null || device.ID == 0)
                 return;
 
-            DataContext.Connection.ExecuteNonQuery($"DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator' AND AdapterName LIKE '{device.Acronym}%'");
-            DataContext.Connection.ExecuteNonQuery($"DELETE FROM Measurement WHERE DeviceID = {device.ID} AND SignalTypeID = {CalcSignalTypeID}");
+            string searchText = $"{device.Acronym}%";
+            DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator' AND AdapterName LIKE {0}", searchText);
+            DataContext.Connection.ExecuteNonQuery("DELETE FROM Measurement WHERE DeviceID = {0} AND SignalTypeID = {1}", device.ID, CalcSignalTypeID);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void RemoveAllDeviceCalculations()
         {
             DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'DynamicCalculator.DynamicCalculator'");
             DataContext.Connection.ExecuteNonQuery("DELETE FROM CustomActionAdapter WHERE TypeName = 'PowerCalculations.BulkSequenceCalculator' AND AdapterName <> 'BULK_SEQ'");
-            DataContext.Connection.ExecuteNonQuery($"DELETE FROM Measurement WHERE SignalTypeID = {CalcSignalTypeID}");
+            DataContext.Connection.ExecuteNonQuery("DELETE FROM Measurement WHERE SignalTypeID = {0}", CalcSignalTypeID);
         }
 
         #endregion
