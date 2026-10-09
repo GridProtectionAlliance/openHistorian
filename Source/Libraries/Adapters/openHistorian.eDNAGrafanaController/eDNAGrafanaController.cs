@@ -21,21 +21,6 @@
 //
 //******************************************************************************************************
 
-using GrafanaAdapters;
-using GrafanaAdapters.DataSourceValueTypes;
-using GrafanaAdapters.Functions;
-using GrafanaAdapters.Model.Annotations;
-using GrafanaAdapters.Model.Common;
-using GrafanaAdapters.Model.Functions;
-using GrafanaAdapters.Model.Metadata;
-using GSF;
-using GSF.Collections;
-using GSF.Configuration;
-using GSF.Diagnostics;
-using GSF.Security;
-using GSF.TimeSeries;
-using GSF.Web.Security;
-using InStep.eDNA.EzDNAApiNet;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -47,10 +32,24 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters;
+using GrafanaAdapters.DataSourceValueTypes;
+using GrafanaAdapters.Functions;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
 using GrafanaAdapters.Model.Database;
-using eDNAMetaData = eDNAAdapters.Metadata;
+using GrafanaAdapters.Model.Functions;
+using GrafanaAdapters.Model.Metadata;
+using GSF;
+using GSF.Collections;
+using GSF.Configuration;
+using GSF.Diagnostics;
+using GSF.Security;
+using GSF.TimeSeries;
+using InStep.eDNA.EzDNAApiNet;
 using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
 using CancellationToken = System.Threading.CancellationToken;
+using eDNAMetaData = eDNAAdapters.Metadata;
 
 // ReSharper disable VirtualMemberCallInConstructor
 namespace openHistorian.eDNAGrafanaController
@@ -476,7 +475,7 @@ namespace openHistorian.eDNAGrafanaController
         /// data source value type without restarting host.
         /// </remarks>
         [HttpGet]
-        [AuthorizeControllerRole("Administrator")]
+        [Authorize(Roles = "Administrator")]
         public virtual void ReloadValueTypes(string site, string service)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
@@ -496,7 +495,7 @@ namespace openHistorian.eDNAGrafanaController
         /// without restarting host.
         /// </remarks>
         [HttpGet]
-        [AuthorizeControllerRole("Administrator")]
+        [Authorize(Roles = "Administrator")]
         public virtual void ReloadGrafanaFunctions(string site, string service)
         {
             if (!DataSources.ContainsKey($"{site.ToUpper()}.{service.ToUpper()}"))
