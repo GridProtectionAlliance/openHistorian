@@ -18,7 +18,6 @@
 //  ----------------------------------------------------------------------------------------------------
 //  10/25/2013 - Steven E. Chisholm
 //       Generated original version of source code. 
-//       
 //
 //******************************************************************************************************
 
@@ -26,63 +25,73 @@ using System;
 using GSF.Snap.Storage;
 using GSF.Snap.Tree;
 
-namespace GSF.Snap.Services.Reader
+namespace GSF.Snap.Services.Reader;
+
+public class BufferedArchiveStream<TKey, TValue>
+    : IDisposable
+    where TKey : SnapTypeBase<TKey>, new()
+    where TValue : SnapTypeBase<TValue>, new()
 {
-    public class BufferedArchiveStream<TKey, TValue>
-        : IDisposable
-        where TKey : SnapTypeBase<TKey>, new()
-        where TValue : SnapTypeBase<TValue>, new()
+    private readonly ArchiveTableSummary<TKey, TValue> m_table;
+    private SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
+
+    public SortedTreeScannerBase<TKey, TValue> Scanner;
+
+    /// <summary>
+    /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="SortedTreeEngineReaderSequential{TKey,TValue}"/>
+    /// </summary>
+    public int Index { get; private set; }
+
+    internal bool HasTimeBucketBloomIndex => m_table.ActiveSnapshotInfo.HasTimeBucketBloomIndex;
+    
+    internal bool MayContainPointID(ulong id, ulong lower, ulong upper) => m_table.ActiveSnapshotInfo.MayContainPointID(id, lower, upper);
+
+    internal bool MayContainPointID(ulong id) => m_table.ActiveSnapshotInfo.MayContainPointID(id);
+
+    internal bool ContainsRange(TKey lower, TKey upper) => m_table.Contains(lower, upper);
+
+    /// <summary>
+    /// Creates the table reader.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="table"></param>
+    public BufferedArchiveStream(int index, ArchiveTableSummary<TKey, TValue> table)
     {
-        public SortedTreeScannerBase<TKey, TValue> Scanner;
-        private readonly ArchiveTableSummary<TKey, TValue> m_table;
-        private SortedTreeTableReadSnapshot<TKey, TValue> m_snapshot;
+        Index = index;
+        m_table = table;
+        m_snapshot = m_table.ActiveSnapshotInfo.CreateReadSnapshot();
+        Scanner = m_snapshot.GetTreeScanner();
+    }
 
-        /// <summary>
-        /// An index value that is used to disassociate the archive file. Passed to this class from the <see cref="SortedTreeEngineReaderSequential{TKey,TValue}"/>
-        /// </summary>
-        public int Index { get; private set; }
+    public bool CacheIsValid;
 
-        /// <summary>
-        /// Creates the table reader.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="table"></param>
-        public BufferedArchiveStream(int index, ArchiveTableSummary<TKey, TValue> table)
-        {
-            Index = index;
-            m_table = table;
-            m_snapshot = m_table.ActiveSnapshotInfo.CreateReadSnapshot();
-            Scanner = m_snapshot.GetTreeScanner();
-        }
+    public TKey CacheKey = new TKey();
 
-        public bool CacheIsValid;
-        public TKey CacheKey = new TKey();
-        public TValue CacheValue = new TValue();
+    public TValue CacheValue = new TValue();
 
-        public void UpdateCachedValue()
-        {
-            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
-        }
+    public void UpdateCachedValue()
+    {
+        CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+    }
 
-        public void SkipToNextKeyAndUpdateCachedValue()
-        {
-            CacheIsValid = Scanner.Read(CacheKey, CacheValue);
-            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
-        }
+    public void SkipToNextKeyAndUpdateCachedValue()
+    {
+        CacheIsValid = Scanner.Read(CacheKey, CacheValue);
+        CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+    }
 
-        public void SeekToKeyAndUpdateCacheValue(TKey key)
-        {
-            Scanner.SeekToKey(key);
-            CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
-        }
+    public void SeekToKeyAndUpdateCacheValue(TKey key)
+    {
+        Scanner.SeekToKey(key);
+        CacheIsValid = Scanner.Peek(CacheKey, CacheValue);
+    }
 
-        public void Dispose()
-        {
-            if (m_snapshot != null)
-            {
-                m_snapshot.Dispose();
-                m_snapshot = null;
-            }
-        }
+    public void Dispose()
+    {
+        if (m_snapshot is null)
+            return;
+        
+        m_snapshot.Dispose();
+        m_snapshot = null;
     }
 }

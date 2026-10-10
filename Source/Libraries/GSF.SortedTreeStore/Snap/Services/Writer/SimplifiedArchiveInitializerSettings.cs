@@ -19,7 +19,6 @@
 //  10/18/2014 - Steven E. Chisholm
 //       Generated original version of source code. 
 //       
-//
 //******************************************************************************************************
 
 using System;
@@ -28,269 +27,338 @@ using System.Data;
 using System.IO;
 using GSF.Immutable;
 using GSF.IO;
+using GSF.Snap.Storage;
 
-namespace GSF.Snap.Services.Writer
+namespace GSF.Snap.Services.Writer;
+
+/// <summary>
+/// Settings for <see cref="SimplifiedArchiveInitializer{TKey,TValue}"/>.
+/// </summary>
+public class SimplifiedArchiveInitializerSettings
+    : SettingsBase<SimplifiedArchiveInitializerSettings>
 {
+    private bool m_enablePointIDIndex = true;
+    private TimeBucketBloomFilterSettings m_bloomFilter = new();
+    private ArchiveDirectoryMethod m_directoryMethod;
+    private ArchiveDirectoryFillMethod m_fillMethod;
+    private string m_prefix;
+    private string m_pendingExtension;
+    private string m_finalExtension;
+    private long m_desiredRemainingSpace;
+    private EncodingDefinition m_encodingMethod;
+
     /// <summary>
-    /// Settings for <see cref="SimplifiedArchiveInitializer{TKey,TValue}"/>.
+    /// Creates a new <see cref="ArchiveInitializerSettings"/>
     /// </summary>
-    public class SimplifiedArchiveInitializerSettings
-        : SettingsBase<SimplifiedArchiveInitializerSettings>
+    public SimplifiedArchiveInitializerSettings()
     {
-        private ArchiveDirectoryMethod m_directoryMethod;
-        private ArchiveDirectoryFillMethod m_fillMethod;
-        private string m_prefix;
-        private string m_pendingExtension;
-        private string m_finalExtension;
-        private long m_desiredRemainingSpace;
-        private EncodingDefinition m_encodingMethod;
-        private ImmutableList<string> m_writePath;
-        private ImmutableList<Guid> m_flags;
+        Initialize();
+    }
 
-        /// <summary>
-        /// Creates a new <see cref="ArchiveInitializerSettings"/>
-        /// </summary>
-        public SimplifiedArchiveInitializerSettings()
+    private void Initialize()
+    {
+        m_enablePointIDIndex = true;
+        m_bloomFilter = new TimeBucketBloomFilterSettings();
+        m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
+        m_fillMethod = ArchiveDirectoryFillMethod.Sequential;
+        m_prefix = string.Empty;
+        m_pendingExtension = ".~d2i";
+        m_finalExtension = ".d2i";
+        m_desiredRemainingSpace = 5 * 1024 * 1024 * 1024L; //5GB
+        m_encodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
+        
+        WritePath = new ImmutableList<string>(pathName =>
         {
-            Initialize();
+            PathHelpers.ValidatePathName(pathName);
+            return pathName;
+        });
+
+        Flags = [];
+    }
+
+    /// <summary>
+    /// Whether newly finalized timestamp archives receive exact ID-presence indexes.
+    /// </summary>
+    public bool EnablePointIDIndex
+    {
+        get => m_enablePointIDIndex;
+        set
+        {
+            TestForEditable();
+            m_enablePointIDIndex = value;
         }
+    }
 
-        private void Initialize()
+    /// <summary>
+    /// Options for optional time-bucket Bloom sidecars.
+    /// </summary>
+    public TimeBucketBloomFilterSettings BloomFilter
+    {
+        get => m_bloomFilter;
+        set
         {
-            m_directoryMethod = ArchiveDirectoryMethod.TopDirectoryOnly;
-            m_fillMethod = ArchiveDirectoryFillMethod.Sequential;
-            m_prefix = string.Empty;
-            m_pendingExtension = ".~d2i";
-            m_finalExtension = ".d2i";
-            m_desiredRemainingSpace = 5 * 1024 * 1024 * 1024L; //5GB
-            m_encodingMethod = EncodingDefinition.FixedSizeCombinedEncoding;
-            m_writePath = new ImmutableList<string>((x) =>
-            {
-                PathHelpers.ValidatePathName(x);
-                return x;
-            });
-            m_flags = new ImmutableList<Guid>();
+            TestForEditable();
+            m_bloomFilter = value ?? throw new ArgumentNullException(nameof(value));
         }
+    }
 
-        /// <summary>
-        /// Gets the method that the directory structure will follow when writing a new file.
-        /// </summary>
-        public ArchiveDirectoryMethod DirectoryMethod
+    /// <summary>
+    /// Gets the method that the directory structure will follow when writing a new file.
+    /// </summary>
+    public ArchiveDirectoryMethod DirectoryMethod
+    {
+        get => m_directoryMethod;
+        set
         {
-            get => m_directoryMethod;
-            set
-            {
-                TestForEditable();
-                m_directoryMethod = value;
-            }
+            TestForEditable();
+            m_directoryMethod = value;
         }
+    }
 
-        /// <summary>
-        /// Gets or sets the method used to select a write path when more than one is configured. Defaults to
-        /// <see cref="ArchiveDirectoryFillMethod.Sequential"/>.
-        /// </summary>
-        public ArchiveDirectoryFillMethod FillMethod
+    /// <summary>
+    /// Gets or sets the method used to select a write path when more than one is configured. Defaults to
+    /// <see cref="ArchiveDirectoryFillMethod.Sequential"/>.
+    /// </summary>
+    public ArchiveDirectoryFillMethod FillMethod
+    {
+        get => m_fillMethod;
+        set
         {
-            get => m_fillMethod;
-            set
-            {
-                TestForEditable();
-                m_fillMethod = value;
-            }
+            TestForEditable();
+            m_fillMethod = value;
         }
+    }
 
-        /// <summary>
-        /// Gets/Sets the file prefix. Can be String.Empty for no prefix.
-        /// </summary>
-        public string Prefix
+    /// <summary>
+    /// Gets/Sets the file prefix. Can be String.Empty for no prefix.
+    /// </summary>
+    public string Prefix
+    {
+        get => m_prefix;
+        set
         {
-            get => m_prefix;
-            set
-            {
-                TestForEditable();
+            TestForEditable();
                 
-                if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                m_prefix = string.Empty;
+                return;
+            }
+                
+            if (value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                throw new ArgumentException("filename has invalid characters.", nameof(value));
+                
+            m_prefix = value;
+        }
+    }
+
+    /// <summary>
+    /// The list of all available paths to write files to
+    /// </summary>
+    public ImmutableList<string> WritePath { get; private set; }
+
+    /// <summary>
+    /// The extension to name the file.
+    /// </summary>
+    public string PendingExtension
+    {
+        get => m_pendingExtension;
+        set
+        {
+            TestForEditable();
+            m_pendingExtension = PathHelpers.FormatExtension(value);
+        }
+    }
+
+
+    /// <summary>
+    /// The extension to name the file.
+    /// </summary>
+    public string FinalExtension
+    {
+        get => m_finalExtension;
+        set
+        {
+            TestForEditable();
+            m_finalExtension = PathHelpers.FormatExtension(value);
+        }
+    }
+
+    /// <summary>
+    /// The flags that will be added to any created archive files.
+    /// </summary>
+    public ImmutableList<Guid> Flags { get; private set; }
+
+    /// <summary>
+    /// The encoding method that will be used to write files.
+    /// </summary>
+    public EncodingDefinition EncodingMethod
+    {
+        get => m_encodingMethod;
+        set
+        {
+            TestForEditable();
+            m_encodingMethod = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// The desired number of bytes to leave on the disk after a rollover has completed. 
+    /// Otherwise, pick a different directory or throw an out of disk space exception.
+    /// </summary>
+    /// <remarks>
+    /// Value must be between 100MB and 1TB
+    /// </remarks>
+    public long DesiredRemainingSpace
+    {
+        get => m_desiredRemainingSpace;
+        set
+        {
+            TestForEditable();
+
+            m_desiredRemainingSpace = value switch
+            {
+                < 100 * 1024L * 1024L => 100 * 1024L * 1024L,
+                > 1024 * 1024L * 1024L * 1024L => 1024 * 1024L * 1024L * 1024L,
+                _ => value
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside on the disk.
+    /// </summary>
+    /// <param name="paths">the paths to place the files.</param>
+    /// <param name="desiredRemainingSpace">The desired free space to leave on the disk before moving to another disk.</param>
+    /// <param name="directoryMethod">the method for storing files in a directory.</param>
+    /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
+    /// <param name="prefix">the prefix to affix to the files created.</param>
+    /// <param name="pendingExtension">the extension file name</param>
+    /// <param name="finalExtension">the final extension to specify</param>
+    /// <param name="flags">flags to include in the archive that is created.</param>
+    /// <returns></returns>
+    public void ConfigureOnDisk(IEnumerable<string> paths, long desiredRemainingSpace, ArchiveDirectoryMethod directoryMethod, EncodingDefinition encodingMethod, string prefix, string pendingExtension, string finalExtension, params Guid[] flags)
+    {
+        TestForEditable();
+        Initialize();
+
+        DirectoryMethod = directoryMethod;
+        PendingExtension = pendingExtension;
+        FinalExtension = finalExtension;
+        Flags.AddRange(flags);
+        Prefix = prefix;
+        WritePath.AddRange(paths);
+        DesiredRemainingSpace = desiredRemainingSpace;
+        EncodingMethod = encodingMethod;
+    }
+
+    public override void Save(Stream stream)
+    {
+        bool controls = !m_enablePointIDIndex || m_bloomFilter.MaximumIndexSizeMiB != 64;
+        bool extended = controls || m_bloomFilter.Enabled || m_bloomFilter.BucketDurationSeconds != 900 || m_bloomFilter.FalsePositiveProbability != 0.01D;
+        
+        stream.Write((byte)(controls ? 4 : extended ? 3 : 2));
+        stream.Write((int)m_directoryMethod);
+        stream.Write((int)m_fillMethod);
+        stream.Write(m_prefix);
+        stream.Write(m_pendingExtension);
+        stream.Write(m_finalExtension);
+        stream.Write(m_desiredRemainingSpace);
+        
+        m_encodingMethod.Save(stream);
+        stream.Write(WritePath.Count);
+        
+        foreach (string path in WritePath)
+            stream.Write(path);
+        
+        stream.Write(Flags.Count);
+        
+        foreach (Guid flag in Flags)
+            stream.Write(flag);
+
+        if (!extended)
+            return;
+        
+        stream.Write(m_bloomFilter.Enabled);
+        stream.Write(m_bloomFilter.BucketDurationSeconds);
+        stream.Write(m_bloomFilter.FalsePositiveProbability);
+
+        if (!controls)
+            return;
+        
+        stream.Write(m_enablePointIDIndex);
+        stream.Write(m_bloomFilter.MaximumIndexSizeMiB);
+    }
+
+    public override void Load(Stream stream)
+    {
+        TestForEditable();
+        
+        byte version = stream.ReadNextByte();
+        
+        switch (version)
+        {
+            case 1:
+            case 2:
+            case 4:
+            case 3:
+                m_directoryMethod = (ArchiveDirectoryMethod)stream.ReadInt32();
+
+                // Fill method was introduced in version 2; version 1 streams default to Sequential
+                m_fillMethod = version >= 2 ? (ArchiveDirectoryFillMethod)stream.ReadInt32() : ArchiveDirectoryFillMethod.Sequential;
+
+                m_prefix = stream.ReadString();
+                m_pendingExtension = stream.ReadString();
+                m_finalExtension = stream.ReadString();
+                m_desiredRemainingSpace = stream.ReadInt64();
+                m_encodingMethod = new EncodingDefinition(stream);
+                    
+                int cnt = stream.ReadInt32();
+                WritePath.Clear();
+                    
+                while (cnt > 0)
                 {
-                    m_prefix = string.Empty;
-                    return;
+                    cnt--;
+                    WritePath.Add(stream.ReadString());
                 }
-                
-                if (value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-                    throw new ArgumentException("filename has invalid characters.", nameof(value));
-                
-                m_prefix = value;
-            }
-        }
-
-        /// <summary>
-        /// The list of all available paths to write files to
-        /// </summary>
-        public ImmutableList<string> WritePath => m_writePath;
-
-        /// <summary>
-        /// The extension to name the file.
-        /// </summary>
-        public string PendingExtension
-        {
-            get => m_pendingExtension;
-            set
-            {
-                TestForEditable();
-                m_pendingExtension = PathHelpers.FormatExtension(value);
-            }
-        }
-
-
-        /// <summary>
-        /// The extension to name the file.
-        /// </summary>
-        public string FinalExtension
-        {
-            get => m_finalExtension;
-            set
-            {
-                TestForEditable();
-                m_finalExtension = PathHelpers.FormatExtension(value);
-            }
-        }
-
-        /// <summary>
-        /// The flags that will be added to any created archive files.
-        /// </summary>
-        public ImmutableList<Guid> Flags => m_flags;
-
-        /// <summary>
-        /// The encoding method that will be used to write files.
-        /// </summary>
-        public EncodingDefinition EncodingMethod
-        {
-            get => m_encodingMethod;
-            set
-            {
-                TestForEditable();
-                m_encodingMethod = value ?? throw new ArgumentNullException(nameof(value));
-            }
-        }
-
-        /// <summary>
-        /// The desired number of bytes to leave on the disk after a rollover has completed. 
-        /// Otherwise, pick a different directory or throw an out of disk space exception.
-        /// </summary>
-        /// <remarks>
-        /// Value must be between 100MB and 1TB
-        /// </remarks>
-        public long DesiredRemainingSpace
-        {
-            get => m_desiredRemainingSpace;
-            set
-            {
-                TestForEditable();
-
-                if (value < 100 * 1024L * 1024L)
-                    m_desiredRemainingSpace = 100 * 1024L * 1024L;
-                else if (value > 1024 * 1024L * 1024L * 1024L)
-                    m_desiredRemainingSpace = 1024 * 1024L * 1024L * 1024L;
-                else
-                    m_desiredRemainingSpace = value;
-            }
-        }
-
-
-        /// <summary>
-        /// Creates a <see cref="ArchiveInitializer{TKey,TValue}"/> that will reside on the disk.
-        /// </summary>
-        /// <param name="paths">the paths to place the files.</param>
-        /// <param name="desiredRemainingSpace">The desired free space to leave on the disk before moving to another disk.</param>
-        /// <param name="directoryMethod">the method for storing files in a directory.</param>
-        /// <param name="encodingMethod">the encoding method to use for the archive file.</param>
-        /// <param name="prefix">the prefix to affix to the files created.</param>
-        /// <param name="pendingExtension">the extension file name</param>
-        /// <param name="finalExtension">the final extension to specify</param>
-        /// <param name="flags">flags to include in the archive that is created.</param>
-        /// <returns></returns>
-        public void ConfigureOnDisk(IEnumerable<string> paths, long desiredRemainingSpace, ArchiveDirectoryMethod directoryMethod, EncodingDefinition encodingMethod, string prefix, string pendingExtension, string finalExtension, params Guid[] flags)
-        {
-            TestForEditable();
-            Initialize();
-            DirectoryMethod = directoryMethod;
-            PendingExtension = pendingExtension;
-            FinalExtension = finalExtension;
-            Flags.AddRange(flags);
-            Prefix = prefix;
-            WritePath.AddRange(paths);
-            DesiredRemainingSpace = desiredRemainingSpace;
-            EncodingMethod = encodingMethod;
-        }
-
-        public override void Save(Stream stream)
-        {
-            stream.Write((byte)2);
-            stream.Write((int)m_directoryMethod);
-            stream.Write((int)m_fillMethod);
-            stream.Write(m_prefix);
-            stream.Write(m_pendingExtension);
-            stream.Write(m_finalExtension);
-            stream.Write(m_desiredRemainingSpace);
-            m_encodingMethod.Save(stream);
-            stream.Write(m_writePath.Count);
-            foreach (string path in m_writePath)
-            {
-                stream.Write(path);
-            }
-            stream.Write(m_flags.Count);
-            foreach (Guid flag in m_flags)
-            {
-                stream.Write(flag);
-            }
-        }
-
-        public override void Load(Stream stream)
-        {
-            TestForEditable();
-            byte version = stream.ReadNextByte();
-            switch (version)
-            {
-                case 1:
-                case 2:
-                    m_directoryMethod = (ArchiveDirectoryMethod)stream.ReadInt32();
-
-                    // Fill method was introduced in version 2; version 1 streams default to Sequential
-                    m_fillMethod = version >= 2 ? (ArchiveDirectoryFillMethod)stream.ReadInt32() : ArchiveDirectoryFillMethod.Sequential;
-
-                    m_prefix = stream.ReadString();
-                    m_pendingExtension = stream.ReadString();
-                    m_finalExtension = stream.ReadString();
-                    m_desiredRemainingSpace = stream.ReadInt64();
-                    m_encodingMethod = new EncodingDefinition(stream);
                     
-                    int cnt = stream.ReadInt32();
-                    m_writePath.Clear();
+                cnt = stream.ReadInt32();
+                Flags.Clear();
                     
-                    while (cnt > 0)
+                while (cnt > 0)
+                {
+                    cnt--;
+                    Flags.Add(stream.ReadGuid());
+                }
+
+                m_enablePointIDIndex = true;
+                m_bloomFilter = new TimeBucketBloomFilterSettings();
+
+                if (version >= 3)
+                {
+                    bool enabled = stream.ReadBoolean();
+                    int seconds = stream.ReadInt32();
+                    double probability = stream.ReadDouble();
+                    int maximumMiB = 64;
+
+                    if (version >= 4)
                     {
-                        cnt--;
-                        m_writePath.Add(stream.ReadString());
+                        m_enablePointIDIndex = stream.ReadBoolean();
+                        maximumMiB = stream.ReadInt32();
                     }
                     
-                    cnt = stream.ReadInt32();
-                    m_flags.Clear();
-                    
-                    while (cnt > 0)
-                    {
-                        cnt--;
-                        m_flags.Add(stream.ReadGuid());
-                    }
-                    break;
-                default:
-                    throw new VersionNotFoundException("Unknown Version Code: " + version);
+                    m_bloomFilter = new TimeBucketBloomFilterSettings(enabled, seconds, probability, maximumMiB);
+                }
+                break;
+            default:
+                throw new VersionNotFoundException("Unknown Version Code: " + version);
 
-            }
         }
+    }
 
-        public override void Validate()
-        {
-            if (WritePath.Count == 0)
-                throw new Exception("Missing write paths.");
-        }
+    public override void Validate()
+    {
+        if (WritePath.Count == 0)
+            throw new Exception("Missing write paths.");
     }
 }

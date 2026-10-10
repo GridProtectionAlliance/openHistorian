@@ -30,110 +30,110 @@ using GSF.Snap.Collection;
 using GSF.Snap.Services.Reader;
 using GSF.Snap.Tree.Specialized;
 
-namespace GSF.Snap.Storage
+namespace GSF.Snap.Storage;
+
+/// <summary>
+/// Provides a simple interface for writing a <see cref="SortedTreeFile"/> to disk.
+/// </summary>
+/// <remarks>>
+/// This class is intended for use in scenarios where the data is already sorted and can be written sequentially to disk.
+/// </remarks>
+public static class SortedTreeFileSimpleWriter<TKey, TValue>
+    where TKey : SnapTypeBase<TKey>, new()
+    where TValue : SnapTypeBase<TValue>, new()
 {
     /// <summary>
-    /// Will write a file.
+    /// Creates a new archive file with the supplied data.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    public static class SortedTreeFileSimpleWriter<TKey, TValue>
-        where TKey : SnapTypeBase<TKey>, new()
-        where TValue : SnapTypeBase<TValue>, new()
+    public static void Create(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
     {
-        /// <summary>
-        /// Creates a new arhive file with the supplied data.
-        /// </summary>
-        /// <param name="pendingFileName"></param>
-        /// <param name="completeFileName"></param>
-        /// <param name="blockSize"></param>
-        /// <param name="treeNodeType"></param>
-        /// <param name="treeStream"></param>
-        /// <param name="flags"></param>
-        public static void Create(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
-        {
-            using (SimplifiedFileWriter writer = new SimplifiedFileWriter(pendingFileName, completeFileName, blockSize, flags))
-            {
-                if (archiveIdCallback != null)
-                    archiveIdCallback(writer.ArchiveId);
+        CreateWithBloomFilter(pendingFileName, completeFileName, blockSize, archiveIdCallback, treeNodeType, treeStream, new TimeBucketBloomFilterSettings(), flags);
+    }
 
-                using (ISupportsBinaryStream file = writer.CreateFile(GetFileName()))
-                using (BinaryStream bs = new BinaryStream(file))
-                {
-                    SequentialSortedTreeWriter<TKey, TValue>.Create(bs, blockSize - 32, treeNodeType, treeStream);
-                }
-                writer.Commit();
-            }
+    /// <summary>
+    /// Writes a finalized archive with optional time-bucket Bloom indexing.
+    /// </summary>
+    public static void CreateWithBloomFilter(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, TimeBucketBloomFilterSettings bloomFilter, params Guid[] flags)
+    {
+        CreateWithIndexes(pendingFileName, completeFileName, blockSize, archiveIdCallback, treeNodeType, treeStream, bloomFilter, true, flags);
+    }
+
+    /// <summary>
+    /// Writes a finalized archive with independently controlled presence and Bloom indexes.
+    /// </summary>
+    public static void CreateWithIndexes(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, TimeBucketBloomFilterSettings bloomFilter, bool enablePointIDIndex, params Guid[] flags)
+    {
+        PointIDCollectingStream<TKey, TValue> indexedStream = new(treeStream, bloomFilter, enablePointIDIndex);
+        using SimplifiedFileWriter writer = new(pendingFileName, completeFileName, blockSize, flags);
+        
+        archiveIdCallback?.Invoke(writer.ArchiveId);
+
+        using (ISupportsBinaryStream file = writer.CreateFile(GetFileName()))
+        using (BinaryStream bs = new(file))
+        {
+            SequentialSortedTreeWriter<TKey, TValue>.Create(bs, blockSize - 32, treeNodeType, indexedStream);
         }
+        
+        writer.Commit();
+        indexedStream.Publish(completeFileName, writer.ArchiveId, writer.SnapshotSequenceNumber);
+    }
 
-        public static void CreateNonSequential(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
+    public static void CreateNonSequential(string pendingFileName, string completeFileName, int blockSize, Action<Guid> archiveIdCallback, EncodingDefinition treeNodeType, TreeStream<TKey, TValue> treeStream, params Guid[] flags)
+    {
+        SortedPointBuffer<TKey, TValue> queue = new(100000, true);
+        queue.IsReadingMode = false;
+
+        TKey key = new();
+        TValue value = new();
+
+        List<SortedTreeTable<TKey, TValue>> pendingFiles = new();
+
+        try
         {
-            SortedPointBuffer<TKey, TValue> m_queue;
-            m_queue = new SortedPointBuffer<TKey, TValue>(100000, true);
-            m_queue.IsReadingMode = false;
-
-            TKey key = new TKey();
-            TValue value = new TValue();
-
-            List<SortedTreeTable<TKey, TValue>> pendingFiles = new List<SortedTreeTable<TKey, TValue>>();
-
-            try
+            while (treeStream.Read(key, value))
             {
-                while (treeStream.Read(key, value))
-                {
-                    if (m_queue.IsFull)
-                    {
-                        pendingFiles.Add(CreateMemoryFile(treeNodeType, m_queue));
-                    }
-                    m_queue.TryEnqueue(key, value);
-                }
-
-                if (m_queue.Count > 0)
-                {
-                    pendingFiles.Add(CreateMemoryFile(treeNodeType, m_queue));
-                }
-
-                using (UnionTreeStream<TKey, TValue> reader = new UnionTreeStream<TKey, TValue>(pendingFiles.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), false))
-                {
-                    Create(pendingFileName, completeFileName, blockSize, archiveIdCallback, treeNodeType, reader, flags);
-                }
-
-            }
-            finally
-            {
-                pendingFiles.ForEach(x => x.Dispose());
-            }
-        }
-
-        private static SortedTreeTable<TKey, TValue> CreateMemoryFile(EncodingDefinition treeNodeType, SortedPointBuffer<TKey, TValue> buffer)
-        {
-            buffer.IsReadingMode = true;
-
-            SortedTreeFile file = SortedTreeFile.CreateInMemory(4096);
-            SortedTreeTable<TKey, TValue> table = file.OpenOrCreateTable<TKey, TValue>(treeNodeType);
-            using (SortedTreeTableEditor<TKey, TValue> edit = table.BeginEdit())
-            {
-                edit.AddPoints(buffer);
-                edit.Commit();
+                if (queue.IsFull)
+                    pendingFiles.Add(CreateMemoryFile(treeNodeType, queue));
+                
+                queue.TryEnqueue(key, value);
             }
 
-            buffer.IsReadingMode = false;
-            return table;
-        }
+            if (queue.Count > 0)
+                pendingFiles.Add(CreateMemoryFile(treeNodeType, queue));
 
-        /// <summary>
-        /// Helper method. Creates the <see cref="SubFileName"/> for the default table.
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <returns></returns>
-        private static SubFileName GetFileName()
+            using UnionTreeStream<TKey, TValue> reader = new(pendingFiles.Select(x => new ArchiveTreeStreamWrapper<TKey, TValue>(x)), false);
+            Create(pendingFileName, completeFileName, blockSize, archiveIdCallback, treeNodeType, reader, flags);
+        }
+        finally
         {
-            Guid keyType = new TKey().GenericTypeGuid;
-            Guid valueType = new TValue().GenericTypeGuid;
-            return SubFileName.Create(SortedTreeFile.PrimaryArchiveType, keyType, valueType);
+            pendingFiles.ForEach(x => x.Dispose());
+        }
+    }
+
+    private static SortedTreeTable<TKey, TValue> CreateMemoryFile(EncodingDefinition treeNodeType, SortedPointBuffer<TKey, TValue> buffer)
+    {
+        buffer.IsReadingMode = true;
+
+        SortedTreeFile file = SortedTreeFile.CreateInMemory();
+        SortedTreeTable<TKey, TValue> table = file.OpenOrCreateTable<TKey, TValue>(treeNodeType);
+        
+        using (SortedTreeTableEditor<TKey, TValue> edit = table.BeginEdit())
+        {
+            edit.AddPoints(buffer);
+            edit.Commit();
         }
 
+        buffer.IsReadingMode = false;
+        
+        return table;
+    }
 
+    // Helper method. Creates the <see cref="SubFileName"/> for the default table.
+    private static SubFileName GetFileName()
+    {
+        Guid keyType = new TKey().GenericTypeGuid;
+        Guid valueType = new TValue().GenericTypeGuid;
+        
+        return SubFileName.Create(SortedTreeFile.PrimaryArchiveType, keyType, valueType);
     }
 }

@@ -28,7 +28,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <LangVersion>8</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -142,11 +142,18 @@
     <Compile Include="Security\NonceGenerator.cs" />
     <Compile Include="Security\SaltGenerator.cs" />
     <Compile Include="Snap\BufferedTreeStream%272.cs" />
+    <Compile Include="Snap\Filters\NearestTimestampSeekFilter.cs" />
+    <Compile Include="Snap\Filters\NearestTimestampSeekFilterDefinition.cs" />
     <Compile Include="Snap\Filters\TimestampPointIDSeekFilterDefinition.cs" />
     <Compile Include="Snap\Filters\TimestampPointIDSeekFilter.cs" />
+    <Compile Include="Snap\Filters\TimestampSearchMode.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilterDefinition.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilterDefinition.cs" />
     <Compile Include="Snap\Services\ArchiveDirectoryFillMethod.cs" />
+    <Compile Include="Snap\Services\Reader\NearestTimestampReader.cs" />
+    <Compile Include="Snap\Storage\ArchivePointIDIndex.cs" />
+    <Compile Include="Snap\Storage\ArchiveTimeBucketBloomIndex.cs" />
+    <Compile Include="Snap\Storage\TimeBucketBloomFilterSettings.cs" />
     <Compile Include="Snap\UnionTreeStreamSortHelper.cs" />
     <Compile Include="Snap\Services\ArchiveDetails.cs" />
     <Compile Include="Snap\Services\ArchiveDirectoryMethod.cs" />
