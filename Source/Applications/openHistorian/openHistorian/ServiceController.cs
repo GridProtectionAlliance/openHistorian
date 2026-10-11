@@ -41,7 +41,7 @@ public class ServiceController : ApiController
     /// </summary>
     /// <param name="command">Command to send to the host service.</param>
     [HttpGet]
-    [AuthorizeControllerRole("Administrator, Editor, Viewer")]
+    [Authorize(Roles = "Administrator,Editor,Viewer")]
     public Task<IHttpActionResult> SendCommand(string command)
     {
         return SendCommand(command, false, 0);
@@ -53,7 +53,7 @@ public class ServiceController : ApiController
     /// <param name="command">Command to send to the host service.</param>
     /// <param name="returnValueTimeout">Timeout for return value response.</param>
     [HttpGet]
-    [AuthorizeControllerRole("Administrator, Editor, Viewer")]
+    [Authorize(Roles = "Administrator,Editor,Viewer")]
     public Task<IHttpActionResult> SendCommandWithReturnValue(string command, int returnValueTimeout = 5000)
     {
         return SendCommand(command, true, returnValueTimeout);

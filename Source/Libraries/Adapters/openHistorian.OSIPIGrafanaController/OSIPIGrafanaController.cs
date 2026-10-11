@@ -21,22 +21,6 @@
 //
 //******************************************************************************************************
 
-using GrafanaAdapters;
-using GrafanaAdapters.DataSourceValueTypes;
-using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
-using GrafanaAdapters.Functions;
-using GrafanaAdapters.Model.Annotations;
-using GrafanaAdapters.Model.Common;
-using GrafanaAdapters.Model.Functions;
-using GrafanaAdapters.Model.Metadata;
-using GSF;
-using GSF.Collections;
-using GSF.TimeSeries;
-using GSF.Web.Security;
-using OSIsoft.AF.Asset;
-using OSIsoft.AF.PI;
-using OSIsoft.AF.Time;
-using PIAdapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -49,7 +33,22 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GrafanaAdapters;
+using GrafanaAdapters.DataSourceValueTypes;
+using GrafanaAdapters.DataSourceValueTypes.BuiltIn;
+using GrafanaAdapters.Functions;
+using GrafanaAdapters.Model.Annotations;
+using GrafanaAdapters.Model.Common;
 using GrafanaAdapters.Model.Database;
+using GrafanaAdapters.Model.Functions;
+using GrafanaAdapters.Model.Metadata;
+using GSF;
+using GSF.Collections;
+using GSF.TimeSeries;
+using OSIsoft.AF.Asset;
+using OSIsoft.AF.PI;
+using OSIsoft.AF.Time;
+using PIAdapters;
 using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
 using CancellationToken = System.Threading.CancellationToken;
 
@@ -325,7 +324,7 @@ namespace openHistorian.OSIPIGrafanaController
         /// data source value type without restarting host.
         /// </remarks>
         [HttpGet]
-        [AuthorizeControllerRole("Administrator")]
+        [Authorize(Roles = "Administrator")]
         public virtual void ReloadValueTypes(string instanceName, string serverName)
         {
             DataSource(instanceName, serverName)?.ReloadDataSourceValueTypes();
@@ -342,7 +341,7 @@ namespace openHistorian.OSIPIGrafanaController
         /// without restarting host.
         /// </remarks>
         [HttpGet]
-        [AuthorizeControllerRole("Administrator")]
+        [Authorize(Roles = "Administrator")]
         public virtual void ReloadGrafanaFunctions(string instanceName, string serverName)
         {
             DataSource(instanceName, serverName)?.ReloadGrafanaFunctions();
