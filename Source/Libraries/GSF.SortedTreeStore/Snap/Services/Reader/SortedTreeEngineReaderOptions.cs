@@ -105,7 +105,7 @@ public class SortedTreeEngineReaderOptions
                 MaxScanCount = stream.ReadInt64();
                 MaxSeekCount = stream.ReadInt64();
 
-                if (version == 1)
+                if (version >= 1)
                 {
                     UsePointIDIndex = stream.ReadBoolean();
                     UseTimeBucketBloomFilter = stream.ReadBoolean();
