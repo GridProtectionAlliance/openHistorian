@@ -122,6 +122,9 @@ public class SortedTreeEngineReaderOptions
     /// <param name="stream">the stream to write data to</param>
     public void Save(BinaryStreamBase stream)
     {
+        // Options travel over the wire from client to server and version 0 servers reject any
+        // other version, so version 1 is only written when an index is disabled. Both indexes
+        // being enabled is the default, which is what a version 0 payload implies on load.
         bool extended = !UsePointIDIndex || !UseTimeBucketBloomFilter;
 
         stream.Write((byte)(extended ? 1 : 0));

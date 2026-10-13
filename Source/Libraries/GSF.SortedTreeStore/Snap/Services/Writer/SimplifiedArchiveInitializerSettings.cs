@@ -254,10 +254,7 @@ public class SimplifiedArchiveInitializerSettings
 
     public override void Save(Stream stream)
     {
-        bool controls = !m_enablePointIDIndex || m_bloomFilter.MaximumIndexSizeMiB != 64;
-        bool extended = controls || m_bloomFilter.Enabled || m_bloomFilter.BucketDurationSeconds != 900 || m_bloomFilter.FalsePositiveProbability != 0.01D;
-        
-        stream.Write((byte)(controls ? 4 : extended ? 3 : 2));
+        stream.Write((byte)3);
         stream.Write((int)m_directoryMethod);
         stream.Write((int)m_fillMethod);
         stream.Write(m_prefix);
@@ -276,16 +273,9 @@ public class SimplifiedArchiveInitializerSettings
         foreach (Guid flag in Flags)
             stream.Write(flag);
 
-        if (!extended)
-            return;
-        
         stream.Write(m_bloomFilter.Enabled);
         stream.Write(m_bloomFilter.BucketDurationSeconds);
         stream.Write(m_bloomFilter.FalsePositiveProbability);
-
-        if (!controls)
-            return;
-        
         stream.Write(m_enablePointIDIndex);
         stream.Write(m_bloomFilter.MaximumIndexSizeMiB);
     }
@@ -300,7 +290,6 @@ public class SimplifiedArchiveInitializerSettings
         {
             case 1:
             case 2:
-            case 4:
             case 3:
                 m_directoryMethod = (ArchiveDirectoryMethod)stream.ReadInt32();
 
@@ -339,14 +328,10 @@ public class SimplifiedArchiveInitializerSettings
                     bool enabled = stream.ReadBoolean();
                     int seconds = stream.ReadInt32();
                     double probability = stream.ReadDouble();
-                    int maximumMiB = 64;
 
-                    if (version >= 4)
-                    {
-                        m_enablePointIDIndex = stream.ReadBoolean();
-                        maximumMiB = stream.ReadInt32();
-                    }
-                    
+                    m_enablePointIDIndex = stream.ReadBoolean();
+                    int maximumMiB = stream.ReadInt32();
+
                     m_bloomFilter = new TimeBucketBloomFilterSettings(enabled, seconds, probability, maximumMiB);
                 }
                 break;

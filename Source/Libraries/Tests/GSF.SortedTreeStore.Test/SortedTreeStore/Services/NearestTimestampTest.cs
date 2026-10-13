@@ -849,8 +849,8 @@ namespace GSF.UnitTests.SortedTreeStore.Services
 
             settings.Save(stream);
 
-            byte[] versionTwo = stream.ToArray();
-            Assert.AreEqual(2, versionTwo[0]);
+            byte[] versionThree = stream.ToArray();
+            Assert.AreEqual(3, versionThree[0]);
 
             SimplifiedArchiveInitializerSettings loaded = new SimplifiedArchiveInitializerSettings();
 
@@ -858,6 +858,18 @@ namespace GSF.UnitTests.SortedTreeStore.Services
             loaded.Load(stream);
 
             Assert.AreEqual(ArchiveDirectoryFillMethod.RoundRobin, loaded.FillMethod);
+            Assert.IsFalse(loaded.BloomFilter.Enabled);
+            Assert.AreEqual(stream.Length, stream.Position);
+
+            // Version 2 lacks the trailing index settings: bool + int + double + bool + int
+            byte[] versionTwo = versionThree.Take(versionThree.Length - 18).ToArray();
+
+            versionTwo[0] = 2;
+
+            using (MemoryStream old = new MemoryStream(versionTwo)) loaded.Load(old);
+
+            Assert.AreEqual(ArchiveDirectoryFillMethod.RoundRobin, loaded.FillMethod);
+            Assert.IsTrue(loaded.EnablePointIDIndex);
             Assert.IsFalse(loaded.BloomFilter.Enabled);
 
             byte[] versionOne = versionTwo.Take(5).Concat(versionTwo.Skip(9)).ToArray();
