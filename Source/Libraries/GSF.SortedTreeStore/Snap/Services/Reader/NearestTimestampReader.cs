@@ -110,8 +110,6 @@ internal sealed class NearestTimestampReader<TKey, TValue>
             if (m_lower.IsGreaterThan(m_upper))
                 continue;
 
-            m_missing = m_candidates.Count;
-                
             foreach (Candidate candidate in m_candidates.Values)
                 candidate.Found = false;
                 
