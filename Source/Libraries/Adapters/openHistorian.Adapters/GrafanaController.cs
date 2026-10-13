@@ -21,6 +21,20 @@
 //
 //******************************************************************************************************
 
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Web.Http;
+using DataQualityMonitoring;
 using GrafanaAdapters;
 using GrafanaAdapters.DataSourceValueTypes;
 using GrafanaAdapters.Functions;
@@ -40,22 +54,7 @@ using GSF.Snap.Filters;
 using GSF.Snap.Services;
 using GSF.Snap.Services.Reader;
 using GSF.TimeSeries;
-using GSF.Web.Security;
 using openHistorian.Snap;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
-using System.Web.Http;
-using DataQualityMonitoring;
 using AlarmState = GrafanaAdapters.Model.Database.AlarmState;
 using CancellationToken = System.Threading.CancellationToken;
 using Timer = System.Timers.Timer;
@@ -644,7 +643,7 @@ public class GrafanaController : ApiController
     /// data source value type without restarting host.
     /// </remarks>
     [HttpGet]
-    [AuthorizeControllerRole("Administrator")]
+    [Authorize(Roles = "Administrator")]
     public virtual void ReloadValueTypes()
     {
         DataSource?.ReloadDataSourceValueTypes();
@@ -659,7 +658,7 @@ public class GrafanaController : ApiController
     /// without restarting host.
     /// </remarks>
     [HttpGet]
-    [AuthorizeControllerRole("Administrator")]
+    [Authorize(Roles = "Administrator")]
     public virtual void ReloadGrafanaFunctions()
     {
         DataSource?.ReloadGrafanaFunctions();
