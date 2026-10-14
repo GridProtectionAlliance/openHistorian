@@ -28,7 +28,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <LangVersion>8</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -272,6 +272,10 @@
     <Compile Include="Snap\Filters\PointIdMatchFilter_BitArray.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_UIntHashSet.cs" />
     <Compile Include="Snap\Filters\PointIdMatchFilter_UlongHashSet.cs" />
+    <Compile Include="Snap\Filters\TimestampSearchMode.cs" />
+    <Compile Include="Snap\Filters\NearestTimestampSeekFilter.cs" />
+    <Compile Include="Snap\Filters\NearestTimestampSeekFilterDefinition.cs" />
+    <Compile Include="Snap\Services\Reader\NearestTimestampReader.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilter.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilter_FixedRange.cs" />
     <Compile Include="Snap\Filters\TimestampSeekFilter_IntervalRanges.cs" />
@@ -279,6 +283,9 @@
     <Compile Include="Snap\Services\Net\SnapNetworkClientSettings.cs" />
     <Compile Include="Snap\Services\Net\StreamingServerDatabase`2.cs" />
     <Compile Include="Snap\Services\Writer\WriteProcessorSettings.cs" />
+    <Compile Include="Snap\Storage\ArchivePointIDIndex.cs" />
+    <Compile Include="Snap\Storage\ArchiveTimeBucketBloomIndex.cs" />
+    <Compile Include="Snap\Storage\TimeBucketBloomFilterSettings.cs" />
     <Compile Include="Snap\Storage\SortedTreeFileSimpleWriter.cs" />
     <Compile Include="Snap\Tree\KeyValueMethods`2.cs" />
     <Compile Include="Snap\Tree\Specialized\NodeHeader%271.cs" />

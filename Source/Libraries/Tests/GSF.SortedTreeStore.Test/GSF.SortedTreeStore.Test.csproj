@@ -115,6 +115,7 @@
     <Compile Include="DebugStopwatch.cs" />
     <Compile Include="DelMeTest.cs" />
     <Compile Include="SortedTreeStore\Services\ArchiveReaderSequential_Test.cs" />
+    <Compile Include="SortedTreeStore\Services\NearestTimestampTest.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PointStreamCacheTest.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\PrestageWriterTest.cs" />
     <Compile Include="SortedTreeStore\Services\Writer\StageWriterTest.cs" />

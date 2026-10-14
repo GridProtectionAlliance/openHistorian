@@ -22,6 +22,7 @@
 //******************************************************************************************************
 
 using System;
+using System.Collections.Generic;
 using GSF.IO;
 using GSF.Snap.Filters;
 
@@ -48,51 +49,41 @@ namespace GSF.Snap.Tree
         private const int IndexSize = sizeof(uint);
         protected int KeySize;
         protected int ValueSize;
-        protected TKey UpperKey = new TKey();
-        protected TKey LowerKey = new TKey();
+        protected TKey UpperKey = new();
+        protected TKey LowerKey = new();
         private readonly Func<TKey, byte, uint> m_lookupKey;
         private readonly TKey m_tempKey;
-        //private TKey m_lowerKey;
-        //private TKey m_upperKey;
+        private readonly List<TKey> m_reverseKeys = [];
+        private readonly List<TValue> m_reverseValues = [];
+        private readonly byte m_level;
+        private readonly int m_blockSize;   // JRC: 09/22/2026 -- Changed to private from protected, saw no other external uses
+
+        /// <summary>
+        /// Gets the methods for the key type.
+        /// </summary>
         protected SnapTypeCustomMethods<TKey> KeyMethods;
 
         /// <summary>
         /// The index of the current node.
         /// </summary>
-        protected uint NodeIndex
-        {
-            get;
-            private set;
-        }
+        protected uint NodeIndex { get; private set; }
 
         /// <summary>
         /// The number of records in the current node.
         /// </summary>
-        protected ushort RecordCount
-        {
-            get;
-            private set;
-        }
+        protected ushort RecordCount { get; private set; }
 
         /// <summary>
         /// The node index of the previous sibling.
         /// uint.MaxValue means there is no sibling to the right.
         /// </summary>
-        protected uint LeftSiblingNodeIndex
-        {
-            get;
-            private set;
-        }
+        protected uint LeftSiblingNodeIndex { get; private set; }
 
         /// <summary>
         /// The node index of the next sibling. 
         /// uint.MaxValue means there is no sibling to the right.
         /// </summary>
-        protected uint RightSiblingNodeIndex
-        {
-            get;
-            private set;
-        }
+        protected uint RightSiblingNodeIndex { get; private set; }
 
         /// <summary>
         /// Gets the byte offset of the upper bounds key
@@ -111,8 +102,9 @@ namespace GSF.Snap.Tree
         /// </summary>
         protected long PointerVersion { get; private set; }
 
-        private readonly byte m_level;
-        protected readonly int m_blockSize;
+        /// <summary>
+        /// The stream that is being read from.
+        /// </summary>
         protected readonly BinaryStreamPointerBase Stream;
 
         /// <summary>
@@ -124,23 +116,24 @@ namespace GSF.Snap.Tree
         /// <summary>
         /// The number of bytes in the header of any given node.
         /// </summary>
-        protected int HeaderSize { get; private set; }
-        //protected int OffsetOfUpperBounds;
+        protected int HeaderSize { get; }
+
+        /// <summary>
+        /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
+        /// the data read from this stream will never contain duplicates.
+        /// </summary>
+        public override bool NeverContainsDuplicates => true;
 
         protected SortedTreeScannerBase(byte level, int blockSize, BinaryStreamPointerBase stream, Func<TKey, byte, uint> lookupKey)
         {
             m_tempKey = new TKey();
-            //m_lowerKey = new TKey();
-            //m_upperKey = new TKey();
             m_lookupKey = lookupKey;
             m_level = level;
 
-            //m_currentNode = new Node(stream, blockSize);
             KeyMethods = m_tempKey.CreateValueMethods();
             KeySize = new TKey().Size;
             ValueSize = new TValue().Size;
 
-            //OffsetOfUpperBounds = OffsetOfLowerBounds + KeySize;
             HeaderSize = OffsetOfLowerBounds + 2 * KeySize;
             m_blockSize = blockSize;
             Stream = stream;
@@ -155,11 +148,64 @@ namespace GSF.Snap.Tree
         /// </summary>
         public override bool IsAlwaysSequential => true;
 
-        /// <summary>
-        /// Gets if the stream will never return duplicate keys. Do not return true unless it is Guaranteed that 
-        /// the data read from this stream will never contain duplicates.
-        /// </summary>
-        public override bool NeverContainsDuplicates => true;
+        // Visit from an indexed seek without setting the stream's EOS/disposed state. Nearest
+        // queries reposition the same snapshot repeatedly, including after the last stored key.
+        internal void VisitForward(TKey start, Func<TKey, TValue, bool> visitor)
+        {
+            SeekToKey(start);
+            TKey key = new();
+            TValue value = new();
+
+            while (true)
+            {
+                while (IndexOfNextKeyValue < RecordCount)
+                {
+                    InternalRead(key, value);
+                    if (!visitor(key, value))
+                        return;
+                }
+
+                if (RightSiblingNodeIndex == uint.MaxValue)
+                    return;
+                
+                LoadNode(RightSiblingNodeIndex);
+            }
+        }
+
+        // Compressed leaves must be decoded forwards. Decode one leaf once, then visit its
+        // buffered records backwards; memory is bounded by the largest leaf encountered.
+        internal void VisitBackward(TKey exclusiveStart, Func<TKey, TValue, bool> visitor)
+        {
+            SeekToKey(exclusiveStart);
+            int count = IndexOfNextKeyValue;
+            LoadNode(NodeIndex);
+
+            while (true)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (i == m_reverseKeys.Count)
+                    {
+                        m_reverseKeys.Add(new TKey());
+                        m_reverseValues.Add(new TValue());
+                    }
+
+                    InternalRead(m_reverseKeys[i], m_reverseValues[i]);
+                }
+
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    if (!visitor(m_reverseKeys[i], m_reverseValues[i]))
+                        return;
+                }
+
+                if (LeftSiblingNodeIndex == uint.MaxValue)
+                    return;
+
+                LoadNode(LeftSiblingNodeIndex);
+                count = RecordCount;
+            }
+        }
 
         protected abstract void InternalPeek(TKey key, TValue value);
 
@@ -180,7 +226,7 @@ namespace GSF.Snap.Tree
         #region [ Peek ]
 
         /// <summary>
-        /// Reads the next point, but doees not advance the position of the stream.
+        /// Reads the next point, but does not advance the position of the stream.
         /// </summary>
         /// <param name="key">the key to write the results to</param>
         /// <param name="value">the value to write the results to</param>
@@ -192,13 +238,14 @@ namespace GSF.Snap.Tree
         {
             if (Stream.PointerVersion == PointerVersion)
             {
-                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                // A lightweight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
                     InternalPeek(key, value);
                     return true;
                 }
             }
+
             return PeekCatchAll(key, value);
         }
 
@@ -212,18 +259,22 @@ namespace GSF.Snap.Tree
                 {
                     key.Clear();
                     value.Clear();
+
                     Dispose();
+
                     return false;
                 }
+
                 LoadNode(RightSiblingNodeIndex);
             }
+
             //if the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
-            {
                 RefreshPointer();
-            }
+
             //Reads the next key in the sequence.
             InternalPeek(key, value);
+
             return true;
         }
 
@@ -251,7 +302,7 @@ namespace GSF.Snap.Tree
         {
             if (Stream.PointerVersion == PointerVersion)
             {
-                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                // A lightweight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
                     if (UpperKey.IsLessThan(upperBounds))
@@ -259,38 +310,44 @@ namespace GSF.Snap.Tree
                         InternalRead(key, value);
                         return true;
                     }
+
                     return InternalReadWhile(key, value, upperBounds);
                 }
             }
+
             return ReadWhileCatchAll(key, value, upperBounds);
         }
 
         protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds)
         {
-            //If there are no more records in the current node.
+            // If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
             {
-                //If the last leaf node, return false
+                // If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
                     key.Clear();
                     value.Clear();
+
                     Dispose();
+
                     return false;
                 }
+
                 LoadNode(RightSiblingNodeIndex);
             }
-            //if the pointer data is no longer valid, refresh the pointer
+
+            // If the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
-            {
                 RefreshPointer();
-            }
-            //Reads the next key in the sequence.
+
+            // Reads the next key in the sequence.
             if (UpperKey.IsLessThan(upperBounds))
             {
                 InternalRead(key, value);
                 return true;
             }
+
             return InternalReadWhile(key, value, upperBounds);
         }
 
@@ -315,42 +372,36 @@ namespace GSF.Snap.Tree
         public virtual bool ReadWhile(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
             if (Stream.PointerVersion == PointerVersion && IndexOfNextKeyValue < RecordCount)
-            {
-                if (UpperKey.IsLessThan(upperBounds))
-                {
-                    return InternalRead(key, value, filter);
-                }
-                return InternalReadWhile(key, value, upperBounds, filter);
-            }
+                return UpperKey.IsLessThan(upperBounds) ? InternalRead(key, value, filter) : InternalReadWhile(key, value, upperBounds, filter);
+            
             return ReadWhileCatchAll(key, value, upperBounds, filter);
         }
 
         protected bool ReadWhileCatchAll(TKey key, TValue value, TKey upperBounds, MatchFilterBase<TKey, TValue> filter)
         {
-            //If there are no more records in the current node.
+            // If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
             {
-                //If the last leaf node, return false
+                // If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
                     key.Clear();
                     value.Clear();
+
                     Dispose();
+
                     return false;
                 }
+
                 LoadNode(RightSiblingNodeIndex);
             }
-            //if the pointer data is no longer valid, refresh the pointer
+
+            // If the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
-            {
                 RefreshPointer();
-            }
-            //Reads the next key in the sequence.
-            if (UpperKey.IsLessThan(upperBounds))
-            {
-                return InternalRead(key, value, filter);
-            }
-            return InternalReadWhile(key, value, upperBounds, filter);
+
+            // Reads the next key in the sequence.
+            return UpperKey.IsLessThan(upperBounds) ? InternalRead(key, value, filter) : InternalReadWhile(key, value, upperBounds, filter);
         }
 
         #endregion
@@ -366,13 +417,14 @@ namespace GSF.Snap.Tree
         {
             if (Stream.PointerVersion == PointerVersion)
             {
-                //A light weight function that can be called quickly since 99% of the time, this logic statement will return successfully.
+                // A lightweight function that can be called quickly since 99% of the time, this logic statement will return successfully.
                 if (IndexOfNextKeyValue < RecordCount)
                 {
                     InternalRead(key, value);
                     return true;
                 }
             }
+
             return ReadCatchAll(key, value);
         }
 
@@ -383,60 +435,64 @@ namespace GSF.Snap.Tree
         /// Note: This functionality should be used only to inspect the contests of a file, and not be
         /// used to attempt supporting reverse readings of files.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public bool ReadBackwardish(TKey key, TValue value)
         {
-            //If there are no more records in the current node.
+            // If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
             {
-                //If the last leaf node, return false
+                // If the last leaf node, return false
                 if (LeftSiblingNodeIndex == uint.MaxValue)
                 {
                     key.Clear();
                     value.Clear();
+                    
                     Dispose();
+                    
                     return false;
                 }
+                
                 LoadNode(LeftSiblingNodeIndex);
             }
-            //if the pointer data is no longer valid, refresh the pointer
+            
+            // If the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
-            {
                 RefreshPointer();
-            }
-            //Reads the next key in the sequence.
+            
+            // Reads the next key in the sequence.
             InternalRead(key, value);
+            
             return true;
         }
 
         /// <summary>
-        /// A catch all read function. That can be called if overriding <see cref="Read"/> in a derived class.
+        /// A catch-all read function. That can be called if overriding <see cref="Read"/> in a derived class.
         /// </summary>
-        /// <returns></returns>
         protected bool ReadCatchAll(TKey key, TValue value)
         {
-            //If there are no more records in the current node.
+            // If there are no more records in the current node.
             if (IndexOfNextKeyValue >= RecordCount)
             {
-                //If the last leaf node, return false
+                // If the last leaf node, return false
                 if (RightSiblingNodeIndex == uint.MaxValue)
                 {
                     key.Clear();
                     value.Clear();
+
                     Dispose();
+
                     return false;
                 }
+
                 LoadNode(RightSiblingNodeIndex);
             }
-            //if the pointer data is no longer valid, refresh the pointer
+
+            // If the pointer data is no longer valid, refresh the pointer
             if (Stream.PointerVersion != PointerVersion)
-            {
                 RefreshPointer();
-            }
-            //Reads the next key in the sequence.
+
+            // Reads the next key in the sequence.
             InternalRead(key, value);
+
             return true;
         }
 
@@ -465,26 +521,29 @@ namespace GSF.Snap.Tree
         /// Loads the header data for the provided node.
         /// </summary>
         /// <param name="index">the node index</param>
-        /// <exception cref="ArgumentNullException">occurs when <see cref="index"/>
-        /// is equal to uint.MaxValue</exception>
+        /// <exception cref="ArgumentNullException">occurs when <see cref="index"/> is equal to uint.MaxValue</exception>
         private void LoadNode(uint index)
         {
             if (index == uint.MaxValue)
-                throw new ArgumentNullException("index", "Cannot be uint.MaxValue. Which is null.");
+                throw new ArgumentNullException(nameof(index), "Cannot be uint.MaxValue. Which is null.");
+
             NodeIndex = index;
 
             RefreshPointer();
 
             byte* ptr = Pointer - HeaderSize;
+
             if (ptr[OffsetOfNodeLevel] != m_level)
                 throw new Exception("This node is not supposed to access the underlying node level.");
+
             RecordCount = *(ushort*)(ptr + OffsetOfRecordCount);
             LeftSiblingNodeIndex = *(uint*)(ptr + OffsetOfLeftSibling);
             RightSiblingNodeIndex = *(uint*)(ptr + OffsetOfRightSibling);
             LowerKey.Read(ptr + OffsetOfLowerBounds);
             UpperKey.Read(ptr + OffsetOfUpperBounds);
             IndexOfNextKeyValue = 0;
-            OnNoadReload();
+
+            OnNodeReload();
         }
 
         /// <summary>
@@ -500,7 +559,6 @@ namespace GSF.Snap.Tree
         /// Gets the block index when seeking for the provided key.
         /// </summary>
         /// <param name="key">the key to start the search from.</param>
-        /// <returns></returns>
         protected uint FindLeafNodeAddress(TKey key)
         {
             return m_lookupKey(key, m_level);
@@ -511,9 +569,8 @@ namespace GSF.Snap.Tree
         /// Derived classes can override this 
         /// method if fields need to be reset when a node is loaded.
         /// </summary>
-        protected virtual void OnNoadReload()
+        protected virtual void OnNodeReload()
         {
         }
-
     }
 }
