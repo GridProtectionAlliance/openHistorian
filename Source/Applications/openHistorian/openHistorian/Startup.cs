@@ -70,6 +70,8 @@ namespace openHistorian
                 {
                     await next();
 
+                    context.Response.Headers.Remove("Server");
+
                     if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
                         context.Response.Headers.Add("Content-Security-Policy", ["default-src: 'self'"]);
 
