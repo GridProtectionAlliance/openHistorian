@@ -593,6 +593,7 @@ namespace openHistorian
             DataContext.Table<Measurement>().UpdateRecord(measurement);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void AddNewOrUpdateMeasurement(Measurement measurement)
         {
             DataContext.Table<Measurement>().AddNewOrUpdateRecord(measurement);
@@ -973,26 +974,31 @@ namespace openHistorian
 
         #region [ DirectoryBrowser Operations ]
 
+        [AuthorizeHubRole("Administrator")]
         public IEnumerable<string> LoadDirectories(string rootFolder, bool showHidden)
         {
             return DirectoryBrowserOperations.LoadDirectories(rootFolder, showHidden);
         }
 
+        [AuthorizeHubRole("Administrator")]
         public bool IsLogicalDrive(string path)
         {
             return DirectoryBrowserOperations.IsLogicalDrive(path);
         }
 
+        [AuthorizeHubRole("Administrator")]
         public string ResolvePath(string path)
         {
             return DirectoryBrowserOperations.ResolvePath(path);
         }
 
+        [AuthorizeHubRole("Administrator")]
         public string CombinePath(string path1, string path2)
         {
             return DirectoryBrowserOperations.CombinePath(path1, path2);
         }
 
+        [AuthorizeHubRole("Administrator")]
         public void CreatePath(string path)
         {
             DirectoryBrowserOperations.CreatePath(path);
@@ -1002,11 +1008,13 @@ namespace openHistorian
 
         #region [ Modbus Operations ]
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public Task<bool> ModbusConnect(string connectionString)
         {
             return m_modbusOperations.ModbusConnect(connectionString);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public void ModbusDisconnect()
         {
             m_modbusOperations.ModbusDisconnect();
@@ -1064,6 +1072,7 @@ namespace openHistorian
             }
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public async Task WriteCoils(ushort startAddress, bool[] data)
         {
             try
@@ -1076,6 +1085,7 @@ namespace openHistorian
             }
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public async Task WriteHoldingRegisters(ushort startAddress, ushort[] data)
         {
             try
@@ -1162,13 +1172,21 @@ namespace openHistorian
 
         #region [ COMTRADE Operations ]
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public Schema LoadCOMTRADEConfiguration(string configFile)
         {
+            if (!string.Equals(Path.GetExtension(configFile), ".cfg", StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityException("File type error: Invalid extension for a COMTRADE schema file.");
+
             return new Schema(configFile);
         }
 
+        [AuthorizeHubRole("Administrator, Editor")]
         public uint BeginCOMTRADEDataLoad(string instanceName, string configFile, int deviceID, bool inferTimeFromSampleRates)
         {
+            if (!string.Equals(Path.GetExtension(configFile), ".cfg", StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityException("File type error: Invalid extension for a COMTRADE schema file.");
+
             Schema schema = new Schema(configFile);
             Dictionary<int, int> indexToPointID = new Dictionary<int, int>();
 
@@ -1252,6 +1270,7 @@ namespace openHistorian
         /// </summary>
         /// <param name="path">Directory path to test for existence.</param>
         /// <returns><c>true</c> if directory exists; otherwise, <c>false</c>.</returns>
+        [AuthorizeHubRole("Administrator, Editor")]
         public bool DirectoryExists(string path) => 
             Directory.Exists(path);
 
@@ -1260,6 +1279,7 @@ namespace openHistorian
         /// </summary>
         /// <param name="path">Path and file name to test for existence.</param>
         /// <returns><c>true</c> if file exists; otherwise, <c>false</c>.</returns>
+        [AuthorizeHubRole("Administrator, Editor")]
         public bool FileExists(string path) => 
             File.Exists(path);
 
@@ -1306,6 +1326,7 @@ namespace openHistorian
         ///   <para>Cannot save JSON files without the .json extension.</para>
         /// </exception>
         /// <returns>URL to download filename.</returns>
+        [AuthorizeHubRole("Administrator, Editor")]
         public string SaveJSONFile(string targetFilePath, string json)
         {
             string localPath = FilePath.GetAbsolutePath(@"Grafana\public");
