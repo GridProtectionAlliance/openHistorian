@@ -1401,7 +1401,7 @@ public class LocalOutputAdapter : OutputAdapterBase
                         // CompressionMinTime is in effect
                         archiveData = false;
                     }
-                    else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || compressionMaxTime > 0 && previousData.Value - archivedData.Timestamp > compressionMaxTime)
+                    else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || compressionMaxTime > 0 && previousData.Timestamp - archivedData.Timestamp > compressionMaxTime)
                     {
                         // Quality changed or CompressionMaxTime is exceeded
                         archiveData = true;
