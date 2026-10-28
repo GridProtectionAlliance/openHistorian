@@ -73,6 +73,17 @@ public class LocalOutputAdapter : OutputAdapterBase
 {
     #region [ Members ]
 
+    // Nested Types
+
+    // Swinging door compression state for a single point
+    private sealed class SwingingDoorState
+    {
+        public IMeasurement ArchivedData;   // Last archived measurement
+        public IMeasurement PreviousData;   // Last received measurement, pending archival
+        public double UpperSlope;           // Maximum slope from upper pivot, i.e., archived value + compression limit
+        public double LowerSlope;           // Minimum slope from lower pivot, i.e., archived value - compression limit
+    }
+
     // Constants
 
     /// <summary>
@@ -192,8 +203,8 @@ public class LocalOutputAdapter : OutputAdapterBase
     private readonly HistorianKey m_key;
     private readonly HistorianValue m_value;
     private Dictionary<ulong, DataRow> m_measurements;
-    private Dictionary<ulong, Tuple<int, int, double>> m_compressionSettings;
-    private readonly Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>> m_swingingDoorStates;
+    private Dictionary<ulong, Tuple<long, long, double>> m_compressionSettings;
+    private readonly Dictionary<ulong, SwingingDoorState> m_swingingDoorStates;
     private SortedList<int, double> m_downsamplingIntervals;
     private Timer m_archiveCurtailmentTimer;
     private SafeFileWatcher[] m_attachedPathWatchers;
@@ -210,7 +221,7 @@ public class LocalOutputAdapter : OutputAdapterBase
     {
         m_key = new HistorianKey();
         m_value = new HistorianValue();
-        m_swingingDoorStates = new Dictionary<ulong, Tuple<IMeasurement, IMeasurement, double, double>>();
+        m_swingingDoorStates = new Dictionary<ulong, SwingingDoorState>();
         m_downsamplingIntervals = new SortedList<int, double>();
     }
 
@@ -591,24 +602,27 @@ public class LocalOutputAdapter : OutputAdapterBase
                     measurements[key.ID] = row;
             }
 
-            Dictionary<ulong, Tuple<int, int, double>> compressionSettings = new();
+            Dictionary<ulong, Tuple<long, long, double>> compressionSettings = new();
 
             if (value.Tables.Contains("CompressionSettings"))
             {
+                HashSet<ulong> inputPointIDs = new(InputMeasurementKeys?.Select(key => key.ID) ?? []);
+
                 // Extract compression settings for defined measurements
                 foreach (DataRow row in value.Tables["CompressionSettings"].Rows)
                 {
                     uint pointID = row.ConvertField<uint>("PointID");
 
-                    if (InputMeasurementKeys.All(key => key.ID != pointID))
+                    if (!inputPointIDs.Contains(pointID))
                         continue;
 
-                    // Get compression settings
-                    int compressionMinTime = row.ConvertField<int>("CompressionMinTime");
-                    int compressionMaxTime = row.ConvertField<int>("CompressionMaxTime");
+                    // Get compression settings - min and max times are defined in seconds, stored here as ticks
+                    // to match measurement timestamps
+                    long compressionMinTime = Ticks.FromSeconds(row.ConvertField<double>("CompressionMinTime"));
+                    long compressionMaxTime = Ticks.FromSeconds(row.ConvertField<double>("CompressionMaxTime"));
                     double compressionLimit = row.ConvertField<double>("CompressionLimit");
 
-                    compressionSettings[pointID] = new Tuple<int, int, double>(compressionMinTime, compressionMaxTime, compressionLimit);
+                    compressionSettings[pointID] = new Tuple<long, long, double>(compressionMinTime, compressionMaxTime, compressionLimit);
                 }
             }
 
@@ -1365,82 +1379,110 @@ public class LocalOutputAdapter : OutputAdapterBase
                     continue;
             }
 
-            m_key.Timestamp = (ulong)measurement.Timestamp.Value;
-            m_key.PointID = measurement.Key.ID;
+            IMeasurement archiveMeasurement = measurement;
+
+            // Apply swinging door compression when enabled and settings are defined for this measurement
+            if (SwingingDoorCompressionEnabled && (m_compressionSettings?.TryGetValue(measurement.Key.ID, out Tuple<long, long, double> settings) ?? false) && settings is not null)
+            {
+                archiveMeasurement = ApplySwingingDoorCompression(measurement, settings);
+
+                // Continue to next point if no data needs to be archived
+                if (archiveMeasurement is null)
+                    continue;
+            }
+
+            m_key.Timestamp = (ulong)archiveMeasurement.Timestamp.Value;
+            m_key.PointID = archiveMeasurement.Key.ID;
 
             // Since current time-series measurements are basically all floats - values fit into first value,
             // this will change as value types for time-series framework expands
-            m_value.Value1 = BitConvert.ToUInt64((float)measurement.AdjustedValue);
-            m_value.Value3 = (ulong)measurement.StateFlags;
-
-            // Check to see if swinging door compression is enabled
-            if (SwingingDoorCompressionEnabled)
-            {
-                // Attempt to lookup compression settings for this measurement
-                if ((m_compressionSettings?.TryGetValue(m_key.PointID, out Tuple<int, int, double> settings) ?? false) && settings is not null)
-                {
-                    // Get compression settings
-                    int compressionMinTime = settings.Item1;
-                    int compressionMaxTime = settings.Item2;
-                    double compressionLimit = settings.Item3;
-
-                    // Get current swinging door compression state, creating state if needed
-                    Tuple<IMeasurement, IMeasurement, double, double> state = m_swingingDoorStates.GetOrAdd(m_key.PointID, _ => new Tuple<IMeasurement, IMeasurement, double, double>(measurement, measurement, double.MinValue, double.MaxValue));
-                    IMeasurement currentData = measurement;
-                    IMeasurement archivedData = state.Item1;
-                    IMeasurement previousData = state.Item2;
-                    double lastHighSlope = state.Item3;
-                    double lastLowSlope = state.Item4;
-                    double highSlope = 0.0D;
-                    double lowSlope = 0.0D;
-                    bool archiveData;
-
-                    // Data is to be compressed
-                    if (compressionMinTime > 0 && currentData.Timestamp - archivedData.Timestamp < compressionMinTime)
-                    {
-                        // CompressionMinTime is in effect
-                        archiveData = false;
-                    }
-                    else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || compressionMaxTime > 0 && previousData.Timestamp - archivedData.Timestamp > compressionMaxTime)
-                    {
-                        // Quality changed or CompressionMaxTime is exceeded
-                        archiveData = true;
-                    }
-                    else
-                    {
-                        // Perform a compression test
-                        highSlope = (currentData.Value - (archivedData.Value + compressionLimit)) / (currentData.Timestamp - archivedData.Timestamp);
-                        lowSlope = (currentData.Value - (archivedData.Value - compressionLimit)) / (currentData.Timestamp - archivedData.Timestamp);
-                        double slope = (currentData.Value - archivedData.Value) / (currentData.Timestamp - archivedData.Timestamp);
-
-                        if (highSlope >= lastHighSlope)
-                            lastHighSlope = highSlope;
-
-                        if (lowSlope <= lastLowSlope)
-                            lastLowSlope = lowSlope;
-
-                        archiveData = slope <= lastHighSlope || slope >= lastLowSlope;
-                    }
-
-                    // Update swinging door compression state
-                    m_swingingDoorStates[m_key.PointID] = new Tuple<IMeasurement, IMeasurement, double, double>
-                    (
-                        archiveData ? currentData : archivedData,
-                        currentData,
-                        archiveData ? highSlope: lastHighSlope,
-                        archiveData ? lowSlope : lastLowSlope
-                    );
-
-                    // Continue to next point if this point does not need to be archived
-                    if (!archiveData)
-                        continue;
-                }
-            }
+            m_value.Value1 = BitConvert.ToUInt64((float)archiveMeasurement.AdjustedValue);
+            m_value.Value3 = (ulong)archiveMeasurement.StateFlags;
 
             m_archive.Write(m_key, m_value);
         }
 
         m_archivedMeasurements += measurements.Length;
+    }
+
+    // Applies swinging door compression to the received measurement, returning the measurement to archive, if any.
+    // When the current measurement falls outside the compression doors, the previously received measurement, i.e.,
+    // the last one that could be reproduced by linear interpolation from the archived measurement within the
+    // compression limit, is the one archived. Settings are compression min time (ticks), max time (ticks) and limit.
+    private IMeasurement ApplySwingingDoorCompression(IMeasurement currentData, Tuple<long, long, double> settings)
+    {
+        (long compressionMinTime, long compressionMaxTime, double compressionLimit) = settings;
+        ulong pointID = currentData.Key.ID;
+
+        if (!m_swingingDoorStates.TryGetValue(pointID, out SwingingDoorState state))
+        {
+            // First measurement received for this point is always archived
+            m_swingingDoorStates[pointID] = new SwingingDoorState { ArchivedData = currentData };
+            return currentData;
+        }
+
+        IMeasurement archivedData = state.ArchivedData;
+        IMeasurement previousData = state.PreviousData;
+
+        // Out-of-sequence data is archived as received without affecting compression state
+        if (currentData.Timestamp <= (previousData ?? archivedData).Timestamp)
+            return currentData;
+
+        IMeasurement archiveData = null;
+        bool calculateSlopes = false;
+
+        if (previousData is null)
+        {
+            // First measurement received since archival, initialize compression doors
+            calculateSlopes = true;
+        }
+        else if (compressionMinTime > 0 && previousData.Timestamp - archivedData.Timestamp < compressionMinTime)
+        {
+            // CompressionMinTime is in effect - checked against previous data since it is the candidate for archival
+        }
+        else if (currentData.StateFlags != archivedData.StateFlags || currentData.StateFlags != previousData.StateFlags || compressionMaxTime > 0 && previousData.Timestamp - archivedData.Timestamp > compressionMaxTime)
+        {
+            // Quality changed or CompressionMaxTime is exceeded
+            archiveData = previousData;
+            calculateSlopes = true;
+        }
+        else
+        {
+            // Perform compression test - narrow the doors to include current data, then archive previous data if
+            // the line from archived data to current data no longer passes between the doors. Comparisons are
+            // strict so that a zero compression limit archives data only on change.
+            double elapsed = currentData.Timestamp - archivedData.Timestamp;
+            double upperSlope = (currentData.AdjustedValue - (archivedData.AdjustedValue + compressionLimit)) / elapsed;
+            double lowerSlope = (currentData.AdjustedValue - (archivedData.AdjustedValue - compressionLimit)) / elapsed;
+            double slope = (currentData.AdjustedValue - archivedData.AdjustedValue) / elapsed;
+
+            if (upperSlope > state.UpperSlope)
+                state.UpperSlope = upperSlope;
+
+            if (lowerSlope < state.LowerSlope)
+                state.LowerSlope = lowerSlope;
+
+            if (slope < state.UpperSlope || slope > state.LowerSlope)
+            {
+                archiveData = previousData;
+                calculateSlopes = true;
+            }
+        }
+
+        if (archiveData is not null)
+            state.ArchivedData = archiveData;
+
+        // Reset compression doors from archived data to current data
+        if (calculateSlopes)
+        {
+            double elapsed = currentData.Timestamp - state.ArchivedData.Timestamp;
+            state.UpperSlope = (currentData.AdjustedValue - (state.ArchivedData.AdjustedValue + compressionLimit)) / elapsed;
+            state.LowerSlope = (currentData.AdjustedValue - (state.ArchivedData.AdjustedValue - compressionLimit)) / elapsed;
+        }
+
+        state.PreviousData = currentData;
+
+        return archiveData;
     }
 
     private void AttachArchiveDirectoriesAndAttachedPaths()
