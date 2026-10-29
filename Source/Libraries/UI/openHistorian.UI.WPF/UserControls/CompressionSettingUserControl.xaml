@@ -80,10 +80,10 @@
             <TextBlock Text="Compression Limit" Grid.Row="0" Grid.Column="2" />
             <TextBox Name="CompressionLimitBox" Grid.Row="0" Grid.Column="3" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionLimit}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
 
-            <TextBlock Text="Compression Min Time" Grid.Row="1" Grid.Column="0" />
+            <TextBlock Text="Compression Min Time (ms)" Grid.Row="1" Grid.Column="0" />
             <TextBox Name="CompressionMinTimeBox" Grid.Row="1" Grid.Column="1" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionMinTime}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
 
-            <TextBlock Text="Compression Max Time" Grid.Row="1" Grid.Column="2" />
+            <TextBlock Text="Compression Max Time (ms)" Grid.Row="1" Grid.Column="2" />
             <TextBox Name="CompressionMaxTimeBox" Grid.Row="1" Grid.Column="3" Text="{tsfBinding:Column UpdateSourceTrigger=LostFocus, Path=CompressionMaxTime}" Width="{StaticResource SmallItemSize}" TextAlignment="Right" />
         </Grid>
 
@@ -96,8 +96,8 @@
                 <DataGridTextColumn Header="PointID" Width="*" Binding="{tsfBinding:Column Path=PointID}" />
                 <DataGridTextColumn Header="PointTag" Width="*" Binding="{tsfBinding:Column Mode=OneWay, Path=PointTag}" />
                 <DataGridTextColumn Header="CompressionLimit" Width="*" Binding="{tsfBinding:Column Path=CompressionLimit}" IsReadOnly="True" />
-                <DataGridTextColumn Header="CompressionMinTime" Width="*" Binding="{tsfBinding:Column Path=CompressionMinTime}" IsReadOnly="True" />
-                <DataGridTextColumn Header="CompressionMaxTime" Width="*" Binding="{tsfBinding:Column Path=CompressionMaxTime}" IsReadOnly="True" />
+                <DataGridTextColumn Header="CompressionMinTime (ms)" Width="*" Binding="{tsfBinding:Column Path=CompressionMinTime}" IsReadOnly="True" />
+                <DataGridTextColumn Header="CompressionMaxTime (ms)" Width="*" Binding="{tsfBinding:Column Path=CompressionMaxTime}" IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
 
