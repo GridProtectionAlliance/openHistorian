@@ -616,10 +616,10 @@ public class LocalOutputAdapter : OutputAdapterBase
                     if (!inputPointIDs.Contains(pointID))
                         continue;
 
-                    // Get compression settings - min and max times are defined in seconds, stored here as ticks
-                    // to match measurement timestamps
-                    long compressionMinTime = Ticks.FromSeconds(row.ConvertField<double>("CompressionMinTime"));
-                    long compressionMaxTime = Ticks.FromSeconds(row.ConvertField<double>("CompressionMaxTime"));
+                    // Get compression settings - min and max times are defined in milliseconds, allowing sub-second
+                    // resolution with integer columns, and are stored here as ticks to match measurement timestamps
+                    long compressionMinTime = Ticks.FromMilliseconds(row.ConvertField<double>("CompressionMinTime"));
+                    long compressionMaxTime = Ticks.FromMilliseconds(row.ConvertField<double>("CompressionMaxTime"));
                     double compressionLimit = row.ConvertField<double>("CompressionLimit");
 
                     compressionSettings[pointID] = new Tuple<long, long, double>(compressionMinTime, compressionMaxTime, compressionLimit);
