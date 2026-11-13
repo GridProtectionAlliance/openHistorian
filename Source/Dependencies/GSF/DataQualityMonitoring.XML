@@ -155,66 +155,90 @@
             </summary>
             <param name="alarm">The alarm that was raised.</param>
         </member>
+        <member name="T:DataQualityMonitoring.BestDeviceSelector">
+            <summary>
+            Produces the signals of an output device by selecting, for each frame, the best of several
+            redundant source devices.
+            </summary>
+            <remarks>
+            <para>
+            Signals are paired across devices by signal reference suffix, i.e., the part of the signal reference
+            that follows the device acronym, e.g., "-PA1" or "-FQ". The output device defines the set of signals;
+            pairing is rebuilt from the active measurements each time the adapter is initialized.
+            </para>
+            <para>
+            For each frame, the first source device, in priority order, that has every signal present and good
+            supplies all outputs. When no source device qualifies, each output is taken from its own best source
+            device, unless <see cref="P:DataQualityMonitoring.BestDeviceSelector.AllowMixedSources"/> is <c>false</c>, in which case all outputs are taken
+            from the source device with the most good values so a frame never combines source devices.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DataQualityMonitoring.BestDeviceSelector.DefaultAllowMixedSources">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestDeviceSelector.AllowMixedSources"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestDeviceSelector.DefaultFailbackDelay">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestDeviceSelector.FailbackDelay"/> property.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.SourceDevices">
+            <summary>
+            Gets or sets the source device acronyms, in priority order, separated by semicolons.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.OutputDevice">
+            <summary>
+            Gets or sets the acronym of the output device whose measurements receive the selected values.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.AllowMixedSources">
+            <summary>
+            Gets or sets the flag that determines if a frame can combine values from more than one source
+            device when no source device has all good values.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.FailbackDelay">
+            <summary>
+            Gets or sets the time, in seconds, a higher priority source device must have all good values
+            before it is selected again after a fail-over; zero disables the delay.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.SourceIndexMeasurement">
+            <summary>
+            Gets or sets the optional measurement that receives the 1-based index of the source device
+            used for each frame, or zero when the frame combined source devices.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestDeviceSelector.Status">
+            <summary>
+            Returns the detailed status of the action adapter.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestDeviceSelector.Initialize">
+            <summary>
+            Initializes the <see cref="T:DataQualityMonitoring.BestDeviceSelector"/>.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestDeviceSelector.PublishFrame(GSF.TimeSeries.IFrame,System.Int32)">
+            <summary>
+            Publish <see cref="T:GSF.TimeSeries.IFrame"/> of time-aligned collection of <see cref="T:GSF.TimeSeries.IMeasurement"/> values that arrived within the
+            concentrator's defined <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/>.
+            </summary>
+            <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
+            <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
         <member name="T:DataQualityMonitoring.BestValueSelector">
             <summary>
             Produces a new signal by selecting the best values
             from a collection of concentrated data points.
             </summary>
         </member>
-        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultPublishBadValues">
-            <summary>
-            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.PublishBadValues"/> property.
-            </summary>
-        </member>
-        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultBadFlags">
-            <summary>
-            Defines the default value for the <see cref="F:DataQualityMonitoring.BestValueSelector.DefaultBadFlags"/> property.
-            </summary>
-        </member>
-        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultHandleZeroAsBad">
-            <summary>
-            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.HandleZeroAsBad"/> property.
-            </summary>
-        </member>
-        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultHandleNaNAsBad">
-            <summary>
-            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.HandleNaNAsBad"/> property.
-            </summary>
-        </member>
-        <member name="F:DataQualityMonitoring.BestValueSelector.DefaultSupportsTemporalProcessing">
-            <summary>
-            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelector.SupportsTemporalProcessing"/> property.
-            </summary>
-        </member>
         <member name="P:DataQualityMonitoring.BestValueSelector.OutputMeasurements">
             <summary>
             Gets or sets output measurements that the action adapter will produce, if any.
-            </summary>
-        </member>
-        <member name="P:DataQualityMonitoring.BestValueSelector.PublishBadValues">
-            <summary>
-            Gets or sets the value that determines whether the adapter should
-            publish measurements if all of its inputs are found to be bad.
-            </summary>
-        </member>
-        <member name="P:DataQualityMonitoring.BestValueSelector.BadFlags">
-            <summary>
-            Gets or sets the flags that should be considered bad by this adapter.
-            </summary>
-        </member>
-        <member name="P:DataQualityMonitoring.BestValueSelector.HandleZeroAsBad">
-            <summary>
-            Gets the flag indicating if this adapter considers zero to be a bad value.
-            </summary>
-        </member>
-        <member name="P:DataQualityMonitoring.BestValueSelector.HandleNaNAsBad">
-            <summary>
-            Gets the flag indicating if this adapter considers not-a-number to be a bad value.
-            </summary>
-        </member>
-        <member name="P:DataQualityMonitoring.BestValueSelector.SupportsTemporalProcessing">
-            <summary>
-            Gets the flag indicating if this adapter supports temporal processing.
             </summary>
         </member>
         <member name="P:DataQualityMonitoring.BestValueSelector.Status">
@@ -234,6 +258,95 @@
             </summary>
             <param name="frame"><see cref="T:GSF.TimeSeries.IFrame"/> of measurements with the same timestamp that arrived within <see cref="P:GSF.TimeSeries.ConcentratorBase.LagTime"/> that are ready for processing.</param>
             <param name="index">Index of <see cref="T:GSF.TimeSeries.IFrame"/> within a second ranging from zero to <c><see cref="P:GSF.TimeSeries.ConcentratorBase.FramesPerSecond"/> - 1</c>.</param>
+        </member>
+        <member name="T:DataQualityMonitoring.BestValueSelectorBase">
+            <summary>
+            Represents a base class for adapters that select the best values from redundant input measurements.
+            </summary>
+            <remarks>
+            Defines the quality settings shared by best value selection adapters and the allocation-free
+            evaluation of measurement quality used while processing frames.
+            </remarks>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelectorBase.DefaultPublishBadValues">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelectorBase.PublishBadValues"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelectorBase.DefaultBadFlags">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelectorBase.BadFlags"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelectorBase.DefaultHandleZeroAsBad">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelectorBase.HandleZeroAsBad"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelectorBase.DefaultHandleNaNAsBad">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelectorBase.HandleNaNAsBad"/> property.
+            </summary>
+        </member>
+        <member name="F:DataQualityMonitoring.BestValueSelectorBase.DefaultSupportsTemporalProcessing">
+            <summary>
+            Defines the default value for the <see cref="P:DataQualityMonitoring.BestValueSelectorBase.SupportsTemporalProcessing"/> property.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.PublishBadValues">
+            <summary>
+            Gets or sets the value that determines whether the adapter should
+            publish measurements if all of its inputs are found to be bad.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.BadFlags">
+            <summary>
+            Gets or sets the flags that should be considered bad by this adapter.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.HandleZeroAsBad">
+            <summary>
+            Gets the flag indicating if this adapter considers zero to be a bad value.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.HandleNaNAsBad">
+            <summary>
+            Gets the flag indicating if this adapter considers not-a-number to be a bad value.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.SupportsTemporalProcessing">
+            <summary>
+            Gets the flag indicating if this adapter supports temporal processing.
+            </summary>
+        </member>
+        <member name="P:DataQualityMonitoring.BestValueSelectorBase.Status">
+            <summary>
+            Returns the detailed status of the action adapter.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestValueSelectorBase.Initialize">
+            <summary>
+            Initializes the <see cref="T:DataQualityMonitoring.BestValueSelectorBase"/>.
+            </summary>
+        </member>
+        <member name="M:DataQualityMonitoring.BestValueSelectorBase.IsGood(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Determines if <paramref name="measurement"/> is good per the configured quality settings.
+            </summary>
+            <param name="measurement">Measurement to evaluate, can be <c>null</c>.</param>
+            <returns><c>true</c> if <paramref name="measurement"/> is defined and good; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:DataQualityMonitoring.BestValueSelectorBase.GetBadnessScore(GSF.TimeSeries.IMeasurement)">
+            <summary>
+            Gets a score that ranks how bad <paramref name="measurement"/> is, where lower is better and zero is good.
+            </summary>
+            <param name="measurement">Measurement to score.</param>
+            <returns>Badness score of <paramref name="measurement"/>.</returns>
+            <remarks>
+            Ranks NaN values (when handled as bad) worst, then zero values (when handled as bad), then
+            by the number of configured bad flags that are set. Callers selecting the least bad value
+            should keep the first of equal scores so that input priority breaks ties.
+            </remarks>
         </member>
         <member name="T:DataQualityMonitoring.FlatlineTest">
             <summary>
